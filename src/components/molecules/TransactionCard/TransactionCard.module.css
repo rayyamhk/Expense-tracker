@@ -1,0 +1,66 @@
+.container {
+  font-family: var(--font);
+  border-bottom: 1px solid var(--gray300);
+  padding: 1rem;
+  display: flex;
+  position: relative;
+}
+
+.container:last-child {
+  border-bottom: none;
+}
+
+.container::after {
+  content: '';
+  background-color: var(--gray500);
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: opacity 0.1s linear;
+}
+
+.container:active::after {
+  opacity: 0.3;
+}
+
+.info {
+  flex: 1;
+  margin: 0 1rem;
+}
+
+.category {
+  line-height: 1;
+}
+
+.details {
+  color: var(--gray500);
+  font-size: 0.7rem;
+  line-height: 1.1;
+  margin: 0.5rem 0;
+}
+
+.time {
+  color: var(--gray500);
+  font-size: 0.7rem;
+  font-weight: 300;
+  line-height: 1;
+  display: block;
+}
+
+.amount {
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.amount.expense {
+  color: var(--red500);
+}
+
+.amount.income {
+  color: var(--green500);
+}

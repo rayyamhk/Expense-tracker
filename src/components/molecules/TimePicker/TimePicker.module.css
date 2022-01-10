@@ -1,0 +1,14 @@
+.container {
+  display: block;
+}
+
+.col {
+  display: inline-flex;
+  width: 50%;
+}
+
+.col span {
+  text-align: center;
+  display: block;
+  width: 100%;
+}
