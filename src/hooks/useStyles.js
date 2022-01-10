@@ -7,5 +7,5 @@ export default function useStyles(cssModule) {
       }
     });
     return classes.join(' ');
-  }
+  };
 }

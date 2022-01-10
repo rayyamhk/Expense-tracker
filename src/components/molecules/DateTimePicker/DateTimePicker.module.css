@@ -25,8 +25,21 @@
   overflow: hidden;
 }
 
+.tabs {
+  display: flex;
+  transition: transform 0.2s linear;
+}
+
+.tabs.date-active {
+  transform: translateX(0);
+}
+
+.tabs.time-active {
+  transform: translateX(-100%);
+}
+
 .tab {
-  display: none;
+  flex: 1 0 100%;
 }
 
 .tab.tab-active {

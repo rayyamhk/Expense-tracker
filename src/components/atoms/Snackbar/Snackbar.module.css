@@ -1,0 +1,25 @@
+.container {
+  font-family: var(--font);
+  border-radius: 4px;
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.error {
+  color: var(--white);
+  background-color: var(--error);
+}
+
+.icon {
+  color: inherit;
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+.close {
+  position: absolute;
+  right: 0;
+}

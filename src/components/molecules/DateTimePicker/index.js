@@ -17,14 +17,12 @@ import utils from '../DatePicker/utils';
 export default function DateTimePicker(props) {
   const {
     className,
-    datetime,
+    datetime, // millisecond
     label,
     onDateTimeChange,
   } = props;
 
-  const [initDate, initTime] = utils.getDateTime(datetime);
-  const [date, setDate] = useState(initDate)
-  const [time, setTime] = useState(initTime);
+  const [date, time] = utils.getDateTime(datetime);
   const [tab, setTab] = useState();
   const css = useStyles(styles);
 
@@ -34,12 +32,17 @@ export default function DateTimePicker(props) {
   const timeTab = () => setTab('time');
 
   const onDateChange = (yyyy, mm, dd) => {
-    setDate(utils.encodeDateString(yyyy, mm, dd));
-    setTab('time');
+    const newDate = utils.encodeDateString(yyyy, mm, dd);
+    const dbTime = utils.getDatabaseTime(newDate, time);
+    onDateTimeChange(dbTime);
+    // timeTab();
   };
 
   const onTimeChange = (hh, mm) => {
-    setTime(utils.encodeTimeString(hh, mm));
+    const newTime = utils.encodeTimeString(hh, mm);
+    const dbTime = utils.getDatabaseTime(date, newTime);
+    onDateTimeChange(dbTime);
+    // close();
   };
 
   const classes = css(
@@ -62,14 +65,16 @@ export default function DateTimePicker(props) {
         <MdCalendarToday className={css('textfield-icon')} />
       </div>
       <Card elevated className={css('datetime-picker')}>
-        <div className={css('tabs')}>
+        <div className={css('tabs', tab === 'time' ? 'time-active' : 'date-active')}>
           <DatePicker
-            className={css('tab', tab === 'date' && 'tab-active')}
+            className={css('tab')}
             onDateChange={onDateChange}
             selected={date}
           />
           <TimePicker
-            className={css('tab', tab === 'time' && 'tab-active')}
+            className={css('tab')}
+            onTimeChange={onTimeChange}
+            selected={time}
           />
         </div>
         <div className={css('tab-btns')}>

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-  MdArrowDropDown,
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
 } from 'react-icons/md';
@@ -24,6 +23,7 @@ export default function DatePicker(props) {
 
   const calendarCells = utils.getCalendarCells(year, month);
 
+  // TODO: make sure the year is not overflow: 2000 - 2099
   const nextMonth= () => {
     if (month === 12) {
       setMonth(1);
@@ -45,13 +45,9 @@ export default function DatePicker(props) {
   return (
     <div className={css('container', className)}>
       <div className={css('calendar-control')}>
-        <Button
-          variant="transparent"
-          className={css('year-select')}
-        >
+        <span className={css('year-select')}>
           {`${utils.translateMonth(month)} ${year}`}
-          <MdArrowDropDown />
-        </Button>
+        </span>
         <span className={css('flex-expand')} />
         <Button
           onClick={prevMonth}

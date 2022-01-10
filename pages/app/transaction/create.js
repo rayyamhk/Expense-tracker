@@ -8,12 +8,15 @@ import {
   MdStore,
   MdPayment,
   MdEditNote,
+  MdDone,
 } from 'react-icons/md';
 import Layout from '../../../src/components/molecules/Layout';
 import Radio from '../../../src/components/atoms/Radio';
 import DateTimePicker from '../../../src/components/molecules/DateTimePicker';
 import Select from '../../../src/components/atoms/Select';
 import TextField from '../../../src/components/atoms/TextField';
+import Button from '../../../src/components/atoms/Button';
+import { useError } from '../../../src/hooks/useError';
 import useStyles from '../../../src/hooks/useStyles';
 import styles from '../../../styles/transaction-create.module.css';
 
@@ -28,6 +31,9 @@ export default function Create() {
   const [details, setDetails] = useState();
   const [brand, setBrand] = useState();
   const [payment, setPayment] = useState();
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  // const db = useDatabase('transactions');
+  const { setError } = useError();
   const css = useStyles(styles);
 
   const onTypeChange = (e) => setTypeChecked(e.target.value);
@@ -37,7 +43,14 @@ export default function Create() {
   const onAmountChange = (e) => setAmount(e.target.value);
   const onDetailsChange = (e) => setDetails(e.target.value);
   const onBrandChange = (e) => setBrand(e.target.value);
-  const onPaymentChange = (option) => setPayment(option); 
+  const onPaymentChange = (option) => setPayment(option);
+  const onSubmit = async () => {
+    setHasSubmitted(true);
+    if (!category || (!amount && amount !== 0)) {
+      setError('error', 'Some fields are missing.');
+      return;
+    }
+  };
 
   return (
     <Layout headline="Create Transaction">
@@ -77,6 +90,7 @@ export default function Create() {
             onSelect={onCategorySelect}
             options={categoryOptions}
             selected={category}
+            error={hasSubmitted && !category}
             className={css('select')}
           />
         </div>
@@ -97,6 +111,7 @@ export default function Create() {
             label="Amount *"
             value={amount}
             onChange={onAmountChange}
+            error={hasSubmitted && !amount && amount !== 0}
             nextFocus="details"
             id="amount"
             className={css('textfield')}
@@ -135,6 +150,9 @@ export default function Create() {
             className={css('textfield')}
           />
         </div>
+        <Button onClick={onSubmit} float>
+          <MdDone />
+        </Button>
       </main>
     </Layout>
   );
