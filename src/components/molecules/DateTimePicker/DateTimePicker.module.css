@@ -1,0 +1,72 @@
+.container {
+  position: relative;
+}
+
+.textfield input[type="text"] {
+  padding-right: 3rem;
+}
+
+.textfield-icon {
+  font-size: 1.5rem;
+  position: absolute;
+  top: calc(56px / 2);
+  right: 1rem;
+  transform: translateY(-50%);
+}
+
+.datetime-picker {
+  width: 100%;
+  position: absolute;
+  z-index: 10;
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: opacity 0.1s linear, transform 0.1s linear;
+  overflow: hidden;
+}
+
+.tab {
+  display: none;
+}
+
+.tab.tab-active {
+  display: block;
+}
+
+.tab-btns {
+  display: flex;
+}
+
+.tab-btn {
+  flex: 1;
+}
+
+.tab-btn svg {
+  font-size: 1.5rem;
+}
+
+.hidden-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -10000;
+}
+
+.active .textfield fieldset {
+  border: 2px solid var(--primary);
+}
+
+.active .textfield label {
+  color: var(--primary);
+}
+
+.active .datetime-picker {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.active .hidden-overlay {
+  z-index: 1;
+}

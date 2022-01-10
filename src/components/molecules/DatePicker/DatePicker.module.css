@@ -1,0 +1,62 @@
+.container {
+  padding: 1rem;
+};
+
+.icon {
+  color: var(--gray900);
+  font-size: 1.5rem;
+}
+
+.calendar-control {
+  font-family: var(--font);
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.flex-expand {
+  flex: 1;
+}
+
+.year-select {
+  font-size: 1rem;
+}
+
+.year-select svg {
+  font-size: 1.5rem;
+}
+
+.arrow {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+.arrow:last-child {
+  margin-right: 0;
+}
+
+.calendar {
+  font-family: var(--font);
+  width: 100%;
+  min-height: 252px;
+}
+
+.calendar tr {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.calendar tr th,
+.calendar tr td {
+  font-size: 0.7rem;
+  flex: 1;
+  display: flex;
+  place-content: center;
+}
+
+.calendar tr th {
+  color: var(--gray500);
+}
+
+.calendar tr td {
+  color: var(--gray900);
+}

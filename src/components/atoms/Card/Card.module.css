@@ -1,0 +1,11 @@
+.container {
+  background-color: var(--white);
+}
+
+.round {
+  border-radius: 5px;
+}
+
+.elevated {
+  box-shadow: 0px 2px 10px -3px rgb(0, 0, 0, 25%);
+}

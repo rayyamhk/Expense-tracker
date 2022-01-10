@@ -1,0 +1,33 @@
+.btn {
+  font-family: inherit;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  position: relative;
+}
+
+.btn::after {
+  content: '';
+  background-color: var(--gray900);
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transition: opacity 0.05s linear;
+}
+
+.btn:active::after {
+  opacity: 0.3;
+}
+
+.transparent {
+  background-color: transparent;
+}
+
+.primary {
+  background-color: var(--primary);
+}
