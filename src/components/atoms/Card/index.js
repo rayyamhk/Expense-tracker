@@ -8,6 +8,7 @@ export default function Card(props) {
     className,
     component: Tag = 'div',
     elevated = false,
+    onClick,
     squared = false,
   } = props;
 
@@ -15,6 +16,7 @@ export default function Card(props) {
 
   return (
     <Tag
+      onClick={onClick}
       className={css(
         'container',
         elevated && 'elevated',
@@ -32,5 +34,6 @@ Card.propTypes = {
   className: PropTypes.string,
   component: PropTypes.string,
   elevated: PropTypes.bool,
+  onClick: PropTypes.func,
   squared: PropTypes.bool,
 };

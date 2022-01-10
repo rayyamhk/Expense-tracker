@@ -31,3 +31,16 @@
 .primary {
   background-color: var(--primary);
 }
+
+.float {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--gray900);
+  background-color: var(--primary);
+  height: 48px;
+  width: 48px;
+  border-radius: 50%;
+  position: fixed;
+  bottom: calc(56px + 1rem);
+  right: 1rem;
+}

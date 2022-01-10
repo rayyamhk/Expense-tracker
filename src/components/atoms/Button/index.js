@@ -7,6 +7,7 @@ export default function Button(props) {
   const {
     children,
     className,
+    float = false,
     href,
     onClick,
     variant = 'primary',
@@ -18,7 +19,7 @@ export default function Button(props) {
   let Tag;
 
   const componentProps = {
-    className: css('btn', variant, className),
+    className: css('btn', variant, float && 'float', className),
     ...remainingProps,
   };
 
@@ -38,6 +39,7 @@ export default function Button(props) {
 Button.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
+  float: PropTypes.bool,
   href: PropTypes.string,
   onClick: PropTypes.func,
   variant: PropTypes.oneOf(['primary', 'transparent']),

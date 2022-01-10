@@ -50,7 +50,7 @@ const utils = {
     return `${hh}:${mm}`;
   },
   decodeDateString: (str) => str.split('/').map((str) => parseInt(str)),
-  decodeTimeString: (str) => str.split('/').map((str) => parseInt(str)),
+  decodeTimeString: (str) => str.split(':').map((str) => parseInt(str)),
   getCalendarCells: (year, month) => {
     const [daysOfWeek, dayNum] = getCalendarInfo(year, month);
     const cells = [];
