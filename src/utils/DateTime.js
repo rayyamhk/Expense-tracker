@@ -85,6 +85,26 @@ const utils = {
     const time = `${hh}:${mm}`;
     return [date, time];
   },
+  getTodayDisplay: () => {
+    return new Date().toLocaleDateString(undefined, {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+    });
+  },
+  getTodayTimestamp: () => {
+    const today = Date.now();
+    const day = 1000 * 60 * 60 * 24;
+    return Math.ceil(today / day) * day + new Date().getTimezoneOffset() * 60 * 1000;
+  },
+  getMonthTimestampBound: () => {
+    const today = new Date();
+    const YYYY = today.getFullYear();
+    const MM = today.getMonth();
+    const timezoneOffset = today.getTimezoneOffset() * 1000 * 60;
+    return [Date.UTC(YYYY, MM) + timezoneOffset, Date.UTC(YYYY, MM + 1) + timezoneOffset];
+  },
   translateDay: (day) => dayNames[day],
   translateMonth: (month) => monthNames[month],
 };

@@ -40,13 +40,15 @@ export const todayExpense = [
 ];
 
 export const categories = {
-  'Food': {
+  'food': {
     icon: MdOutlineRestaurant,
-    color: '#FBC531'
+    color: '#FBC531',
+    display: 'Food',
   },
-  'Regular': {
+  'regular': {
     icon: MdRepeat,
-    color: '#03A9F4'
+    color: '#03A9F4',
+    display: 'Regular',
   }
 }
 

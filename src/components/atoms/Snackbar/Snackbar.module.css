@@ -13,6 +13,16 @@
   background-color: var(--error);
 }
 
+.warning {
+  color: var(--white);
+  background-color: var(--warning);
+}
+
+.success {
+  color: var(--white);
+  background-color: var(--success);
+}
+
 .icon {
   color: inherit;
   font-size: 1.5rem;

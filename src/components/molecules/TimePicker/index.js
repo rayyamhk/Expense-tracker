@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Button from '../../atoms/Button';
 import useStyles from '../../../hooks/useStyles';
 import styles from './TimePicker.module.css';
-import utils from '../DatePicker/utils';
+import utils from '../../../utils/DateTime';
 const BTN_HEIGHT = 36;
 
 export default function TimePicker(props) {
@@ -13,6 +13,7 @@ export default function TimePicker(props) {
     selected,
   } = props;
 
+  const [hh, mm] = utils.decodeTimeString(selected);
   const ref1 = useRef();
   const ref2 = useRef();
   useEffect(() => {
@@ -27,6 +28,10 @@ export default function TimePicker(props) {
       minCol.removeEventListener('scroll', scrollHandler);
     };
   }, []);
+  const css = useStyles(styles);
+
+  const hours = [23, ...new Array(24).keys(), 0, 1, 2, 3, 4, 5, 6, 7];
+  const minutes = [59, ...new Array(60).keys(), 0, 1, 2, 3, 4, 5, 6, 7];
 
   const scrollHandler = (e) => {
     const scrollPos = e.target.scrollTop;
@@ -37,11 +42,6 @@ export default function TimePicker(props) {
       e.target.scrollTop = scrollTotal - BTN_HEIGHT;
     }
   };
-
-  const [hh, mm] = utils.decodeTimeString(selected);
-  const css = useStyles(styles);
-  const hours = [23, ...new Array(24).keys(), 0, 1, 2, 3, 4, 5, 6, 7];
-  const minutes = [59, ...new Array(60).keys(), 0, 1, 2, 3, 4, 5, 6, 7];
 
   return (
     <div className={css('container', className)}>

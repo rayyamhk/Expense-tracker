@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import {
   MdErrorOutline,
+  MdWarningAmber,
+  MdOutlineCheckCircleOutline,
   MdClose,
 } from 'react-icons/md';
 import Card from '../Card';
@@ -9,7 +11,9 @@ import styles from './Snackbar.module.css';
 
 const mappings = {
   'error': MdErrorOutline,
-}
+  'success': MdOutlineCheckCircleOutline,
+  'warning': MdWarningAmber,
+};
 
 export default function Snackbar(props) {
   const {
@@ -35,5 +39,5 @@ Snackbar.propTypes = {
   className: PropTypes.string,
   message: PropTypes.string,
   onClose: PropTypes.func,
-  type: PropTypes.oneOf(['error']),
+  type: PropTypes.oneOf(['error', 'warning', 'success']),
 };

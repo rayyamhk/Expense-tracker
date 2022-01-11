@@ -1,4 +1,10 @@
 import { useState } from 'react';
+import useDatabase from '../../../src/hooks/useDatabase';
+import useSnackbar from '../../../src/hooks/useSnackbar';
+import useStyles from '../../../src/hooks/useStyles';
+import styles from '../../../styles/transaction-create.module.css';
+import utils from '../../../src/utils/Transaction';
+
 import {
   MdOutlineAttachMoney,
   MdCategory,
@@ -16,40 +22,70 @@ import DateTimePicker from '../../../src/components/molecules/DateTimePicker';
 import Select from '../../../src/components/atoms/Select';
 import TextField from '../../../src/components/atoms/TextField';
 import Button from '../../../src/components/atoms/Button';
-import { useError } from '../../../src/hooks/useError';
-import useStyles from '../../../src/hooks/useStyles';
-import styles from '../../../styles/transaction-create.module.css';
 
 import { categoryOptions, paymentOptions } from '../../../src/fake';
 
 export default function Create() {
-  const [typeChecked, setTypeChecked] = useState('expense');
-  const [datetime, setDatetime] = useState(new Date().getTime());
-  const [category, setCategory] = useState();
-  const [subCategory, setSubCategory] = useState();
-  const [amount, setAmount] = useState();
-  const [details, setDetails] = useState();
-  const [brand, setBrand] = useState();
-  const [payment, setPayment] = useState();
-  const [hasSubmitted, setHasSubmitted] = useState(false);
-  // const db = useDatabase('transactions');
-  const { setError } = useError();
+  const [submitted, setSubmitted] = useState(false);
+  const [transaction, setTransaction] = useState(utils.default());
+  const db = useDatabase('my-test-app');
+  const { showSnackbar } = useSnackbar();
   const css = useStyles(styles);
 
-  const onTypeChange = (e) => setTypeChecked(e.target.value);
-  const onDateTimeChange = (datetime) => setDatetime(datetime);
-  const onCategorySelect = (option) => setCategory(option);
-  const onSubCategorySelect = (option) => setSubCategory(option);
-  const onAmountChange = (e) => setAmount(e.target.value);
-  const onDetailsChange = (e) => setDetails(e.target.value);
-  const onBrandChange = (e) => setBrand(e.target.value);
-  const onPaymentChange = (option) => setPayment(option);
+  const onTypeChange = (e) => {
+    setTransaction({ ...transaction, type: e.target.value });
+  };
+
+  const onDateTimeChange = (datetime) => {
+    setTransaction({ ...transaction, datetime });
+  };
+
+  const onCategorySelect = (option) => {
+    setTransaction({ ...transaction, category: option });
+  };
+
+  const onSubCategorySelect = (option) => {
+    setTransaction({ ...transaction, subCategory: option });
+  };
+
+  const onAmountChange = (e) => {
+    setTransaction({ ...transaction, amount: e.target.value });
+  };
+
+  const onDetailsChange = (e) => {
+    setTransaction({ ...transaction, details: e.target.value });
+  };
+
+  const onBrandChange = (e) => {
+    setTransaction({ ...transaction, brand: e.target.value });
+  };
+
+  const onPaymentChange = (option) => {
+    setTransaction({ ...transaction, payment: option });
+  };
+
   const onSubmit = async () => {
-    setHasSubmitted(true);
+    setSubmitted(true);
+    const { category, amount } = transaction;
     if (!category || (!amount && amount !== 0)) {
-      setError('error', 'Some fields are missing.');
+      showSnackbar('error', 'Some fields are missing.');
       return;
     }
+    if (Number(amount) < 0) {
+      showSnackbar('error', 'Amount should be non-negative.');
+      return;
+    }
+
+    db.connect('transactions', 'readwrite')
+      .then((store) => store.add(utils.parseForDatabase(transaction)))
+      .then(() => {
+        setSubmitted(false);
+        setTransaction(utils.default());
+        showSnackbar('success', 'Transaction created!');
+      })
+      .catch(({ name, message }) => {
+        showSnackbar('error', `${name}: ${message}`);
+      });
   };
 
   return (
@@ -63,7 +99,7 @@ export default function Create() {
             id="type-expense"
             value="expense"
             onChange={onTypeChange}
-            checked={typeChecked === 'expense'}
+            checked={transaction.type === 'expense'}
           />
           <Radio
             label="Income"
@@ -71,7 +107,7 @@ export default function Create() {
             id="type-income"
             value="income"
             onChange={onTypeChange}
-            checked={typeChecked === 'income'}
+            checked={transaction.type === 'income'}
           />
         </div>
         <div className={css('input-row')}>
@@ -80,7 +116,7 @@ export default function Create() {
             className={css('datetime-picker')}
             label="Date Time *"
             onDateTimeChange={onDateTimeChange}
-            datetime={datetime}
+            datetime={transaction.datetime}
           />
         </div>
         <div className={css('input-row')}>
@@ -89,8 +125,8 @@ export default function Create() {
             label="Category *"
             onSelect={onCategorySelect}
             options={categoryOptions}
-            selected={category}
-            error={hasSubmitted && !category}
+            selected={transaction.category}
+            error={submitted && !transaction.category}
             className={css('select')}
           />
         </div>
@@ -100,7 +136,7 @@ export default function Create() {
             label="Subcategory"
             onSelect={onSubCategorySelect}
             options={categoryOptions}
-            selected={subCategory}
+            selected={transaction.subCategory}
             className={css('select')}
           />
         </div>
@@ -109,9 +145,10 @@ export default function Create() {
           <TextField
             type="number"
             label="Amount *"
-            value={amount}
+            value={transaction.amount}
             onChange={onAmountChange}
-            error={hasSubmitted && !amount && amount !== 0}
+            error={submitted && !transaction.amount && transaction.amount !== 0}
+            min="0"
             nextFocus="details"
             id="amount"
             className={css('textfield')}
@@ -122,7 +159,7 @@ export default function Create() {
           <TextField
             type="text"
             label="Details"
-            value={details}
+            value={transaction.details}
             onChange={onDetailsChange}
             nextFocus="brand"
             id="details"
@@ -135,7 +172,7 @@ export default function Create() {
             label="Payment"
             onSelect={onPaymentChange}
             options={paymentOptions}
-            selected={payment}
+            selected={transaction.payment}
             className={css('select')}
           />
         </div>
@@ -144,7 +181,7 @@ export default function Create() {
           <TextField
             type="text"
             label="Brand"
-            value={brand}
+            value={transaction.brand}
             onChange={onBrandChange}
             id="brand"
             className={css('textfield')}

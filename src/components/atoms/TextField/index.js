@@ -13,6 +13,7 @@ export default function TextField(props) {
     onChange,
     type = 'text',
     value = '',
+    ...inputProps
   } = props;
   const css = useStyles(styles);
 
@@ -42,6 +43,7 @@ export default function TextField(props) {
         className={css('input')}
         disabled={disabled}
         autoComplete="off"
+        {...inputProps}
       />
        <label
         htmlFor={id}
