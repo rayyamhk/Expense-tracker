@@ -1,4 +1,5 @@
 .container {
+  text-decoration: none;
   font-family: var(--font);
   border-bottom: 1px solid var(--gray300);
   padding: 1rem;

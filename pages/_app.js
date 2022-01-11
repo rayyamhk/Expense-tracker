@@ -1,11 +1,11 @@
-import { ErrorProvider } from '../src/hooks/useError'
+import { MessageProvider } from '../src/hooks/useSnackbar'
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ErrorProvider debug>
+    <MessageProvider>
       <Component {...pageProps} />
-    </ErrorProvider>
+    </MessageProvider>
   );
 }
 

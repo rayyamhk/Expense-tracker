@@ -1,70 +1,109 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useDatabase from '../../src/hooks/useDatabase';
+import useSnackbar from '../../src/hooks/useSnackbar';
+import useStyles from '../../src/hooks/useStyles';
+import styles from '../../styles/app.module.css';
+import Transaction from '../../src/utils/Transaction';
+import DateTime from '../../src/utils/DateTime';
+
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
 import Layout from '../../src/components/molecules/Layout';
 import Button from '../../src/components/atoms/Button';
 import Card from '../../src/components/atoms/Card';
 import Progress from '../../src/components/atoms/Progress';
 import TransactionCard from '../../src/components/molecules/TransactionCard';
-import useStyles from '../../src/hooks/useStyles';
-import styles from '../../styles/app.module.css';
 
-import { todayExpense, categories } from '../../src/fake';
+import { categories } from '../../src/fake';
+
+const budget = 10000;
 
 export default function App() {
+  const db = useDatabase('my-test-app');
+  const { showSnackbar } = useSnackbar();
   const [visible, setVisible] = useState(true);
+  const [transactions, setTransactions] = useState([]);
+  const [spent, setSpent] = useState(0);
   const css = useStyles(styles);
+
+  useEffect(() => {
+    const todayTimestamp = DateTime.getTodayTimestamp();
+    const tmrTimestamp = todayTimestamp + 1000 * 60 * 60 * 24;
+    const [thisMonthTimestamp, nextMonthTimestamp] =
+      DateTime.getMonthTimestampBound();
+    db.connect('transactions')
+      .then((store) => store.index('datetime_index'))
+      .then((index) => {
+        const range = index.IDBKeyRange.bound(
+          todayTimestamp,
+          tmrTimestamp,
+          false,
+          true
+        );
+        return index.openCursor(range, 'prev');
+      })
+      .then((record) => setTransactions(record))
+      .catch(({ name, message }) => {
+        showSnackbar('error', `${name}: ${message}`);
+      });
+
+    db.connect('transactions')
+      .then((store) => store.index('datetime_index'))
+      .then((index) => {
+        const range = index.IDBKeyRange.bound(
+          thisMonthTimestamp,
+          nextMonthTimestamp,
+          false,
+          true
+        );
+        return index.openCursor(range);
+      })
+      .then((record) => {
+        const spent = record.reduce((total, curr) => (total += curr.amount), 0);
+        setSpent(spent);
+      })
+      .catch(({ name, message }) => {
+        showSnackbar('error', `${name}: ${message}`);
+      });
+  }, []);
 
   const toggleVisibility = () => {
     setVisible(!visible);
   };
 
-  const isOverBudget = false;
-  const balance = '-$150.0';
+  const balance = transactions.reduce((prev, curr) => (prev += curr.amount), 0);
 
   return (
     <Layout hideHeader={true}>
       <header className={css('header')}>
         <time dateTime="2022-01-04" className={css('header-time')}>
-          Tue Jan 4, 2022
+          {DateTime.getTodayDisplay()}
         </time>
         <div className={css('header-balance')}>
           <Button variant="transparent" onClick={toggleVisibility}>
             {visible ? <MdVisibility /> : <MdVisibilityOff />}
           </Button>
-          Balance: {visible ? balance : '✱✱✱✱✱'}
+          Balance: {visible ? Transaction.parseMoney(balance) : '✱✱✱✱✱'}
         </div>
         <Card elevated className={css('budget-card')}>
-          <p className={css('budget-status', isOverBudget && 'over-budget')}>
-            Budget of this month: <span>$1,549.0</span> out of $10,000.0
+          <p className={css('budget-status', spent > budget && 'over-budget')}>
+            Budget of this month: <span>{Transaction.parseMoney(spent)}</span>{' '}
+            out of {Transaction.parseMoney(budget)}
           </p>
-          <Progress value={1549} max={10000}/>
+          <Progress value={spent} max={budget} />
         </Card>
       </header>
       <main className={css('main')}>
         <section className={css('group')}>
-          <h3 className={css('group-title')}>
-            Recent Transcations
-          </h3>
+          <h3 className={css('group-title')}>Today</h3>
           <Card elevated>
-            {todayExpense.map((trans) => {
-              const Tag = categories[trans.category].icon;
-              const color = categories[trans.category].color;
-              return (
-                <TransactionCard
-                  iconColor={color}
-                  icon={Tag}
-                  onClick={toggleVisibility}
-                  key={trans.id}
-                  {...trans}
-                />
-              );
+            {transactions.map((trans) => {
+              trans = Transaction.parseForDisplay(trans, categories);
+              return <TransactionCard {...trans} key={trans.id} />;
             })}
           </Card>
         </section>
         <section className={css('group')}>
-          <h3 className={css('group-title')}>
-            Top 5
-          </h3>
+          <h3 className={css('group-title')}>Top 5</h3>
         </section>
       </main>
     </Layout>

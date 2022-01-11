@@ -12,7 +12,7 @@ import DatePicker from '../DatePicker';
 import TimePicker from '../TimePicker';
 import useStyles from '../../../hooks/useStyles';
 import styles from './DateTimePicker.module.css';
-import utils from '../DatePicker/utils';
+import utils from '../../../utils/DateTime';
 
 export default function DateTimePicker(props) {
   const {
@@ -35,14 +35,13 @@ export default function DateTimePicker(props) {
     const newDate = utils.encodeDateString(yyyy, mm, dd);
     const dbTime = utils.getDatabaseTime(newDate, time);
     onDateTimeChange(dbTime);
-    // timeTab();
+    timeTab();
   };
 
   const onTimeChange = (hh, mm) => {
     const newTime = utils.encodeTimeString(hh, mm);
     const dbTime = utils.getDatabaseTime(date, newTime);
     onDateTimeChange(dbTime);
-    // close();
   };
 
   const classes = css(

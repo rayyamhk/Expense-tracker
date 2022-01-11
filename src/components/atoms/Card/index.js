@@ -10,6 +10,7 @@ export default function Card(props) {
     elevated = false,
     onClick,
     squared = false,
+    ...componentProps
   } = props;
 
   const css = useStyles(styles);
@@ -23,6 +24,7 @@ export default function Card(props) {
         !squared && 'round',
         className
       )}
+      {...componentProps}
     >
       {children}
     </Tag>

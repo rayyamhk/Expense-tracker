@@ -7,7 +7,7 @@ import {
 import Button from '../../atoms/Button';
 import useStyles from '../../../hooks/useStyles';
 import styles from './DatePicker.module.css';
-import utils from './utils';
+import utils from '../../../utils/DateTime';
 
 export default function DatePicker(props) {
   const {
