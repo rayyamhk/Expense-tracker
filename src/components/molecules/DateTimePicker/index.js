@@ -13,6 +13,7 @@ import TimePicker from '../TimePicker';
 import useStyles from '../../../hooks/useStyles';
 import styles from './DateTimePicker.module.css';
 import utils from '../../../utils/DateTime';
+import settings from '../../../fake';
 
 export default function DateTimePicker(props) {
   const {

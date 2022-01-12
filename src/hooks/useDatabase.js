@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 class IndexedDB {
   constructor(dbName, version) {
     this.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
@@ -39,6 +41,14 @@ class StoreWrapper {
   add(...args) {
     return new Promise((resolve, reject) => {
       const req = this.store.add(...args);
+      req.onerror = (e) => reject(e);
+      req.onsuccess = (e) => resolve(e.target.result);
+    });
+  };
+
+  get(...args) {
+    return new Promise((resolve, reject) => {
+      const req = this.store.get(...args);
       req.onerror = (e) => reject(e);
       req.onsuccess = (e) => resolve(e.target.result);
     });
@@ -87,13 +97,17 @@ class IndexWrapper {
       };
       req.onerror = (e) => reject(e);
     });
-  }
+  };
 }
 
 export default function useDatabase(dbName, version) {
-  if (typeof window !== 'undefined') {
+  const db = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return {};
+    }
     return new IndexedDB(dbName, version);
-  }
+  }, [dbName, version]);
+  return db;
 };
 
 function upgrade(e) {

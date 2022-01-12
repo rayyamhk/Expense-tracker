@@ -1,44 +1,5 @@
 import { MdOutlineRestaurant, MdRepeat, MdOutlineCreditCard, MdMoney, MdOutlineFilter8 } from 'react-icons/md';
 
-export const todayExpense = [
-  {
-    "id": 0,
-    "date": "2022-01-04",
-    "time": "20:05",
-    "type": "expense",
-    "amount": "72.5",
-    "category": "Food",
-    "subcategory": "Dinner",
-    "tags": [],
-    "brand": "McDonald's",
-    "details": "Nostrud ut duis dolor excepteur ipsum labore ut excepteur sunt duis nisi pariatur mollit."
-  },
-  {
-    "id": 1,
-    "date": "2022-01-04",
-    "time": "11:17",
-    "type": "income",
-    "amount": "23,000",
-    "category": "Regular",
-    "subcategory": "Salary",
-    "tags": [],
-    "brand": null,
-    "details": "Elit deserunt nulla aliqua elit."
-  },
-  {
-    "id": 2,
-    "date": "2022-01-04",
-    "time": "08:31",
-    "type": "expense",
-    "amount": "37.0",
-    "category": "Food",
-    "subcategory": "Breakfast",
-    "tags": [],
-    "brand": null,
-    "details": "Cupidatat occaecat veniam et voluptate sunt."
-  },
-];
-
 export const categories = {
   'food': {
     icon: MdOutlineRestaurant,
@@ -51,6 +12,12 @@ export const categories = {
     display: 'Regular',
   }
 }
+
+const payments = {
+  'cash': 'Cash',
+  'credit_card': 'Credit Card',
+  'octopus_card': 'Octopus Card',
+};
 
 export const categoryOptions = [
   { icon: null, display: 'Entertainment', value: 'entertainment' },
@@ -70,3 +37,16 @@ export const paymentOptions = [
   { icon: <MdOutlineCreditCard />, display: 'Credit Card', value: 'credit_card' },
   { icon: <MdOutlineFilter8 />, display: 'Octopus Card', value: 'octopus_card' },
 ];
+
+const settings = {
+  categories,
+  payments,
+  time: {
+    format: 'HH:mm',
+  },
+  date: {
+    format: 'MMM DD, YYYY'
+  },
+};
+
+export default settings;

@@ -1,15 +1,16 @@
 import { nanoid } from 'nanoid';
+import DateTime from './DateTime';
 
 const Transaction = {
   default: () => ({
     type: 'expense',
     datetime: Date.now(),
-    category: null,
-    subCategory: null,
-    amount: '',
-    details: '',
-    brand: '',
-    payment: null,
+    category: undefined,
+    subCategory: undefined,
+    amount: undefined,
+    payment: undefined,
+    brand: undefined,
+    details: undefined,
   }),
   parseForDatabase: (transaction) => ({
     ...transaction,
@@ -19,13 +20,15 @@ const Transaction = {
     subCategory: transaction.subCategory?.value,
     payment: transaction.payment?.value,
   }),
-  parseForDisplay: (transaction, categories) => ({
-    ...transaction,
-    time: new Date(transaction.datetime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false}),
-    category: categories[transaction.category].display,
-    iconColor: categories[transaction.category].color,
-    icon: categories[transaction.category].icon,
-  }),
+  parseForDisplay: (transaction, { categories, payments }) => {
+    return {
+      ...transaction,
+      payment: payments[transaction.payment],
+      category: categories[transaction.category].display,
+      iconColor: categories[transaction.category].color,
+      icon: categories[transaction.category].icon,
+    };
+  },
   parseMoney: (value) => {
     const strValue = value.toString();
     const [int, dec] = strValue.split('.');
@@ -41,7 +44,7 @@ const Transaction = {
       return `$${str.slice(1)}${dec ? `.${dec}` : ''}`;
     }
     return `$${str}${dec ? `.${dec}` : ''}`;
-  }
+  },
 };
 
 export default Transaction;

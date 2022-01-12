@@ -13,45 +13,41 @@ import Card from '../../src/components/atoms/Card';
 import Progress from '../../src/components/atoms/Progress';
 import TransactionCard from '../../src/components/molecules/TransactionCard';
 
-import { categories } from '../../src/fake';
+import settings from '../../src/fake';
 
 const budget = 10000;
 
 export default function App() {
-  const db = useDatabase('my-test-app');
   const { showSnackbar } = useSnackbar();
+  const db = useDatabase('my-test-app');
   const [visible, setVisible] = useState(true);
   const [transactions, setTransactions] = useState([]);
   const [spent, setSpent] = useState(0);
   const css = useStyles(styles);
 
   useEffect(() => {
-    const todayTimestamp = DateTime.getTodayTimestamp();
-    const tmrTimestamp = todayTimestamp + 1000 * 60 * 60 * 24;
-    const [thisMonthTimestamp, nextMonthTimestamp] =
-      DateTime.getMonthTimestampBound();
+    const [today, tomorrow] = DateTime.getTodayTimestampBound();
+    const [thisMonth, nextMonth] = DateTime.getMonthTimestampBound();
     db.connect('transactions')
       .then((store) => store.index('datetime_index'))
       .then((index) => {
         const range = index.IDBKeyRange.bound(
-          todayTimestamp,
-          tmrTimestamp,
+          today,
+          tomorrow,
           false,
           true
         );
         return index.openCursor(range, 'prev');
       })
       .then((record) => setTransactions(record))
-      .catch(({ name, message }) => {
-        showSnackbar('error', `${name}: ${message}`);
-      });
+      .catch(({ name, message }) => showSnackbar('error', `${name}: ${message}`));
 
     db.connect('transactions')
       .then((store) => store.index('datetime_index'))
       .then((index) => {
         const range = index.IDBKeyRange.bound(
-          thisMonthTimestamp,
-          nextMonthTimestamp,
+          thisMonth,
+          nextMonth,
           false,
           true
         );
@@ -61,33 +57,36 @@ export default function App() {
         const spent = record.reduce((total, curr) => (total += curr.amount), 0);
         setSpent(spent);
       })
-      .catch(({ name, message }) => {
-        showSnackbar('error', `${name}: ${message}`);
-      });
-  }, []);
+      .catch(({ name, message }) => showSnackbar('error', `${name}: ${message}`));
+  }, [db, showSnackbar]);
 
   const toggleVisibility = () => {
     setVisible(!visible);
   };
 
   const balance = transactions.reduce((prev, curr) => (prev += curr.amount), 0);
+  const now = Date.now();
+  const dateHTML = DateTime.getHTMLTime(now);
+  const dateDisplay = DateTime.getDisplayTime(now);
+  const balanceDisplay = visible ? Transaction.parseMoney(balance) : '✱✱✱✱✱';
+  const budgetDisplay = Transaction.parseMoney(spent);
+  const budgetLimitDisplay = Transaction.parseMoney(budget);
 
   return (
     <Layout hideHeader={true}>
       <header className={css('header')}>
-        <time dateTime="2022-01-04" className={css('header-time')}>
-          {DateTime.getTodayDisplay()}
+        <time dateTime={dateHTML} className={css('header-time')}>
+          {dateDisplay}
         </time>
         <div className={css('header-balance')}>
           <Button variant="transparent" onClick={toggleVisibility}>
             {visible ? <MdVisibility /> : <MdVisibilityOff />}
           </Button>
-          Balance: {visible ? Transaction.parseMoney(balance) : '✱✱✱✱✱'}
+          Balance: {balanceDisplay}
         </div>
         <Card elevated className={css('budget-card')}>
           <p className={css('budget-status', spent > budget && 'over-budget')}>
-            Budget of this month: <span>{Transaction.parseMoney(spent)}</span>{' '}
-            out of {Transaction.parseMoney(budget)}
+            Budget of this month: <span>{budgetDisplay}</span> out of {budgetLimitDisplay}
           </p>
           <Progress value={spent} max={budget} />
         </Card>
@@ -97,7 +96,7 @@ export default function App() {
           <h3 className={css('group-title')}>Today</h3>
           <Card elevated>
             {transactions.map((trans) => {
-              trans = Transaction.parseForDisplay(trans, categories);
+              trans = Transaction.parseForDisplay(trans, settings);
               return <TransactionCard {...trans} key={trans.id} />;
             })}
           </Card>
