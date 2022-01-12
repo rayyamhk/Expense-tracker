@@ -5,7 +5,6 @@ import styles from './TextField.module.css';
 export default function TextField(props) {
   const {
     className,
-    disabled = false,
     error = false,
     id,
     label,
@@ -19,6 +18,7 @@ export default function TextField(props) {
 
   const classes = css(
     'textfield-container',
+    type === 'textarea' && 'textarea',
     value && 'contained',
     error && 'error',
     className,
@@ -32,16 +32,17 @@ export default function TextField(props) {
     }
   };
 
+  const Tag = type === 'textarea' ? 'textarea' : 'input';
+
   return (
     <div className={classes}>
-      <input
+      <Tag
         type={type}
         value={value}
         onChange={onChange}
         onKeyDown={onPress}
         id={id}
         className={css('input')}
-        disabled={disabled}
         autoComplete="off"
         {...inputProps}
       />
@@ -60,12 +61,11 @@ export default function TextField(props) {
 
 TextField.propTypes = {
   className: PropTypes.string,
-  disabled: PropTypes.bool,
   error: PropTypes.bool,
   id: PropTypes.string.isRequired,
   label: PropTypes.string,
   nextFocus: PropTypes.string,
   onChange: PropTypes.func,
-  type: PropTypes.oneOf(['text', 'number', 'password']),
-  value: PropTypes.string,
+  type: PropTypes.oneOf(['text', 'textarea', 'number', 'password']),
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };

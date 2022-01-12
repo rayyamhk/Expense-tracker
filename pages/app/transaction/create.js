@@ -83,8 +83,8 @@ export default function Create() {
         setTransaction(utils.default());
         showSnackbar('success', 'Transaction created!');
       })
-      .catch(({ name, message }) => {
-        showSnackbar('error', `${name}: ${message}`);
+      .catch((e) => {
+        showSnackbar('error', `${e.name}: ${e.message}`);
       });
   };
 
@@ -149,20 +149,8 @@ export default function Create() {
             onChange={onAmountChange}
             error={submitted && !transaction.amount && transaction.amount !== 0}
             min="0"
-            nextFocus="details"
-            id="amount"
-            className={css('textfield')}
-          />
-        </div>
-        <div className={css('input-row')}>
-          <MdEditNote className={css('icon')} />
-          <TextField
-            type="text"
-            label="Details"
-            value={transaction.details}
-            onChange={onDetailsChange}
             nextFocus="brand"
-            id="details"
+            id="amount"
             className={css('textfield')}
           />
         </div>
@@ -184,6 +172,19 @@ export default function Create() {
             value={transaction.brand}
             onChange={onBrandChange}
             id="brand"
+            nextFocus='details'
+            className={css('textfield')}
+          />
+        </div>
+        <div className={css('input-row')}>
+          <MdEditNote className={css('icon')} />
+          <TextField
+            type="textarea"
+            rows="3"
+            label="Details"
+            value={transaction.details}
+            onChange={onDetailsChange}
+            id="details"
             className={css('textfield')}
           />
         </div>
