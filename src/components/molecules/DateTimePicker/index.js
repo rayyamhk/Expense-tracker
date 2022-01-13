@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import useStyles from '../../../hooks/useStyles';
 import styles from './DateTimePicker.module.css';
 import DateTime from '../../../utils/DateTime';
+import Settings from '../../../utils/Settings';
 
 import {
   MdCalendarToday,
@@ -15,7 +16,7 @@ import Card from '../../atoms/Card';
 import DatePicker from '../DatePicker';
 import TimePicker from '../TimePicker';
 
-import settings from '../../../fake';
+const settings = Settings.getFakeSettings();
 
 export default function DateTimePicker(props) {
   const {

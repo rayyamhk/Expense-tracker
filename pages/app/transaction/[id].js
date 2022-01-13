@@ -6,6 +6,7 @@ import useStyles from '../../../src/hooks/useStyles';
 import styles from '../../../styles/transaction-id.module.css';
 import Transaction from '../../../src/utils/Transaction';
 import DateTime from '../../../src/utils/DateTime';
+import Settings from '../../../src/utils/Settings';
 
 import {
   MdOutlineAttachMoney,
@@ -22,7 +23,7 @@ import Layout from '../../../src/components/molecules/Layout';
 import TextField from '../../../src/components/atoms/TextField';
 import Icon from '../../../src/components/atoms/Icon';
 
-import settings from '../../../src/fake';
+const settings = Settings.getFakeSettings();
 
 export default function TransactionDetails() {
   const [transaction, setTransaction] = useState();
