@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types';
-import Link from '../../atoms/Link';
-import Icon from '../../atoms/Icon';
 import useStyles from '../../../hooks/useStyles';
 import styles from './TransactionCard.module.css';
 import Transaction from '../../../utils/Transaction';
 import DateTime from '../../../utils/DateTime';
+
+import Link from '../../atoms/Link';
+import Icon from '../../atoms/Icon';
+
+import settings from '../../../fake';
 
 export default function TransactionCard(props) {
   const {
@@ -12,18 +15,18 @@ export default function TransactionCard(props) {
     category,
     className,
     details,
-    icon: Tag,
+    icon,
     iconColor: color,
     id,
     subcategory,
-    datetime,
+    datetime, // millisecond
     type,
   } = props;
 
   const css = useStyles(styles);
-  const { hour, minute } = DateTime.parseTimestamp(datetime);
-  const displayTime = DateTime.encodeTimeString(hour, minute);
-  const htmlTime = DateTime.getHTMLTime(datetime);
+  const timeDisplay = DateTime.getStringFromTimestamp(datetime, 'time', settings);
+  const timeHTML = DateTime.getStringFromTimestamp(datetime, 'html', settings);
+  const amountDisplay = Transaction.parseMoney(amount);
   let label = category;
   if (subcategory) {
     label += `: ${subcategory}`;
@@ -32,14 +35,14 @@ export default function TransactionCard(props) {
   return (
     <Link href={`/app/transaction/${id}`} className={css('container', className)}>
       <Icon backgroundColor={color}>
-        <Tag />
+        {icon}
       </Icon>
       <div className={css('info')}>
         <h4 className={css('category')}>{label}</h4>
         <p className={css('details')}>{details}</p>
-        <time dateTime={htmlTime} className={css('time')}>{displayTime}</time>
+        <time dateTime={timeHTML} className={css('time')}>{timeDisplay}</time>
       </div>
-      <div className={css('amount', type)}>{Transaction.parseMoney(amount)}</div>
+      <div className={css('amount', type)}>{amountDisplay}</div>
     </Link>
   );
 }

@@ -1,5 +1,9 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import useStyles from '../../../hooks/useStyles';
+import styles from './DateTimePicker.module.css';
+import DateTime from '../../../utils/DateTime';
+
 import {
   MdCalendarToday,
   MdDateRange,
@@ -10,20 +14,21 @@ import Button from '../../atoms/Button';
 import Card from '../../atoms/Card';
 import DatePicker from '../DatePicker';
 import TimePicker from '../TimePicker';
-import useStyles from '../../../hooks/useStyles';
-import styles from './DateTimePicker.module.css';
-import utils from '../../../utils/DateTime';
+
 import settings from '../../../fake';
 
 export default function DateTimePicker(props) {
   const {
     className,
-    datetime, // millisecond
     label,
     onDateTimeChange,
+    year,
+    month,
+    day,
+    hour,
+    minute,
   } = props;
 
-  const [date, time] = utils.getDateTime(datetime);
   const [tab, setTab] = useState();
   const css = useStyles(styles);
 
@@ -32,17 +37,13 @@ export default function DateTimePicker(props) {
   const dateTab = () => setTab('date');
   const timeTab = () => setTab('time');
 
-  const onDateChange = (yyyy, mm, dd) => {
-    const newDate = utils.encodeDateString(yyyy, mm, dd);
-    const dbTime = utils.getDatabaseTime(newDate, time);
-    onDateTimeChange(dbTime);
+  const onDateChange = (YYYY, MM, DD) => {
+    onDateTimeChange(YYYY, MM, DD, hour, minute);
     timeTab();
   };
 
   const onTimeChange = (hh, mm) => {
-    const newTime = utils.encodeTimeString(hh, mm);
-    const dbTime = utils.getDatabaseTime(date, newTime);
-    onDateTimeChange(dbTime);
+    onDateTimeChange(year, month, day, hh, mm);
   };
 
   const classes = css(
@@ -51,13 +52,15 @@ export default function DateTimePicker(props) {
     className,
   );
 
+  const dateDisplay = DateTime.getStringFromArray([year, month, day, hour, minute], 'datetime', settings);
+
   return (
     <div className={classes}>
       <div onClick={close} className={css('hidden-overlay')} />
       <div onClick={toggle}>
         <TextField
           label={label}
-          value={`${date} ${time}`}
+          value={dateDisplay}
           id="date-picker"
           className={css('textfield')}
           disabled
@@ -69,12 +72,15 @@ export default function DateTimePicker(props) {
           <DatePicker
             className={css('tab')}
             onDateChange={onDateChange}
-            selected={date}
+            year={year}
+            month={month}
+            day={day}
           />
           <TimePicker
             className={css('tab')}
             onTimeChange={onTimeChange}
-            selected={time}
+            hour={hour}
+            minute={minute}
           />
         </div>
         <div className={css('tab-btns')}>
@@ -100,7 +106,11 @@ export default function DateTimePicker(props) {
 
 DateTimePicker.propTypes = {
   className: PropTypes.string,
-  datetime: PropTypes.number.isRequired,
   label: PropTypes.string,
   onDateTimeChange: PropTypes.func,
+  year: PropTypes.number.isRequired,
+  month: PropTypes.number.isRequired,
+  day: PropTypes.number.isRequired,
+  hour: PropTypes.number.isRequired,
+  minute: PropTypes.number.isRequired,
 };

@@ -1,4 +1,7 @@
-import { useState, useEffect } from 'react';
+import {
+  useState,
+  useEffect,
+} from 'react';
 import useDatabase from '../../src/hooks/useDatabase';
 import useSnackbar from '../../src/hooks/useSnackbar';
 import useStyles from '../../src/hooks/useStyles';
@@ -6,7 +9,10 @@ import styles from '../../styles/app.module.css';
 import Transaction from '../../src/utils/Transaction';
 import DateTime from '../../src/utils/DateTime';
 
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md';
+import {
+  MdVisibility,
+  MdVisibilityOff,
+} from 'react-icons/md';
 import Layout from '../../src/components/molecules/Layout';
 import Button from '../../src/components/atoms/Button';
 import Card from '../../src/components/atoms/Card';
@@ -54,7 +60,12 @@ export default function App() {
         return index.openCursor(range);
       })
       .then((record) => {
-        const spent = record.reduce((total, curr) => (total += curr.amount), 0);
+        const spent = record.reduce((total, curr) => {
+          if (curr.type === 'expense') {
+            total += curr.amount;
+          }
+          return total;
+        }, 0);
         setSpent(spent);
       })
       .catch(({ name, message }) => showSnackbar('error', `${name}: ${message}`));
@@ -64,10 +75,15 @@ export default function App() {
     setVisible(!visible);
   };
 
-  const balance = transactions.reduce((prev, curr) => (prev += curr.amount), 0);
+  const balance = transactions.reduce((total, curr) => {
+    if (curr.type === 'expense') {
+      total += curr.amount;
+    }
+    return total;
+  }, 0);
   const now = Date.now();
-  const dateHTML = DateTime.getHTMLTime(now);
-  const dateDisplay = DateTime.getDisplayTime(now);
+  const dateHTML = DateTime.getStringFromTimestamp(now, 'html', settings);
+  const dateDisplay = DateTime.getStringFromTimestamp(now, 'fulldate', settings);
   const balanceDisplay = visible ? Transaction.parseMoney(balance) : '✱✱✱✱✱';
   const budgetDisplay = Transaction.parseMoney(spent);
   const budgetLimitDisplay = Transaction.parseMoney(budget);

@@ -1,26 +1,30 @@
-import { useEffect, useRef } from 'react';
+import {
+  useEffect,
+  useRef,
+} from 'react';
 import PropTypes from 'prop-types';
-import Button from '../../atoms/Button';
 import useStyles from '../../../hooks/useStyles';
 import styles from './TimePicker.module.css';
-import utils from '../../../utils/DateTime';
+import DateTime from '../../../utils/DateTime';
+
+import Button from '../../atoms/Button';
 const BTN_HEIGHT = 36;
 
 export default function TimePicker(props) {
   const {
     className,
     onTimeChange,
-    selected,
+    hour,
+    minute,
   } = props;
 
-  const [hh, mm] = utils.decodeTimeString(selected);
   const ref1 = useRef();
   const ref2 = useRef();
   useEffect(() => {
     const hourCol = ref1.current;
     const minCol = ref2.current;
-    hourCol.scrollTop = hh >= 3 ? (hh - 3) * BTN_HEIGHT : (21 + hh) * BTN_HEIGHT;
-    minCol.scrollTop = mm >= 3 ? (mm - 3) * BTN_HEIGHT : (57 + mm) * BTN_HEIGHT;
+    hourCol.scrollTop = hour >= 3 ? (hour - 3) * BTN_HEIGHT : (21 + hour) * BTN_HEIGHT;
+    minCol.scrollTop = minute >= 3 ? (minute - 3) * BTN_HEIGHT : (57 + minute) * BTN_HEIGHT;
     hourCol.addEventListener('scroll', scrollHandler);
     minCol.addEventListener('scroll', scrollHandler);
     return () => {
@@ -48,8 +52,8 @@ export default function TimePicker(props) {
       <div className={css('col')} ref={ref1}>
         {hours.map((x, i) => (
           <Button
-            onClick={() => onTimeChange(x, mm)}
-            variant={hh === x ? 'primary' : 'transparent'}
+            onClick={() => onTimeChange(x, minute)}
+            variant={hour === x ? 'primary' : 'transparent'}
             className={css('btn')}
             key={i}
           >
@@ -60,8 +64,8 @@ export default function TimePicker(props) {
       <div className={css('col')} ref={ref2}>
         {minutes.map((x, i) => (
           <Button
-            onClick={() => onTimeChange(hh, x)}
-            variant={mm === x ? 'primary' : 'transparent'}
+            onClick={() => onTimeChange(hour, x)}
+            variant={minute === x ? 'primary' : 'transparent'}
             className={css('btn')}
             key={i}
           >
@@ -76,5 +80,6 @@ export default function TimePicker(props) {
 TimePicker.propTypes = {
   className: PropTypes.string,
   onTimeChange: PropTypes.func,
-  selected: PropTypes.string.isRequired,
+  hour: PropTypes.number.isRequired,
+  minute: PropTypes.number.isRequired,
 };

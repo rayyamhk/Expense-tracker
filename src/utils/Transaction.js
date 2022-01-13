@@ -6,7 +6,7 @@ const Transaction = {
     type: 'expense',
     datetime: Date.now(),
     category: undefined,
-    subCategory: undefined,
+    subcategory: undefined,
     amount: undefined,
     payment: undefined,
     brand: undefined,
@@ -17,16 +17,19 @@ const Transaction = {
     id: nanoid(8),
     amount: Number(transaction.amount),
     category: transaction.category.value,
-    subCategory: transaction.subCategory?.value,
+    subcategory: transaction.subcategory?.value,
     payment: transaction.payment?.value,
   }),
-  parseForDisplay: (transaction, { categories, payments }) => {
+  parseForDisplay: (transaction, settings) => {
+    const { payments, categories, subcategories } = settings;
+    const { payment, category, subcategory } = transaction;
     return {
       ...transaction,
-      payment: payments[transaction.payment],
-      category: categories[transaction.category].display,
-      iconColor: categories[transaction.category].color,
-      icon: categories[transaction.category].icon,
+      payment: payments[payment],
+      category: categories[category].display,
+      subcategory: subcategories[category][subcategory],
+      iconColor: categories[category].color,
+      icon: categories[category].icon,
     };
   },
   parseMoney: (value) => {
