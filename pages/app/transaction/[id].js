@@ -62,7 +62,6 @@ export default function TransactionDetails() {
     details,
   } = Transaction.parseForDisplay(transaction, settings);
   const headline = type === 'expense' ? 'Expense' : 'Income';
-  const displayTime = DateTime.getDisplayTime(datetime);
 
   return (
     <Layout headline={headline}>

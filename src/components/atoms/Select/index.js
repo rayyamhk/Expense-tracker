@@ -50,7 +50,7 @@ export default function Select(props) {
             className={css('option')}
             key={option.value}
           >
-            {option.icon && <Icon backgroundColor="#FBC531" className={css('icon')}>{option.icon}</Icon>}
+            {option.icon && option.color && <Icon backgroundColor={option.color} className={css('icon')}>{option.icon}</Icon>}
             {option.display}
           </li>
         ))}

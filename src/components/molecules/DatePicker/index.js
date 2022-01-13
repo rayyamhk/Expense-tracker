@@ -1,44 +1,46 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import useStyles from '../../../hooks/useStyles';
+import styles from './DatePicker.module.css';
+import DateTime from '../../../utils/DateTime';
+
 import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
 } from 'react-icons/md';
 import Button from '../../atoms/Button';
-import useStyles from '../../../hooks/useStyles';
-import styles from './DatePicker.module.css';
-import utils from '../../../utils/DateTime';
 
 export default function DatePicker(props) {
   const {
     className,
     onDateChange,
-    selected,
+    year,
+    month,
+    day,
   } = props;
 
-  const [MM, DD, YYYY] = utils.decodeDateString(selected);
-  const [month, setMonth] = useState(MM);
-  const [year, setYear] = useState(YYYY);
+  const [activeYear, setActiveYear] = useState(year);
+  const [activeMonth, setActiveMonth] = useState(month);
   const css = useStyles(styles);
 
-  const calendarCells = utils.getCalendarCells(year, month);
+  const calendarCells = DateTime.getCalendarCells(activeYear, activeMonth);
+  const calendarHeadline = `${DateTime.translateMonth(activeMonth)} ${activeYear}`;
 
-  // TODO: make sure the year is not overflow: 2000 - 2099
   const nextMonth= () => {
-    if (month === 12) {
-      setMonth(1);
-      setYear(year + 1);
+    if (activeMonth === 11) {
+      setActiveMonth(0);
+      setActiveYear(activeYear + 1);
     } else {
-      setMonth(month + 1);
+      setActiveMonth(activeMonth + 1);
     }
   };
 
   const prevMonth= () => {
-    if (month === 1) {
-      setMonth(12);
-      setYear(year - 1);
+    if (activeMonth === 0) {
+      setActiveMonth(11);
+      setActiveYear(activeYear - 1);
     } else {
-      setMonth(month - 1);
+      setActiveMonth(activeMonth - 1);
     }
   };
 
@@ -46,7 +48,7 @@ export default function DatePicker(props) {
     <div className={css('container', className)}>
       <div className={css('calendar-control')}>
         <span className={css('year-select')}>
-          {`${utils.translateMonth(month)} ${year}`}
+          {calendarHeadline}
         </span>
         <span className={css('flex-expand')} />
         <Button
@@ -79,24 +81,24 @@ export default function DatePicker(props) {
         <tbody role="rowgroup">
           {calendarCells.map((row, i) => (
             <tr role="row" key={i}>
-              {row.map((day, i) => {
-                if (day) {
+              {row.map((x, j) => {
+                if (x) {
                   return (
                     <td
                       role="gridcell"
                       tabIndex={-1}
-                      key={i}
+                      key={j}
                     >
                       <Button
-                        onClick={() => onDateChange(year, month, day)}
-                        variant={year === YYYY && month === MM && DD === day ? 'primary' : 'transparent'}
+                        onClick={() => onDateChange(activeYear, activeMonth, x)}
+                        variant={activeYear === year && activeMonth === month && day === x ? 'primary' : 'transparent'}
                       >
-                        {day}
+                        {x}
                       </Button>
                     </td>
                   );
                 }
-                return <td key={i}></td>
+                return <td key={j}></td>
               })}
             </tr>
           ))}
@@ -109,5 +111,7 @@ export default function DatePicker(props) {
 DatePicker.propTypes = {
   className: PropTypes.string,
   onDateChange: PropTypes.func,
-  selected: PropTypes.string.isRequired,
+  year: PropTypes.number.isRequired,
+  month: PropTypes.number.isRequired,
+  day: PropTypes.number.isRequired,
 };
