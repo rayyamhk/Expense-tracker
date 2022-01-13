@@ -3,11 +3,12 @@ import useStyles from '../../../hooks/useStyles';
 import styles from './TransactionCard.module.css';
 import Transaction from '../../../utils/Transaction';
 import DateTime from '../../../utils/DateTime';
+import Settings from '../../../utils/Settings';
 
 import Link from '../../atoms/Link';
 import Icon from '../../atoms/Icon';
 
-import settings from '../../../fake';
+const settings = Settings.getFakeSettings();
 
 export default function TransactionCard(props) {
   const {

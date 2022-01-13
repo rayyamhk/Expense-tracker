@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import DateTime from './DateTime';
+import Settings from './Settings';
 
 const Transaction = {
   default: () => ({
@@ -21,8 +21,9 @@ const Transaction = {
     payment: transaction.payment?.value,
   }),
   parseForDisplay: (transaction, settings) => {
-    const { payments, categories, subcategories } = settings;
+    let { payments, categories, subcategories } = settings;
     const { payment, category, subcategory } = transaction;
+    payments = Settings.parsePayments(payments);
     return {
       ...transaction,
       payment: payments[payment],

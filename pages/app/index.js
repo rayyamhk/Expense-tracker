@@ -8,6 +8,7 @@ import useStyles from '../../src/hooks/useStyles';
 import styles from '../../styles/app.module.css';
 import Transaction from '../../src/utils/Transaction';
 import DateTime from '../../src/utils/DateTime';
+import Settings from '../../src/utils/Settings';
 
 import {
   MdVisibility,
@@ -19,9 +20,8 @@ import Card from '../../src/components/atoms/Card';
 import Progress from '../../src/components/atoms/Progress';
 import TransactionCard from '../../src/components/molecules/TransactionCard';
 
-import settings from '../../src/fake';
-
 const budget = 10000;
+const settings = Settings.getFakeSettings();
 
 export default function App() {
   const { showSnackbar } = useSnackbar();
