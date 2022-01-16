@@ -34,7 +34,7 @@ export default function TransactionCard(props) {
   }
 
   return (
-    <Link href={`/app/transaction/${id}`} className={css('container', className)}>
+    <Link href={`/app/transactions/${id}`} className={css('container', className)}>
       <Icon backgroundColor={color}>
         {icon}
       </Icon>

@@ -1,5 +1,6 @@
 .container {
   font-family: var(--font);
+  font-size: 1rem;
   border-radius: 4px;
   width: 100%;
   padding: 1rem;
@@ -8,28 +9,29 @@
   position: relative;
 }
 
-.error {
-  color: var(--white);
+.container.error {
+  color: var(--error-invert);
   background-color: var(--error);
 }
 
-.warning {
-  color: var(--white);
+.container.warning {
+  color: var(--warning-invert);
   background-color: var(--warning);
 }
 
-.success {
-  color: var(--white);
+.container.success {
+  color: var(--success-invert);
   background-color: var(--success);
 }
 
-.icon {
+.container .icon {
   color: inherit;
   font-size: 1.5rem;
   margin-right: 1rem;
 }
 
-.close {
+.container .action {
+  background-color: transparent;
   position: absolute;
   right: 0;
 }

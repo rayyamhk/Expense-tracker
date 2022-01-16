@@ -1,13 +1,22 @@
 .view-port {
   height: 100vh;
   width: 100%;
+  max-width: 600px;
   margin: 0 auto;
-  padding-bottom: calc(24px + 2rem);
+  padding-bottom: 56px;
+}
+
+.view-port .main {
+  height: calc(100vh - 56px * 2);
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-.snackbar {
+.view-port .main.no-header {
+  height: calc(100vh - 56px);
+}
+
+.view-port .snackbar {
   width: calc(100% - 2rem);
   position: fixed;
   z-index: 5000;

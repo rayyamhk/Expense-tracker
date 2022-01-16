@@ -40,27 +40,30 @@ export default function Select(props) {
           <legend className={css('legend')}>{label}</legend>
         </fieldset>
       </div>
-      <Card component="ul" elevated className={css('options')}>
-        {options.map((option) => (
-          <li
-            onClick={() => {
-              onSelect(option);
-              onClose();
-            }}
-            className={css('option')}
-            key={option.value}
-          >
-            {option.icon && option.color && <Icon backgroundColor={option.color} className={css('icon')}>{option.icon}</Icon>}
-            {option.display}
-          </li>
-        ))}
-      </Card>
+        {options.length > 0 && (
+          <Card component="ul" elevated className={css('options', 'no-scrollbar')}>
+            {options.map((option) => (
+              <li
+                onClick={() => {
+                  onSelect(option);
+                  onClose();
+                }}
+                className={css('option')}
+                key={option.value}
+              >
+                {option.icon && option.color && <Icon backgroundColor={option.color} className={css('icon')}>{option.icon}</Icon>}
+                {option.display}
+              </li>
+            ))}
+          </Card>
+        )}
     </div>
   );
 }
 
 const optionType = PropTypes.shape({
   icon: PropTypes.node,
+  color: PropTypes.string,
   display: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
 });
@@ -71,5 +74,5 @@ Select.propTypes = {
   label: PropTypes.string,
   onSelect: PropTypes.func,
   options: PropTypes.arrayOf(optionType),
-  selected: optionType
+  selected: optionType,
 };

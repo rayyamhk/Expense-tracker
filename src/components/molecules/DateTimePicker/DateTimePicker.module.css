@@ -6,6 +6,10 @@
   padding-right: 3rem;
 }
 
+.textfield input[type="text"]:disabled {
+  color: var(--gray900) !important;
+}
+
 .textfield-icon {
   font-size: 1.5rem;
   position: absolute;
@@ -51,6 +55,7 @@
 }
 
 .tab-btn {
+  color: var(--gray900);
   flex: 1;
 }
 

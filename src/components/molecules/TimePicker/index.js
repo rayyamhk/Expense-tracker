@@ -5,7 +5,6 @@ import {
 import PropTypes from 'prop-types';
 import useStyles from '../../../hooks/useStyles';
 import styles from './TimePicker.module.css';
-import DateTime from '../../../utils/DateTime';
 
 import Button from '../../atoms/Button';
 const BTN_HEIGHT = 36;
@@ -34,8 +33,8 @@ export default function TimePicker(props) {
   }, []);
   const css = useStyles(styles);
 
-  const hours = [23, ...new Array(24).keys(), 0, 1, 2, 3, 4, 5, 6, 7];
-  const minutes = [59, ...new Array(60).keys(), 0, 1, 2, 3, 4, 5, 6, 7];
+  const hours = [23, ...new Array(24).keys(), 0, 1, 2, 3, 4, 5, 6, 7, 8];
+  const minutes = [59, ...new Array(60).keys(), 0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   const scrollHandler = (e) => {
     const scrollPos = e.target.scrollTop;
@@ -49,9 +48,10 @@ export default function TimePicker(props) {
 
   return (
     <div className={css('container', className)}>
-      <div className={css('col')} ref={ref1}>
+      <div className={css('col', 'no-scrollbar')} ref={ref1}>
         {hours.map((x, i) => (
           <Button
+            tabIndex={-1}
             onClick={() => onTimeChange(x, minute)}
             variant={hour === x ? 'primary' : 'transparent'}
             className={css('btn')}
@@ -61,9 +61,10 @@ export default function TimePicker(props) {
           </Button>
         ))}
       </div>
-      <div className={css('col')} ref={ref2}>
+      <div className={css('col', 'no-scrollbar')} ref={ref2}>
         {minutes.map((x, i) => (
           <Button
+            tabIndex={-1}
             onClick={() => onTimeChange(hour, x)}
             variant={minute === x ? 'primary' : 'transparent'}
             className={css('btn')}

@@ -59,9 +59,9 @@
 }
 
 .amount.expense {
-  color: var(--red500);
+  color: var(--error-light);
 }
 
 .amount.income {
-  color: var(--green500);
+  color: var(--success-light);
 }

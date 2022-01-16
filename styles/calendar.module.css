@@ -1,0 +1,105 @@
+.icon {
+  height: 3.5rem;
+  width: 3.5rem;
+}
+
+.icon svg {
+  fill: var(--primary-invert);
+  font-size: 1.5rem;
+}
+
+.calendar {
+  font-family: var(--font);
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  border-collapse: collapse;
+  transition: 0.25s height linear;
+}
+
+.calendar.active {
+  height: 50%;
+}
+
+.calendar tr th {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 0.25rem;
+}
+
+.calendar tr td {
+  background-color: var(--paperwhite);
+  color: var(--gray900);
+  border: 1px solid var(--gray300);
+  width: calc(100% / 7);
+  position: relative;
+}
+
+.calendar tr td:focus,
+.calendar tr td:active {
+  outline: none;
+}
+
+.calendar tr td.disabled {
+  background-color: #f5f5f5;
+  color: var(--gray500);
+}
+
+.calendar tr td.today {
+  background-color: var(--primary-transparent);
+  color: var(--primary-invert);
+}
+
+.calendar tr td.active {
+  background-color: var(--primary);
+  color: var(--primary-invert);
+}
+
+.calendar tr td .date {
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.75rem;
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+}
+
+.calendar tr td .amount {
+  font-family: inherit;
+  font-size: 0.6rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.calendar tr td .amount.income,
+.daily-breakdown .income {
+  color: var(--success-light);
+}
+
+.calendar tr td .amount.expense,
+.daily-breakdown .expense {
+  color: var(--error-light);
+}
+
+.transactions-list {
+  height: 50%;
+  overflow-y: scroll;
+}
+
+.main .transaction-card:last-child {
+  border-bottom: 1px solid var(--gray300);
+}
+
+.daily-breakdown {
+  background-color: var(--white);
+  font-family: var(--font);
+  border-bottom: 1px solid var(--gray300);
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+

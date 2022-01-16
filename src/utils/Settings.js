@@ -78,6 +78,9 @@ function parseCategoryOptions(categories) {
 };
 
 function parseSubcategoryOptions(subcategories) {
+  if (!subcategories) {
+    return [];
+  }
   return Object.entries(subcategories).map(([value, display]) => ({ value, display }));
 };
 

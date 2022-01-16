@@ -40,7 +40,7 @@
 }
 
 .over-budget span {
-  color: var(--red500);
+  color: var(--error-light);
   font-weight: 700;
 }
 
