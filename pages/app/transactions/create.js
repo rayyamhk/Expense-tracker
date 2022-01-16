@@ -4,6 +4,7 @@ import {
 } from 'react';
 import { useRouter } from 'next/router';
 import useDatabase from '../../../src/hooks/useDatabase';
+import useSettings from '../../../src/hooks/useSettings';
 import useSnackbar from '../../../src/hooks/useSnackbar';
 import useStyles from '../../../src/hooks/useStyles';
 import styles from '../../../styles/transaction.module.css';
@@ -30,21 +31,23 @@ import TextField from '../../../src/components/atoms/TextField';
 import Button from '../../../src/components/atoms/Button';
 import Loading from '../../../src/components/molecules/Loading';
 
-const settings = Settings.getFakeSettings();
-const categories = settings.categories;
+const fakeSettings = Settings.getFakeSettings();
+const categories = fakeSettings.categories;
 const categoryOptions = Settings.parseCategoryOptions(categories);
-const payments = settings.payments;
-const paymentOptions = Settings.parsePaymentOptions(payments);
 
 export default function Create() {
-  const router = useRouter();
   const [pageMode, setPageMode] = useState('loading');
   const [submitted, setSubmitted] = useState(false);
   const [subcategories, setSubcategories] = useState();
   const [transaction, setTransaction] = useState(Transaction.default());
+
+  const router = useRouter();
   const db = useDatabase('my-test-app');
+  const [paymentSettings] = useSettings('payments');
   const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
+
+  const settings = {};
 
   useEffect(() => {
     let isMounted = true;
@@ -55,7 +58,7 @@ export default function Create() {
         .then((store) => store.get(id))
         .then((record) => {
           const category = record.category;
-          setSubcategories(settings.subcategories[category]);
+          setSubcategories(fakeSettings.subcategories[category]);
           setTransaction(record);
           setPageMode('edit');
         })
@@ -85,14 +88,14 @@ export default function Create() {
   };
 
   const onCategorySelect = (option) => {
-    const value = option.value;
-    const subcategories = settings.subcategories[value];
-    setTransaction({ ...transaction, category: value, subcategory: undefined });
+    const id = option.id;
+    const subcategories = fakeSettings.subcategories[id];
+    setTransaction({ ...transaction, category: id, subcategory: undefined });
     setSubcategories(subcategories);
   };
 
   const onSubcategorySelect = (option) => {
-    setTransaction({ ...transaction, subcategory: option.value });
+    setTransaction({ ...transaction, subcategory: option.id });
   };
 
   const onAmountChange = (e) => {
@@ -108,7 +111,7 @@ export default function Create() {
   };
 
   const onPaymentChange = (option) => {
-    setTransaction({ ...transaction, payment: option.value });
+    setTransaction({ ...transaction, payment: option.id });
   };
 
   const onSubmit = () => {
@@ -139,6 +142,7 @@ export default function Create() {
 
   const headline = pageMode === 'create' ? 'Create' : 'Edit';
   const subcategoryOptions = Settings.parseSubcategoryOptions(subcategories);
+  const paymentOptions = Settings._parsePaymentOptions(paymentSettings);
   const {
     type,
     datetime,
@@ -150,9 +154,9 @@ export default function Create() {
     details,
   } = transaction;
   const [year, month, day, hour, minute] = DateTime.getArrayFromTimestamp(datetime);
-  const categorySelected = category ? { value: category, display: categories[category].display } : undefined;
-  const subcategorySelected = subcategory ? { value: subcategory, display: subcategories[subcategory] } : undefined;
-  const paymentSelected = payment ? { value: payment, display: payments[payment].display } : undefined;
+  const categorySelected = category ? { id: category, value: categories[category].value } : undefined;
+  const subcategorySelected = subcategory ? { id: subcategory, value: subcategories[subcategory] } : undefined;
+  const paymentSelected = payment ? { id: payment, value: paymentSettings[payment]?.value } : undefined;
 
   return (
     <Layout headline={headline} className={css('main')}>

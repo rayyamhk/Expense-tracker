@@ -3,12 +3,14 @@ import {
   useEffect,
 } from 'react';
 import useDatabase from '../../src/hooks/useDatabase';
+import useSettings from '../../src/hooks/useSettings';
 import useSnackbar from '../../src/hooks/useSnackbar';
 import useStyles from '../../src/hooks/useStyles';
 import styles from '../../styles/app.module.css';
 import Transaction from '../../src/utils/Transaction';
 import DateTime from '../../src/utils/DateTime';
 import Settings from '../../src/utils/Settings';
+const fakeSettings = Settings.getFakeSettings();
 
 import {
   MdVisibility,
@@ -23,16 +25,19 @@ import ExpenseRatio from '../../src/components/molecules/ExpenseRatio';
 import Loading from '../../src/components/molecules/Loading';
 
 const budget = 10000;
-const settings = Settings.getFakeSettings();
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(true);
   const [transactions, setTransactions] = useState([]);
   const [analysis, setAnalysis] = useState({});
-  const { setSnackbar } = useSnackbar();
+
   const db = useDatabase('my-test-app');
+  const [paymentSettings] = useSettings('payments');
+  const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
+
+  const settings = {};
 
   useEffect(() => {
     const now = Date.now()
@@ -102,7 +107,7 @@ export default function App() {
   const budgetDisplay = Transaction.parseMoney(monthExpense);
   const budgetLimitDisplay = Transaction.parseMoney(budget);
   const top5 = Object.entries(analysis)
-    .map(([category, expense]) => ({ ...settings.categories[category], expense }))
+    .map(([category, expense]) => ({ ...fakeSettings.categories[category], expense }))
     .sort((a, b) => b.expense - a.expense)
     .slice(0, 5);
 
@@ -131,7 +136,7 @@ export default function App() {
             <h3 className={css('group-title')}>Today</h3>
             <Card elevated>
               {transactions.map((trans) => {
-                trans = Transaction.parseForDisplay(trans, settings);
+                trans = Transaction.parseForDisplay(trans, paymentSettings);
                 return <TransactionCard {...trans} key={trans.id} />;
               })}
             </Card>

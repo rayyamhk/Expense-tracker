@@ -13,8 +13,8 @@ import {
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import Card from '../../atoms/Card';
-import DatePicker from '../DatePicker';
-import TimePicker from '../TimePicker';
+import Calendar from '../../atoms/Calendar';
+import Clock from '../../atoms/Clock';
 
 const settings = Settings.getFakeSettings();
 
@@ -70,14 +70,14 @@ export default function DateTimePicker(props) {
       </div>
       <Card elevated className={css('datetime-picker')}>
         <div className={css('tabs', tab === 'time' ? 'time-active' : 'date-active')}>
-          <DatePicker
+          <Calendar
             className={css('tab')}
             onDateChange={onDateChange}
             year={year}
             month={month}
             day={day}
           />
-          <TimePicker
+          <Clock
             className={css('tab')}
             onTimeChange={onTimeChange}
             hour={hour}

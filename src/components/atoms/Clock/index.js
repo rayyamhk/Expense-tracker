@@ -4,12 +4,12 @@ import {
 } from 'react';
 import PropTypes from 'prop-types';
 import useStyles from '../../../hooks/useStyles';
-import styles from './TimePicker.module.css';
+import styles from './Clock.module.css';
 
-import Button from '../../atoms/Button';
+import Button from '../Button';
 const BTN_HEIGHT = 36;
 
-export default function TimePicker(props) {
+export default function Clock(props) {
   const {
     className,
     onTimeChange,
@@ -78,7 +78,7 @@ export default function TimePicker(props) {
   );
 }
 
-TimePicker.propTypes = {
+Clock.propTypes = {
   className: PropTypes.string,
   onTimeChange: PropTypes.func,
   hour: PropTypes.number.isRequired,

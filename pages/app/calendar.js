@@ -73,10 +73,11 @@ export default function Calendar() {
     return () => isMounted = false;
   }, [activeMonth, activeYear, db, setSnackbar]);
 
-  const calendarHeadline = `${DateTime.translateMonth(activeMonth)} ${year}`;
+  const calendarHeadline = `${DateTime.translateMonth(activeMonth)} ${activeYear}`;
   const calendarCells = DateTime.getCalendarCells(activeYear, activeMonth);
 
   const nextMonth= () => {
+    setActiveDay(null);
     if (activeMonth === 11) {
       setActiveMonth(0);
       setActiveYear(activeYear + 1);
@@ -86,6 +87,7 @@ export default function Calendar() {
   };
 
   const prevMonth= () => {
+    setActiveDay(null);
     if (activeMonth === 0) {
       setActiveMonth(11);
       setActiveYear(activeYear - 1);
@@ -150,7 +152,7 @@ export default function Calendar() {
                     className={css(
                       'no-tab',
                       activeYear === year && activeMonth === month && x === day && 'today',
-                      activeYear === year && activeMonth === month && activeDay === x && 'active',
+                      activeDay === x && 'active',
                     )}
                     key={j}
                   >
