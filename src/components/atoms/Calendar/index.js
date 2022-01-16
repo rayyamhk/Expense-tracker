@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import useStyles from '../../../hooks/useStyles';
-import styles from './DatePicker.module.css';
+import styles from './Calendar.module.css';
 import DateTime from '../../../utils/DateTime';
 
 import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
 } from 'react-icons/md';
-import Button from '../../atoms/Button';
+import Button from '../Button';
 
-export default function DatePicker(props) {
+export default function Calendar(props) {
   const {
     className,
     onDateChange,
@@ -112,7 +112,7 @@ export default function DatePicker(props) {
   );
 }
 
-DatePicker.propTypes = {
+Calendar.propTypes = {
   className: PropTypes.string,
   onDateChange: PropTypes.func,
   year: PropTypes.number.isRequired,

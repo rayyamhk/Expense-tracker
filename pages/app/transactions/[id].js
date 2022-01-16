@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import useDatabase from '../../../src/hooks/useDatabase';
+import useSettings from '../../../src/hooks/useSettings';
 import useSnackbar from '../../../src/hooks/useSnackbar';
 import useStyles from '../../../src/hooks/useStyles';
 import styles from '../../../styles/transaction.module.css';
 import Transaction from '../../../src/utils/Transaction';
 import DateTime from '../../../src/utils/DateTime';
-import Settings from '../../../src/utils/Settings';
 
 import {
   MdCategory,
@@ -26,16 +26,18 @@ import Button from '../../../src/components/atoms/Button';
 import Loading from '../../../src/components/molecules/Loading';
 import Dialog from '../../../src/components/atoms/Dialog';
 
-const settings = Settings.getFakeSettings();
-
 export default function TransactionDetails() {
   const [transaction, setTransaction] = useState();
   const [loading, setLoading] = useState(true);
   const [popUp, setPopUp] = useState(false);
+
   const router = useRouter();
-  const { setSnackbar } = useSnackbar();
   const db = useDatabase('my-test-app');
+  const [paymentSettings] = useSettings('payments');
+  const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
+
+  const settings = {};
 
   useEffect(() => {
     let isMounted = true;
@@ -70,7 +72,7 @@ export default function TransactionDetails() {
     payment,
     brand,
     details,
-  } = Transaction.parseForDisplay(transaction, settings);
+  } = Transaction.parseForDisplay(transaction, paymentSettings);
   const headline = type === 'expense' ? 'Expense' : 'Income';
   const dateDisplay = DateTime.getStringFromTimestamp(datetime, 'datetime', settings);
 

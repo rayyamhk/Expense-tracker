@@ -34,7 +34,7 @@ export default function Select(props) {
       <div onClick={onClose} className={css('hidden-overlay')} />
       <span className={css('label')}>{label}</span>
       <div onClick={onToggle}>
-        <div className={css('display')}>&#8203;{selected?.display}</div>
+        <div className={css('display')}>&#8203;{selected?.value}</div>
         <MdArrowDropDown size="1.5rem" className={css('arrow')} />
         <fieldset className={css('fieldset')}>
           <legend className={css('legend')}>{label}</legend>
@@ -49,10 +49,10 @@ export default function Select(props) {
                   onClose();
                 }}
                 className={css('option')}
-                key={option.value}
+                key={option.id}
               >
-                {option.icon && option.color && <Icon backgroundColor={option.color} className={css('icon')}>{option.icon}</Icon>}
-                {option.display}
+                {option.icon && option.color && <Icon name={option.icon} backgroundColor={option.color} className={css('icon')} />}
+                {option.value}
               </li>
             ))}
           </Card>
@@ -62,10 +62,10 @@ export default function Select(props) {
 }
 
 const optionType = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
   icon: PropTypes.node,
   color: PropTypes.string,
-  display: PropTypes.string.isRequired,
-  value: PropTypes.string.isRequired,
 });
 
 Select.propTypes = {

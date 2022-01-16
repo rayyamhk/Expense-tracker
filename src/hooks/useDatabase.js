@@ -117,36 +117,33 @@ class IndexWrapper {
   };
 }
 
-export default function useDatabase(dbName, version = 1) {
+export default function useDatabase(dbName) {
   const db = useMemo(() => {
     if (typeof window === 'undefined') {
       return {};
     }
-    return new IndexedDB(dbName, version);
-  }, [dbName, version]);
+    return new IndexedDB(dbName, 2);
+  }, [dbName]);
   return db;
 };
 
 function upgrade(e) {
+  const oldVersion = e.oldVersion;
   const db = e.target.result;
   const upgradeTransaction = e.target.transaction;
-  let store;
 
-  if (!db.objectStoreNames.contains('transactions')) {
-    store = db.createObjectStore('transactions', { keyPath: 'id' });
+  // init v1
+  if (oldVersion < 1) {
+    console.log('v0 to v1');
+    const store = db.createObjectStore('transactions', { keyPath: 'id' });
     store.createIndex('datetime_index', 'datetime', { unique: false });
-    console.debug('store created.');
-    return;
   }
 
-  console.debug('store existed.');
-  store = upgradeTransaction.objectStore('transactions');
-
-  if (!store.indexNames.contains('datetime_index')) {
-    store.createIndex('datetime_index', 'datetime', { unique: false });
-    console.debug('index created.');
-    return;
+  // upgrade from v1 to v2
+  if (oldVersion < 2) {
+    console.log('v1 to v2');
+    db.createObjectStore('payments', { keyPath: 'id' });
+    const transactionsStore = upgradeTransaction.objectStore('transactions');
+    transactionsStore.createIndex('payment_index', 'payment', { unique: false });
   }
-
-  console.debug('index existed.');
 };
