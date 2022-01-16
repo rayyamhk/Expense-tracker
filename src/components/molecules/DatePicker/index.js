@@ -50,7 +50,6 @@ export default function DatePicker(props) {
         <span className={css('year-select')}>
           {calendarHeadline}
         </span>
-        <span className={css('flex-expand')} />
         <Button
           onClick={prevMonth}
           variant="transparent"
@@ -81,24 +80,29 @@ export default function DatePicker(props) {
         <tbody role="rowgroup">
           {calendarCells.map((row, i) => (
             <tr role="row" key={i}>
-              {row.map((x, j) => {
-                if (x) {
+              {row.map(({ current, day: x }, j) => {
+                if (!current) {
                   return (
-                    <td
-                      role="gridcell"
-                      tabIndex={-1}
-                      key={j}
-                    >
-                      <Button
-                        onClick={() => onDateChange(activeYear, activeMonth, x)}
-                        variant={activeYear === year && activeMonth === month && day === x ? 'primary' : 'transparent'}
-                      >
-                        {x}
-                      </Button>
+                    <td key={j}>
+                      <Button variant="transparent" disabled>{x}</Button>
                     </td>
                   );
                 }
-                return <td key={j}></td>
+                return (
+                  <td
+                    role="gridcell"
+                    tabIndex={-1}
+                    key={j}
+                  >
+                    <Button
+                      tabIndex={-1}
+                      onClick={() => onDateChange(activeYear, activeMonth, x)}
+                      variant={activeYear === year && activeMonth === month && day === x ? 'primary' : 'transparent'}
+                    >
+                      {x}
+                    </Button>
+                  </td>
+                );
               })}
             </tr>
           ))}

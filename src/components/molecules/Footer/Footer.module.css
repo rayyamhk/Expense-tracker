@@ -3,18 +3,16 @@
   width: 100%;
   display: flex;
   justify-content: space-evenly;
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  position: relative;
   z-index: 10000;
 }
 
-.btn {
+.container .btn {
   flex: 1;
   padding: 1rem 0;
 }
 
-.btn svg {
+.container .btn svg {
   font-size: 1.5rem;
   fill: var(--gray900);
 }

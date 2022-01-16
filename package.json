@@ -1,6 +1,9 @@
 {
   "name": "expense-trakcer",
   "private": true,
+  "browserslist": [
+    "defaults"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",

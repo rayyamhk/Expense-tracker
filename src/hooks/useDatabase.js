@@ -6,6 +6,7 @@ class IndexedDB {
     this.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction || {READ_WRITE: 'readwrite'};
     this.dbName = dbName;
     this.version = version;
+    this._transaction = null;
   };
 
   connect(storeName, mode) {
@@ -46,6 +47,14 @@ class StoreWrapper {
     });
   };
 
+  put(...args) {
+    return new Promise((resolve, reject) => {
+      const req = this.store.put(...args);
+      req.onerror = (e) => reject(e);
+      req.onsuccess = (e) => resolve(e.target.result);
+    });
+  };
+
   get(...args) {
     return new Promise((resolve, reject) => {
       const req = this.store.get(...args);
@@ -57,6 +66,14 @@ class StoreWrapper {
   getAll(...args) {
     return new Promise((resolve, reject) => {
       const req = this.store.getAll(...args);
+      req.onerror = (e) => reject(e);
+      req.onsuccess = (e) => resolve(e.target.result);
+    });
+  };
+
+  delete(...args) {
+    return new Promise((resolve, reject) => {
+      const req = this.store.delete(...args);
       req.onerror = (e) => reject(e);
       req.onsuccess = (e) => resolve(e.target.result);
     });
@@ -100,7 +117,7 @@ class IndexWrapper {
   };
 }
 
-export default function useDatabase(dbName, version) {
+export default function useDatabase(dbName, version = 1) {
   const db = useMemo(() => {
     if (typeof window === 'undefined') {
       return {};

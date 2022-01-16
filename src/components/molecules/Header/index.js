@@ -7,6 +7,7 @@ import styles from './Header.module.css';
 
 export default function Header(props) {
   const {
+    actions,
     headline,
     hidden = false,
   } = props;
@@ -30,11 +31,13 @@ export default function Header(props) {
         <MdArrowBack />
       </Button>
       <h1 className={css('headline')}>{headline}</h1>
+      {actions}
     </header>
   )
 }
 
 Header.propTypes = {
+  actions: PropTypes.node,
   headline: PropTypes.string,
   hidden: PropTypes.bool,
 };

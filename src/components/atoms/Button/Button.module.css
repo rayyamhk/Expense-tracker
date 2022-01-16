@@ -1,10 +1,10 @@
 .btn {
   font-family: inherit;
+  font-size: 1rem;
   border: none;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5rem;
   position: relative;
 }
 
@@ -29,17 +29,45 @@
 }
 
 .primary {
+  color: var(--primary-invert);
   background-color: var(--primary);
+}
+
+.success {
+  color: var(--success-invert);
+  background-color: var(--success);
+}
+
+.error {
+  color: var(--error-invert);
+  background-color: var(--error);
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.round {
+  border-radius: 2rem;
+}
+
+.small {
+  padding: 0.5rem;
+}
+
+.large {
+  padding: 0.5rem 2rem;
+}
+
+.shadow {
+  box-shadow: 0px 2px 10px -3px rgb(0, 0, 0, 25%);
 }
 
 .float {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--gray900);
-  background-color: var(--primary);
   height: 48px;
   width: 48px;
-  border-radius: 50%;
   position: fixed;
   bottom: calc(56px + 1rem);
   right: 1rem;

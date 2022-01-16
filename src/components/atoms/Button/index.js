@@ -10,6 +10,9 @@ export default function Button(props) {
     float = false,
     href,
     onClick,
+    shadow = false,
+    shape = 'squae',
+    size = 'small',
     variant = 'primary',
     ...remainingProps
   } = props;
@@ -19,7 +22,16 @@ export default function Button(props) {
   let Tag;
 
   const componentProps = {
-    className: css('btn', variant, float && 'float', className),
+    className: css(
+      'btn',
+      'no-tab',
+      variant,
+      shape,
+      size,
+      shadow && 'shadow',
+      float && 'float',
+      className
+    ),
     ...remainingProps,
   };
 
@@ -30,7 +42,6 @@ export default function Button(props) {
     Tag = 'button';
     componentProps.onClick = onClick;
   }
-
   return (
     <Tag {...componentProps}>{children}</Tag>
   );
@@ -42,5 +53,8 @@ Button.propTypes = {
   float: PropTypes.bool,
   href: PropTypes.string,
   onClick: PropTypes.func,
-  variant: PropTypes.oneOf(['primary', 'transparent']),
+  shadow: PropTypes.bool,
+  shape: PropTypes.oneOf(['square', 'round', 'circle']),
+  size: PropTypes.oneOf(['small', 'large']),
+  variant: PropTypes.oneOf(['primary', 'success', 'error', 'transparent']),
 };

@@ -14,10 +14,12 @@
 }
 
 .back-arrow svg {
-  fill: var(--gray900);
+  fill: var(--primary-invert);
   font-size: 1.5rem;
 }
 
 .headline {
+  flex: 1 1 0;
+  color: var(--primary-invert);
   font-size: 1.25rem;
 }

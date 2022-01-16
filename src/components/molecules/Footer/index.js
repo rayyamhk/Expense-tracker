@@ -20,7 +20,7 @@ export default function Footer() {
       <Button href="/app/calendar" variant="transparent" className={css('btn')}>
         <MdCalendarToday />
       </Button>
-      <Button href="/app/transaction/create" variant="transparent" className={css('btn')}>
+      <Button href="/app/transactions/create" variant="transparent" className={css('btn')}>
         <MdAddBox />
       </Button>
       <Button href="/app/dashboard" variant="transparent" className={css('btn')}>

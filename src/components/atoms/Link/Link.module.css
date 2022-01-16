@@ -1,0 +1,8 @@
+.link {
+  cursor: default;
+}
+
+.link, .link:hover, .link:focus, .link:active {
+  text-decoration: none;
+  color: inherit;
+}

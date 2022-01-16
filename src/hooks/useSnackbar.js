@@ -11,14 +11,13 @@ const MessageContext = createContext();
 export function MessageProvider({ children, debug = false }) {
   const [type, setType] = useState(null);
   const [message, setMessage] = useState(null);
-  const showSnackbar = (type, msg) => {
-    console.log(type, msg);
+  const setSnackbar = (type, msg) => {
     setType(type);
     setMessage(msg);
   };
 
   const value = useMemo(() => {
-    return { type, message, showSnackbar };
+    return { type, message, setSnackbar };
   }, [type, message]);
 
   useEffect(() => {

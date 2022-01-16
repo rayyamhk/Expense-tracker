@@ -13,20 +13,14 @@
   margin-bottom: 1rem;
 }
 
-.flex-expand {
-  flex: 1;
-}
-
 .year-select {
+  flex: 1 1 0;
   font-size: 1rem;
   padding: 0.5rem;
 }
 
-.year-select svg {
-  font-size: 1.5rem;
-}
-
 .arrow {
+  color: var(--gray900);
   font-size: 1.5rem;
   margin-right: 1rem;
 }
@@ -38,7 +32,7 @@
 .calendar {
   font-family: var(--font);
   width: 100%;
-  min-height: 252px;
+  /* min-height: 270px; */
 }
 
 .calendar tr {
@@ -58,6 +52,10 @@
   color: var(--gray500);
 }
 
-.calendar tr td {
+.calendar tr td button {
   color: var(--gray900);
+}
+
+.calendar tr td button:disabled {
+  color: var(--gray300);
 }

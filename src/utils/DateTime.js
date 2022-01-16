@@ -6,7 +6,7 @@ const utils = {
   getTimestampFromArray,
   getStringFromTimestamp,
   getCalendarCells,
-  getTodayTimestampBound,
+  getDayTimestampBound,
   getMonthTimestampBound,
   translateMonth,
 };
@@ -67,20 +67,22 @@ function getStringFromArray(arr, type, settings) {
 };
 
 function getCalendarCells(year, month) {
-  const dayNum = new Date(year, month + 1, 0).getDate();
+  const prevMonthDayNum = new Date(year, month, 0).getDate();
+  const currentMonthDayNum = new Date(year, month + 1, 0).getDate();
   const dayOfWeek = new Date(year, month, 1).getDay();
 
   const cells = [];
-  const cellNum = Math.ceil((dayOfWeek + dayNum) / 7) * 7;
   let row;
-  for (let i = 0; i < cellNum; i++) {
+  for (let i = 0; i < 42; i++) {
     if (i % 7 === 0) {
       row = [];
     }
-    if (i < dayOfWeek || i > dayOfWeek + dayNum - 1) {
-      row.push(null);
+    if (i < dayOfWeek) {
+      row.push({ current: false, day: prevMonthDayNum - dayOfWeek + i + 1 })
+    } else if (i >= dayOfWeek + currentMonthDayNum) {
+      row.push({ current: false, day: i - dayOfWeek - currentMonthDayNum + 1 });
     } else {
-      row.push(i - dayOfWeek + 1);
+      row.push({ current: true, day: i - dayOfWeek + 1 });
     }
     if (i % 7 === 6) {
       cells.push(row);
@@ -89,13 +91,13 @@ function getCalendarCells(year, month) {
   return cells;
 };
 
-function getTodayTimestampBound() {
-  const [year, month, day] = getArrayFromTimestamp(Date.now());
+function getDayTimestampBound(timestamp) {
+  const [year, month, day] = getArrayFromTimestamp(timestamp);
   return [new Date(year, month, day).getTime(), new Date(year, month, day + 1).getTime()];
 };
 
-function getMonthTimestampBound() {
-  const [year, month] = getArrayFromTimestamp(Date.now());
+function getMonthTimestampBound(timestamp) {
+  const [year, month] = getArrayFromTimestamp(timestamp);
   return [new Date(year, month).getTime(), new Date(year, month + 1).getTime()];
 };
 
