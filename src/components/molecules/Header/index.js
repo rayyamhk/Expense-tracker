@@ -1,9 +1,11 @@
 import { useRouter } from 'next/router';
 import PropTypes from 'prop-types';
-import { MdArrowBack } from 'react-icons/md';
-import Button from '../../atoms/Button';
 import useStyles from '../../../hooks/useStyles';
 import styles from './Header.module.css';
+
+import Icon from '../../atoms/Icon';
+import Button from '../../atoms/Button';
+
 
 export default function Header(props) {
   const {
@@ -28,7 +30,7 @@ export default function Header(props) {
         variant='transparent'
         className={css('back-arrow')}
       >
-        <MdArrowBack />
+        <Icon icon="arrow_back" />
       </Button>
       <h1 className={css('headline')}>{headline}</h1>
       {actions}

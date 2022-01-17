@@ -20,9 +20,9 @@
   margin: 0.5rem 0;
 }
 
-.header-balance svg {
+.header-balance span {
   font-size: 1.125rem;
-  fill: var(--gray900);
+  color: var(--gray900);
 }
 
 .budget-card {

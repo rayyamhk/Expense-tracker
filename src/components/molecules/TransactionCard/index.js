@@ -3,30 +3,26 @@ import useStyles from '../../../hooks/useStyles';
 import styles from './TransactionCard.module.css';
 import Transaction from '../../../utils/Transaction';
 import DateTime from '../../../utils/DateTime';
-import Settings from '../../../utils/Settings';
 
 import Link from '../../atoms/Link';
 import Icon from '../../atoms/Icon';
-
-const settings = Settings.getFakeSettings();
 
 export default function TransactionCard(props) {
   const {
     amount,
     category,
     className,
+    datetime, // millisecond
     details,
-    icon,
-    iconColor: color,
     id,
     subcategory,
-    datetime, // millisecond
     type,
+    ...iconProps
   } = props;
 
   const css = useStyles(styles);
-  const timeDisplay = DateTime.getStringFromTimestamp(datetime, 'time', settings);
-  const timeHTML = DateTime.getStringFromTimestamp(datetime, 'html', settings);
+  const timeDisplay = DateTime.getStringFromTimestamp(datetime, 'time');
+  const timeHTML = DateTime.getStringFromTimestamp(datetime, 'html');
   const amountDisplay = Transaction.parseMoney(amount);
   let label = category;
   if (subcategory) {
@@ -35,9 +31,7 @@ export default function TransactionCard(props) {
 
   return (
     <Link href={`/app/transactions/${id}`} className={css('container', className)}>
-      <Icon backgroundColor={color}>
-        {icon}
-      </Icon>
+      <Icon className={css('icon')} {...iconProps} />
       <div className={css('info')}>
         <h4 className={css('category')}>{label}</h4>
         <p className={css('details')}>{details}</p>
@@ -54,8 +48,6 @@ TransactionCard.propsType = {
   className: PropTypes.string,
   datetime: PropTypes.string.isRequired,
   details: PropTypes.string,
-  icon: PropTypes.node.isRequired,
-  iconColor: PropTypes.string,
   id: PropTypes.string.isRequired,
   subcategory: PropTypes.string,
   type: PropTypes.string.isRequired,

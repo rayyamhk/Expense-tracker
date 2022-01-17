@@ -3,8 +3,8 @@
   width: 3.5rem;
 }
 
-.icon svg {
-  fill: var(--primary-invert);
+.icon span {
+  color: var(--primary-invert);
   font-size: 1.5rem;
 }
 

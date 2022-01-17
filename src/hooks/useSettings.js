@@ -1,59 +1,56 @@
 import {
   createContext,
-  useState,
-  useEffect,
   useContext,
   useCallback,
+  useMemo,
 } from 'react';
-import useDatabase from './useDatabase';
-import useSnackbar from './useSnackbar';
-import Utils from '../utils/Settings';
+import IndexedDB from '../utils/IndexedDB';
 
 const SettingsContext = createContext();
 
 export function SettingsProvider({ children }) {
-  const [settings, setSettings] = useState({});
-  const db = useDatabase('my-test-app');
-  const { setSnackbar } = useSnackbar();
-
-  useEffect(() => {
-    console.log('fetching settings...');
-    const settings = {};
-    db.connect('payments')
-      .then((store) => store.getAll())
-      .then((record) => settings.payments = Utils._parsePayments(record))
-      .catch(({ message, name }) => setSnackbar(`${name}: ${message}`))
-      .finally(() => setSettings(settings));
-  }, [db, setSnackbar]);
-
-  useEffect(() => console.log(settings), [settings])
+  const db = useMemo(() => {
+    if (typeof window === 'undefined') {
+      return {};
+    }
+    return new IndexedDB('my-test-app', 3);
+  }, []);
 
   const saver = useCallback((settingKey) => {
     return (key, value) => {
-      if (!settings[settingKey]) {
-        settings[settingKey] = {};
-      }
-      db.connect(settingKey, 'readwrite')
-        .then((store) => store.put({ id: key, ...settings[settingKey][key], ...value }))
-        .then(() => {
-          setSettings({
-            ...settings,
-            [settingKey]: {
-              ...settings[settingKey],
-              [key]: {
-                ...settings[settingKey][key],
-                ...value,
-              },
-            },
-          })
-        })
-        .catch(({ message, name }) => setSnackbar(`${name}: ${message}`));
-    }
-  }, [settings, db, setSnackbar]);
+      return new Promise((resolve, reject) => {
+        db.connect(settingKey, 'readwrite')
+          .then((store) => store.get(key))
+          .then(({ store, result }) => store.put({ id: key, ...result, ...value }))
+          .then((result) => resolve(result))
+          .catch((e) => reject(e));
+      });
+    };
+  }, [db]);
 
-  const getter = useCallback((key) => {
-    return settings[key] || {};
-  }, [settings]);
+  const getter = useCallback((settingKey) => {
+    return (key, indexName) => {
+      return new Promise((resolve, reject) => {
+        if (indexName) {
+          db.connect(settingKey)
+            .then((store) => store.index(indexName))
+            .then((index) => index.getAll(key))
+            .then(({ result }) => resolve(result))
+            .catch((e) => reject(e));
+        } else {
+          db.connect(settingKey)
+            .then((store) => store.getAll(key))
+            .then(({ result }) => {
+              if (key) {
+                result = result[0];
+              }
+              resolve(result);
+            })
+            .catch((e) => reject(e));
+          }
+      });
+    };
+  }, [db]);
 
   return (
     <SettingsContext.Provider value={{ getter, saver }}>{children}</SettingsContext.Provider>

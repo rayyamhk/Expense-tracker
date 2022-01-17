@@ -18,13 +18,18 @@
 }
 
 .icon.gray {
-  fill: var(--gray500);
+  color: var(--gray500);
 }
 
 .select,
 .textfield,
 .datetime-picker {
   width: 100%;
+}
+
+.main .float-btn span {
+  color: var(--white);
+  font-size: 2rem;
 }
 
 .main .float-btn-left {

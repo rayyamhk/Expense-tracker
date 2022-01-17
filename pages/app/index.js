@@ -10,66 +10,50 @@ import styles from '../../styles/app.module.css';
 import Transaction from '../../src/utils/Transaction';
 import DateTime from '../../src/utils/DateTime';
 import Settings from '../../src/utils/Settings';
-const fakeSettings = Settings.getFakeSettings();
 
-import {
-  MdVisibility,
-  MdVisibilityOff,
-} from 'react-icons/md';
 import Layout from '../../src/components/molecules/Layout';
+import Icon from '../../src/components/atoms/Icon';
 import Button from '../../src/components/atoms/Button';
 import Card from '../../src/components/atoms/Card';
 import Progress from '../../src/components/atoms/Progress';
 import TransactionCard from '../../src/components/molecules/TransactionCard';
 import ExpenseRatio from '../../src/components/molecules/ExpenseRatio';
-import Loading from '../../src/components/molecules/Loading';
 
 const budget = 10000;
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(true);
-  const [transactions, setTransactions] = useState([]);
   const [analysis, setAnalysis] = useState({});
+  const [transactions, setTransactions] = useState([]);
+  const [settings, setSettings] = useState({});
 
   const db = useDatabase('my-test-app');
-  const [paymentSettings] = useSettings('payments');
+  const [getPayments] = useSettings('payments');
+  const [getCategories] = useSettings('categories');
+  const [getSubcategories] = useSettings('subcategories');
   const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
 
-  const settings = {};
-
   useEffect(() => {
-    const now = Date.now()
-    const [today, tomorrow] = DateTime.getDayTimestampBound(now);
-    const [thisMonth, nextMonth] = DateTime.getMonthTimestampBound(now);
-    db.connect('transactions')
-      .then((store) => store.index('datetime_index'))
-      .then((index) => {
-        const range = index.IDBKeyRange.bound(
-          today,
-          tomorrow,
-          false,
-          true
-        );
-        return index.openCursor(range, 'prev');
-      })
-      .then((record) => setTransactions(record))
-      .catch(({ name, message }) => setSnackbar('error', `${name}: ${message}`));
+    const init = async () => {
+      try {
+        const now = Date.now();
+        const [today, tomorrow] = DateTime.getDayTimestampBound(now);
+        const [thisMonth, nextMonth] = DateTime.getMonthTimestampBound(now);
 
-    db.connect('transactions')
-      .then((store) => store.index('datetime_index'))
-      .then((index) => {
-        const range = index.IDBKeyRange.bound(
-          thisMonth,
-          nextMonth,
-          false,
-          true
-        );
-        return index.openCursor(range);
-      })
-      .then((record) => {
-        const analysis = record.reduce((aggregated, tran) => {
+        const payments = await getPayments();
+        const categories = await getCategories();
+        const subcategories = await getSubcategories();
+        const settings = { payments, categories, subcategories };
+
+        const store = await db.connect('transactions');
+        let index = await store.index('datetime_index');
+        let range = index.IDBKeyRange.bound(today, tomorrow, false, true);
+        const transactions = await index.openCursor(range, 'prev');
+        range = index.IDBKeyRange.bound(thisMonth, nextMonth, false, true);
+        const result = await index.openCursor(range);
+        const analysis = result.reduce((aggregated, tran) => {
           const { type, category, amount } = tran;
           if (type === 'expense') {
             if (typeof aggregated[category] === 'undefined') {
@@ -79,14 +63,20 @@ export default function App() {
           }
           return aggregated;
         }, {});
+
         setAnalysis(analysis);
-      })
-      .catch(({ name, message }) => setSnackbar('error', `${name}: ${message}`))
-      .finally(() => setLoading(false));
-  }, [db, setSnackbar]);
+        setTransactions(transactions);
+        setSettings(settings);
+        setLoading(false);
+      } catch ({ name, message }) {
+        setSnackbar('error', `${name}: ${message}`);
+      }
+    };
+    init();
+  }, []);
 
   if (loading) {
-    return <Loading />;
+    return <h1>Loading.</h1>;
   }
 
   const toggleVisibility = () => {
@@ -101,13 +91,15 @@ export default function App() {
   }, 0);
   const monthExpense = Object.values(analysis).reduce((total, curr) => total += curr, 0);
   const now = Date.now();
-  const dateHTML = DateTime.getStringFromTimestamp(now, 'html', settings);
-  const dateDisplay = DateTime.getStringFromTimestamp(now, 'fulldate', settings);
+  const dateHTML = DateTime.getStringFromTimestamp(now, 'html');
+  const dateDisplay = DateTime.getStringFromTimestamp(now, 'fulldate');
   const balanceDisplay = visible ? Transaction.parseMoney(todayExpense) : '✱✱✱✱✱';
   const budgetDisplay = Transaction.parseMoney(monthExpense);
   const budgetLimitDisplay = Transaction.parseMoney(budget);
+
+  const _categories = Settings._arrayToObject(settings.categories);
   const top5 = Object.entries(analysis)
-    .map(([category, expense]) => ({ ...fakeSettings.categories[category], expense }))
+    .map(([category, expense]) => ({ ..._categories[category], expense }))
     .sort((a, b) => b.expense - a.expense)
     .slice(0, 5);
 
@@ -118,8 +110,8 @@ export default function App() {
           {dateDisplay}
         </time>
         <div className={css('header-balance')}>
-          <Button variant="transparent" onClick={toggleVisibility}>
-            {visible ? <MdVisibility /> : <MdVisibilityOff />}
+          <Button variant="transparent" onClick={toggleVisibility} >
+            {visible ? <Icon icon="visibility" /> : <Icon icon="visibility_off" />}
           </Button>
           Balance: {balanceDisplay}
         </div>
@@ -135,9 +127,9 @@ export default function App() {
           <section className={css('group')}>
             <h3 className={css('group-title')}>Today</h3>
             <Card elevated>
-              {transactions.map((trans) => {
-                trans = Transaction.parseForDisplay(trans, paymentSettings);
-                return <TransactionCard {...trans} key={trans.id} />;
+              {transactions.map((tran) => {
+                tran = Transaction.parseForDisplay(tran, settings);
+                return <TransactionCard {...tran} key={tran.id} />;
               })}
             </Card>
           </section>
@@ -145,14 +137,13 @@ export default function App() {
         <section className={css('group')}>
           <h3 className={css('group-title')}>Top 5 Expenses</h3>
           <Card elevated>
-            {top5.map(({ display, icon, color, expense }, i) => (
+            {top5.map(({ expense, value, ...rest }, i) => (
               <ExpenseRatio
-                category={display}
-                icon={icon}
-                iconColor={color}
+                key={i}
+                category={value}
                 max={monthExpense}
                 value={expense}
-                key={i}
+                {...rest}
               />
             ))}
           </Card>

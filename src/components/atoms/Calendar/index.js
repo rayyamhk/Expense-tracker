@@ -4,10 +4,7 @@ import useStyles from '../../../hooks/useStyles';
 import styles from './Calendar.module.css';
 import DateTime from '../../../utils/DateTime';
 
-import {
-  MdKeyboardArrowLeft,
-  MdKeyboardArrowRight,
-} from 'react-icons/md';
+import Icon from '../Icon';
 import Button from '../Button';
 
 export default function Calendar(props) {
@@ -55,14 +52,14 @@ export default function Calendar(props) {
           variant="transparent"
           className={css('arrow')}
         >
-          <MdKeyboardArrowLeft />
+          <Icon icon="keyboard_arrow_left" />
         </Button>
         <Button
           onClick={nextMonth}
           variant="transparent"
           className={css('arrow')}
         >
-          <MdKeyboardArrowRight />
+          <Icon icon="keyboard_arrow_right" />
         </Button>
       </div>
       <table role="grid" className={css('calendar')}>

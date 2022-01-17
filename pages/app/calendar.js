@@ -3,20 +3,15 @@ import {
   useEffect,
 } from 'react';
 import useDatabase from '../../src/hooks/useDatabase';
+import useSettings from '../../src/hooks/useSettings';
 import useSnackbar from '../../src/hooks/useSnackbar';
 import useStyles from '../../src/hooks/useStyles';
 import styles from '../../styles/calendar.module.css';
 import DateTime from '../../src/utils/DateTime';
 import Transaction from '../../src/utils/Transaction';
-import Settings from '../../src/utils/Settings';
-const settings = Settings.getFakeSettings();
 
-import {
-  MdKeyboardArrowLeft,
-  MdKeyboardArrowRight,
-  MdArrowBack,
-} from 'react-icons/md';
 import Layout from '../../src/components/molecules/Layout';
+import Icon from '../../src/components/atoms/Icon';
 import Button from '../../src/components/atoms/Button';
 import Card from '../../src/components/atoms/Card';
 import TransactionCard from '../../src/components/molecules/TransactionCard';
@@ -28,29 +23,30 @@ export default function Calendar() {
   const [activeDay, setActiveDay] = useState(day);
   const [dailyAmount, setDailyAmount] = useState({});
   const [dailyTransactions, setDailyTransactions] = useState([]);
+  const [getPayments] = useSettings('payments');
+  const [getCategories] = useSettings('categories');
+  const [getSubcategories] = useSettings('subcategories');
   const db = useDatabase('my-test-app');
   const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
 
   useEffect(() => {
     let isMounted = true;
-    if (isMounted) {
-      db.connect('transactions')
-        .then((store) => store.index('datetime_index'))
-        .then((index) => {
+    const init = async () => {
+      try {
+        if (isMounted) {
+          const payments = await getPayments();
+          const categories = await getCategories();
+          const subcategories = await getSubcategories();
+          const store = await db.connect('transactions');
+          const index = await store.index('datetime_index');
+
           const timestamp = DateTime.getTimestampFromArray([activeYear, activeMonth]);
           const [lowerBound, upperBound] = DateTime.getMonthTimestampBound(timestamp);
-          const range = index.IDBKeyRange.bound(
-            lowerBound,
-            upperBound,
-            false,
-            true
-          );
-          return index.openCursor(range, 'next');
-        })
-        .then((record) => {
+          const range = index.IDBKeyRange.bound(lowerBound, upperBound, false, true);
+          const result = await index.openCursor(range, 'next');
           const dailyAmount = {}, dailyTransactions = {};
-          record.forEach((tran) => {
+          result.forEach((tran) => {
             const day = DateTime.getArrayFromTimestamp(tran.datetime)[2];
             if (!dailyAmount[day]) {
               dailyAmount[day] = { income: 0, expense: 0 };
@@ -60,18 +56,21 @@ export default function Calendar() {
             if (!dailyTransactions[day]) {
               dailyTransactions[day] = [];
             }
-            dailyTransactions[day].push(Transaction.parseForDisplay(tran, settings));
+            dailyTransactions[day].push(Transaction.parseForDisplay(tran, { payments, categories, subcategories }));
           });
           Object.values(dailyAmount).forEach((obj) => {
             obj.amount = obj.income - obj.expense;
           });
           setDailyAmount(dailyAmount);
           setDailyTransactions(dailyTransactions);
-        })
-        .catch(({ name, message }) => setSnackbar(`${name}: ${message}`));
+        }
+      } catch ({ name, message }) {
+        setSnackbar('error', `${name}: ${message}`);
+      }
     }
+    init();
     return () => isMounted = false;
-  }, [activeMonth, activeYear, db, setSnackbar]);
+  }, [activeMonth, activeYear]);
 
   const calendarHeadline = `${DateTime.translateMonth(activeMonth)} ${activeYear}`;
   const calendarCells = DateTime.getCalendarCells(activeYear, activeMonth);
@@ -109,14 +108,14 @@ export default function Calendar() {
             variant="transparent"
             className={css('icon')}
           >
-            <MdKeyboardArrowLeft />
+            <Icon icon="keyboard_arrow_left" />
           </Button>
           <Button
             onClick={nextMonth}
             variant="transparent"
             className={css('icon')}
           >
-            <MdKeyboardArrowRight />
+            <Icon icon="keyboard_arrow_right" />
           </Button>
         </>
       )}

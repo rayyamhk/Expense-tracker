@@ -8,55 +8,54 @@ import styles from '../../../styles/transaction.module.css';
 import Transaction from '../../../src/utils/Transaction';
 import DateTime from '../../../src/utils/DateTime';
 
-import {
-  MdCategory,
-  MdOutlineCategory,
-  MdAttachMoney,
-  MdCalendarToday,
-  MdStore,
-  MdPayment,
-  MdInsertComment,
-  MdDeleteOutline,
-  MdDeleteForever,
-  MdOutlineMode,
-} from 'react-icons/md';
 import Layout from '../../../src/components/molecules/Layout';
+import Icon from '../../../src/components/atoms/Icon';
 import TextField from '../../../src/components/atoms/TextField';
 import Button from '../../../src/components/atoms/Button';
-import Loading from '../../../src/components/molecules/Loading';
 import Dialog from '../../../src/components/atoms/Dialog';
 
 export default function TransactionDetails() {
-  const [transaction, setTransaction] = useState();
   const [loading, setLoading] = useState(true);
   const [popUp, setPopUp] = useState(false);
+  const [transaction, setTransaction] = useState();
+  const [payments, setPayments] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
 
   const router = useRouter();
   const db = useDatabase('my-test-app');
-  const [paymentSettings] = useSettings('payments');
+  const [getPayments] = useSettings('payments');
+  const [getCategories] = useSettings('categories');
+  const [getSubcategories] = useSettings('subcategories');
   const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
 
-  const settings = {};
-
   useEffect(() => {
     let isMounted = true;
-    const { isReady, query } = router;
-    if (isReady && isMounted) {
-      const id = query.id;
-      db.connect('transactions')
-        .then((store) => store.get(id))
-        .then((record) => {
-          setTransaction(record);
+    const init = async () => {
+      try {
+        if (router.isReady && router.query.id && isMounted) {
+          const store = await db.connect('transactions');
+          const { result } = await store.get(router.query.id);
+          const payments = await getPayments();
+          const categories = await getCategories();
+          const subcategories = await getSubcategories(result.category, 'category_index');
+          setTransaction(result);
+          setPayments(payments);
+          setCategories(categories);
+          setSubcategories(subcategories);
           setLoading(false);
-        })
-        .catch(({ name, message }) => setSnackbar('error', `${name}: ${message}`));
-    }
+        }
+      } catch ({ name, message }) {
+        setSnackbar('error', `${name}: ${message}`);
+      }
+    };
+    init();
     return () => isMounted = false;
-  }, [router, db, setSnackbar]);
+  }, [router]);
 
   if (loading) {
-    return <Loading />;
+    return <h1>Loading.</h1>;
   }
 
   if (!transaction) {
@@ -72,23 +71,22 @@ export default function TransactionDetails() {
     payment,
     brand,
     details,
-  } = Transaction.parseForDisplay(transaction, paymentSettings);
+  } = Transaction.parseForDisplay(transaction, { payments, categories, subcategories });
   const headline = type === 'expense' ? 'Expense' : 'Income';
-  const dateDisplay = DateTime.getStringFromTimestamp(datetime, 'datetime', settings);
+  const dateDisplay = DateTime.getStringFromTimestamp(datetime, 'datetime');
 
   const onCloseDialog = () => setPopUp(false);
   const onOpenDialog = () => setPopUp(true);
-
-  const onDelete = () => {
-    db.connect('transactions', 'readwrite')
-      .then((store) => store.delete(router.query.id))
-      .then(() => {
-        setSnackbar('success', 'Transaction Deleted!');
-        router.push('/app');
-      })
-      .catch(({ name, message }) => setSnackbar('error', `${name}: ${message}`));
+  const onDelete = async () => {
+    try {
+      const store = await db.connect('transactions', 'readwrite');
+      await store.delete(router.query.id);
+      setSnackbar('success', 'Transaction Deleted!');
+      router.push('/app');
+    } catch ({ name, message }) {
+      setSnackbar('error', `${name}: ${message}`);
+    }
   };
-
   const onEdit = () => {
     router.push(`/app/transactions/create?id=${transaction.id}`);
   };
@@ -96,7 +94,7 @@ export default function TransactionDetails() {
   return (
     <Layout headline={headline} className={css('main')}>
       <div className={css('input-row')}>
-        <MdCalendarToday fill="#f44336" className={css('icon')} />
+        <Icon icon="calendar_today" color="#f44336" className={css('icon')} />
         <TextField
           type="text"
           label="Date Time"
@@ -107,7 +105,7 @@ export default function TransactionDetails() {
         />
       </div>
       <div className={css('input-row')}>
-        <MdCategory fill="#3f51b5" className={css('icon')} />
+        <Icon icon="category" color="#3f51b5" className={css('icon')} />
         <TextField
           type="text"
           label="Category"
@@ -118,7 +116,7 @@ export default function TransactionDetails() {
         />
       </div>
       <div className={css('input-row')}>
-        <MdOutlineCategory fill="#2196f3" className={css('icon')} />
+        <Icon icon="dashboard" color="#2196f3" className={css('icon')} />
         <TextField
           type="text"
           label="Subcategory"
@@ -129,7 +127,7 @@ export default function TransactionDetails() {
         />
       </div>
       <div className={css('input-row')}>
-        <MdAttachMoney fill="#ffc107" className={css('icon')} />
+        <Icon icon="attach_money" color="#ffc107" className={css('icon')} />
         <TextField
           type="text"
           label="Amount"
@@ -140,7 +138,7 @@ export default function TransactionDetails() {
         />
       </div>
       <div className={css('input-row')}>
-        <MdPayment fill="#673ab7" className={css('icon')} />
+        <Icon icon="payment" color="#673ab7" className={css('icon')} />
         <TextField
           type="text"
           label="Payment"
@@ -151,7 +149,7 @@ export default function TransactionDetails() {
         />
       </div>
       <div className={css('input-row')}>
-        <MdStore fill="#4caf50" className={css('icon')} />
+        <Icon icon="store" color="#4caf50" className={css('icon')} />
         <TextField
           type="text"
           label="Brand"
@@ -162,7 +160,7 @@ export default function TransactionDetails() {
         />
       </div>
       <div className={css('input-row')}>
-        <MdInsertComment fill="#e91e63" className={css('icon')} />
+        <Icon icon="insert_comment" color="#e91e63" className={css('icon')} />
         <TextField
           type="textarea"
           rows="3"
@@ -180,7 +178,7 @@ export default function TransactionDetails() {
         float
         className={css('float-btn', 'float-btn-left')}
       >
-        <MdDeleteOutline />
+        <Icon icon="delete" />
       </Button>
       <Button
         onClick={onEdit}
@@ -189,11 +187,11 @@ export default function TransactionDetails() {
         float
         className={css('float-btn')}
       >
-        <MdOutlineMode />
+        <Icon icon="mode" />
       </Button>
       {popUp && (
         <Dialog onClose={onCloseDialog} className={css('popup')}>
-          <MdDeleteForever className={css('popup-icon')} />
+          <Icon icon="delete_forever" className={css('popup-icon')} />
           <h2 className={css('popup-title')}>Are you sure you want to delete this transaction?</h2>
           <div className={css('popup-actions')}>
             <Button

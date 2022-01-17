@@ -1,50 +1,26 @@
-import { MdOutlineRestaurant, MdRepeat, MdOutlineCreditCard, MdMoney, MdOutlineFilter8 } from 'react-icons/md';
-
 const utils = {
-  _parsePayments,
-  _parsePaymentOptions,
+  _arrayToObject,
+  _objectToArray,
 
   getFakeSettings,
-  parseCategoryOptions,
-  parseSubcategoryOptions,
 };
 
 export default utils;
 
-/**
- * Input:
- * [
- *    { id, value, icon, color },
- *    ...
- * ]
- * Output:
- * {
- *    id: { value, icon, color },
- *    ...
- * }
- */
-function _parsePayments(payments = []) {
-  return payments.reduce((obj, payment = {}) => {
-    const { id, ...rest } = payment;
-    obj[id] = rest;
+// parse settings from database and store it to state.
+function _arrayToObject(settings = []) {
+  return settings.reduce((obj, setting) => {
+    const { id, ...rest } = setting;
+    if (id) {
+      obj[id] = rest;
+    }
     return obj;
   }, {});
 };
 
-/**
- * Input:
- * {
- *    id: { value, icon, color },
- *    ...
- * }
- * Output:
- * [
- *    { id, value, icon, color },
- *    ...
- * ]
- */
-function _parsePaymentOptions(payments = {}) {
-  return Object.entries(payments).map(([key, val]) => ({
+// parse settings from state to select options.
+function _objectToArray(settings = {}) {
+  return Object.entries(settings).map(([key, val]) => ({
     id: key,
     ...val,
   }));
@@ -56,12 +32,12 @@ function getFakeSettings() {
   return {
     categories: {
       'food': {
-        icon: <MdOutlineRestaurant />,
+        // icon: <MdOutlineRestaurant />,
         color: '#FBC531',
         value: 'Food',
       },
       'regular': {
-        icon: <MdRepeat />,
+        // icon: <MdRepeat />,
         color: '#03A9F4',
         value: 'Regular',
       },
@@ -93,18 +69,4 @@ function getFakeSettings() {
       format: 'ddd',
     },
   };
-};
-
-function parseCategoryOptions(categories) {
-  return Object.entries(categories).map(([value, options]) => ({
-    id: value,
-    ...options,
-  }));
-};
-
-function parseSubcategoryOptions(subcategories) {
-  if (!subcategories) {
-    return [];
-  }
-  return Object.entries(subcategories).map(([key, value]) => ({ id: key, value }));
 };

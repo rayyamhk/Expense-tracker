@@ -10,11 +10,12 @@
   color: var(--gray900) !important;
 }
 
-.textfield-icon {
-  font-size: 1.5rem;
+.container .textfield-icon {
+  color: var(--gray900);
+  font-size: 1.75rem;
   position: absolute;
   top: calc(56px / 2);
-  right: 1rem;
+  right: 0.75rem;
   transform: translateY(-50%);
 }
 
@@ -59,7 +60,7 @@
   flex: 1;
 }
 
-.tab-btn svg {
+.tab-btn span {
   font-size: 1.5rem;
 }
 
