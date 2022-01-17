@@ -3,20 +3,13 @@ import PropTypes from 'prop-types';
 import useStyles from '../../../hooks/useStyles';
 import styles from './DateTimePicker.module.css';
 import DateTime from '../../../utils/DateTime';
-import Settings from '../../../utils/Settings';
 
-import {
-  MdCalendarToday,
-  MdDateRange,
-  MdAccessTime,
-} from 'react-icons/md';
 import TextField from '../../atoms/TextField';
 import Button from '../../atoms/Button';
 import Card from '../../atoms/Card';
 import Calendar from '../../atoms/Calendar';
 import Clock from '../../atoms/Clock';
-
-const settings = Settings.getFakeSettings();
+import Icon from '../../atoms/Icon';
 
 export default function DateTimePicker(props) {
   const {
@@ -53,7 +46,7 @@ export default function DateTimePicker(props) {
     className,
   );
 
-  const dateDisplay = DateTime.getStringFromArray([year, month, day, hour, minute], 'datetime', settings);
+  const dateDisplay = DateTime.getStringFromArray([year, month, day, hour, minute], 'datetime');
 
   return (
     <div className={classes}>
@@ -66,7 +59,7 @@ export default function DateTimePicker(props) {
           className={css('textfield')}
           disabled
         />
-        <MdCalendarToday className={css('textfield-icon')} />
+        <Icon icon="calendar_today" className={css('textfield-icon')} />
       </div>
       <Card elevated className={css('datetime-picker')}>
         <div className={css('tabs', tab === 'time' ? 'time-active' : 'date-active')}>
@@ -90,14 +83,14 @@ export default function DateTimePicker(props) {
             variant={tab === 'date' ? 'primary' : 'transparent'}
             className={css('tab-btn')}
           >
-            <MdDateRange />
+            <Icon icon="date_range" />
           </Button>
           <Button
             onClick={timeTab}
             variant={tab === 'time' ? 'primary' : 'transparent'}
             className={css('tab-btn')}
           >
-            <MdAccessTime />
+            <Icon icon="access_time" />
           </Button>
         </div>
       </Card>

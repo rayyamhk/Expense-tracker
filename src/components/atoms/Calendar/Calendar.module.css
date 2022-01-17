@@ -20,13 +20,16 @@
 }
 
 .arrow {
-  color: var(--gray900);
-  font-size: 1.5rem;
   margin-right: 1rem;
 }
 
 .arrow:last-child {
   margin-right: 0;
+}
+
+.arrow span {
+  color: var(--gray900);
+  font-size: 1.5rem;
 }
 
 .calendar {

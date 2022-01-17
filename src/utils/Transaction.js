@@ -1,6 +1,5 @@
 import { nanoid } from 'nanoid';
 import Settings from './Settings';
-const fakeSettings = Settings.getFakeSettings();
 
 const moneyUnit = {
   2: 'K',
@@ -30,16 +29,17 @@ const Transaction = {
       details,
     };
   },
-  parseForDisplay: (transaction, paymentSettings) => {
-    const { categories, subcategories } = fakeSettings;
+  parseForDisplay: (transaction, { payments, categories, subcategories }) => {
+    const _payments = Settings._arrayToObject(payments);
+    const _categories = Settings._arrayToObject(categories);
+    const _subcategories = Settings._arrayToObject(subcategories);
     const { payment, category, subcategory } = transaction;
     return {
-      ...transaction,
-      payment: paymentSettings[payment]?.value,
-      category: categories[category].value,
-      subcategory: subcategories[category][subcategory],
-      iconColor: categories[category].color,
-      icon: categories[category].icon,
+      ...transaction, // id, type, datetime, amount, brand, details
+      ..._categories[category], // icon, iconType, color
+      category: _categories[category].value,
+      subcategory: _subcategories[subcategory]?.value,
+      payment: _payments[payment]?.value,
     };
   },
   parseMoney: (value, short = false) => {

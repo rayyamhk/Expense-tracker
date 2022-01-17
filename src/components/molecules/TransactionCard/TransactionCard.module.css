@@ -27,6 +27,12 @@
   opacity: 0.3;
 }
 
+.container .icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .info {
   flex: 1;
   margin: 0 1rem;

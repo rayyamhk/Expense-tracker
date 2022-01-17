@@ -3,19 +3,14 @@ import useSnackbar from '../../../hooks/useSnackbar';
 import useStyles from '../../../hooks/useStyles';
 import styles from './Snackbar.module.css';
 
-import {
-  MdErrorOutline,
-  MdWarningAmber,
-  MdOutlineCheckCircleOutline,
-  MdClose,
-} from 'react-icons/md';
+import Icon from '../Icon';
 import Card from '../Card';
 import Button from '../Button';
 
 const mappings = {
-  'error': MdErrorOutline,
-  'success': MdOutlineCheckCircleOutline,
-  'warning': MdWarningAmber,
+  'error': 'error',
+  'success': 'check_circle',
+  'warning': 'warning_amber',
 };
 
 export default function Snackbar(props) {
@@ -23,9 +18,9 @@ export default function Snackbar(props) {
 
   const css = useStyles(styles);
   const { type, message, setSnackbar } = useSnackbar();
-  const Tag = mappings[type];
+  const icon = mappings[type];
 
-  const onClick = (e) => setSnackbar(null, null);
+  const onClick = () => setSnackbar(null, null);
 
   if (!message || !type) {
     return null;
@@ -33,10 +28,10 @@ export default function Snackbar(props) {
 
   return (
     <Card className={css('container', type, className)} elevated onClick={onClick}>
-      <Tag className={css('icon')} />
+      <Icon icon={icon} className={css('icon')} />
       {message}
       <Button className={css('icon', 'action')}>
-        <MdClose />
+        <Icon icon="close" />
       </Button>
     </Card>
   );

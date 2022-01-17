@@ -9,10 +9,9 @@ import Progress from '../../atoms/Progress';
 export default function ExpenseRatio(props) {
   const {
     category,
-    icon,
-    iconColor,
     max,
     value,
+    ...iconProps
   } = props;
 
   const css = useStyles(styles);
@@ -22,7 +21,7 @@ export default function ExpenseRatio(props) {
   
   return (
     <div className={css('container')}>
-      <Icon backgroundColor={iconColor}>{icon}</Icon>
+      <Icon {...iconProps} />
       <div className={css('details')}>
         <div className={css('text-wrapper')}>
           <span className={css('name')}>{category}</span>
@@ -37,8 +36,6 @@ export default function ExpenseRatio(props) {
 
 ExpenseRatio.propTypes = {
   category: PropTypes.string.isRequired,
-  icon: PropTypes.node.isRequired,
-  iconColor: PropTypes.string.isRequired,
   max: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };

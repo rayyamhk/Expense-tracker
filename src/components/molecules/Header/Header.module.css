@@ -13,8 +13,8 @@
   place-content: center;
 }
 
-.back-arrow svg {
-  fill: var(--primary-invert);
+.back-arrow span {
+  color: var(--primary-invert);
   font-size: 1.5rem;
 }
 

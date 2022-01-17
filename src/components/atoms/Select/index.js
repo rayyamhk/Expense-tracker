@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { MdArrowDropDown } from 'react-icons/md';
-import Card from '../Card';
-import Icon from '../Icon';
 import useStyles from '../../../hooks/useStyles';
 import styles from './Select.module.css';
+
+import Card from '../Card';
+import Icon from '../Icon';
 
 export default function Select(props) {
   const {
@@ -35,24 +35,24 @@ export default function Select(props) {
       <span className={css('label')}>{label}</span>
       <div onClick={onToggle}>
         <div className={css('display')}>&#8203;{selected?.value}</div>
-        <MdArrowDropDown size="1.5rem" className={css('arrow')} />
+        <Icon icon="arrow_drop_down" className={css('arrow')} />
         <fieldset className={css('fieldset')}>
           <legend className={css('legend')}>{label}</legend>
         </fieldset>
       </div>
         {options.length > 0 && (
           <Card component="ul" elevated className={css('options', 'no-scrollbar')}>
-            {options.map((option) => (
+            {options.map(({ id, value, ...rest }) => (
               <li
                 onClick={() => {
-                  onSelect(option);
+                  onSelect(id);
                   onClose();
                 }}
                 className={css('option')}
-                key={option.id}
+                key={id}
               >
-                {option.icon && option.color && <Icon name={option.icon} backgroundColor={option.color} className={css('icon')} />}
-                {option.value}
+                <Icon className={css('icon')} {...rest} />
+                <span className={css('option-display')}>{value}</span>
               </li>
             ))}
           </Card>
@@ -64,8 +64,6 @@ export default function Select(props) {
 const optionType = PropTypes.shape({
   id: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  icon: PropTypes.node,
-  color: PropTypes.string,
 });
 
 Select.propTypes = {
