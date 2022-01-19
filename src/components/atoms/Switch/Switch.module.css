@@ -1,0 +1,26 @@
+.wrapper {
+  background-color: var(--secondary);
+  width: 48px;
+  height: 20px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.ball {
+  background-color: var(--text-primary);
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translate(0%, -50%);
+  transition: 0.1s transform linear;
+}
+
+.ball.checked {
+  transform: translate(18px, -50%);
+}

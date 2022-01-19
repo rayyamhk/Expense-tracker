@@ -4,6 +4,17 @@
   position: relative;
 }
 
+.header .switch {
+  position: absolute;
+  right: 1rem;
+  top: 1.5rem;
+}
+
+.header .switch .icon {
+  color: #FFF;
+  font-size: 1rem;
+}
+
 .header-time {
   font-family: var(--font);
   font-size: 1.5rem;

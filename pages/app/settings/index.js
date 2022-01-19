@@ -6,7 +6,7 @@ import useStyles from '../../../src/hooks/useStyles';
 import styles from '../../../styles/settings.module.css';
 import Transaction from '../../../src/utils/Transaction';
 import DateTime from '../../../src/utils/DateTime';
-import availableThemes from '../../../src/utils/Themes';
+import availableThemes from '../../../src/utils/themes.json';
 
 import Layout from '../../../src/components/molecules/Layout';
 import Icon from '../../../src/components/atoms/Icon';
@@ -29,17 +29,17 @@ export default function Settings() {
   }
 
   const closePopUp = () => setActive(null);
-  const openThemePopUp = () => setActive('theme');
+  const openColorPopUp = () => setActive('theme');
   const openBudgetPopUp = () => setActive('budget');
   const openDateFormatPopUp = () => setActive('date');
-  const updateTheme = async (theme) => {
-    if (theme.primary === settings.theme.primary) {
+  const updateColor = async (color) => {
+    if (settings.theme.color === color) {
       setSnackbar('warning', 'Unchanged value.');
       return;
     }
     try {
       const store = await db.connect('common', 'readwrite');
-      await store.put({ id: 'theme', value: theme });
+      await store.put({ id: 'theme', value: { mode: settings.theme.mode, color } });
       setSnackbar('success', 'Theme Color Updated!');
       closePopUp();
       reloadSettings('theme');
@@ -83,21 +83,23 @@ export default function Settings() {
     }
   };
 
+  const palette = availableThemes[settings.theme.color];
+
   return (
     <Layout headline="Settings" className={css('main')} >
       <Card elevated>
-        <div className={css('row')} onClick={openThemePopUp}>
+        <div className={css('row')} onClick={openColorPopUp}>
           <Icon
             icon="palette"
-            color={settings.theme.primary}
+            color={palette.primary}
             className={css('setting-icon')}
           />
           <h3 className={css('setting-title')}>Theme</h3>
           <div
             className={css('color-square')}
             style={{
-              backgroundColor: settings.theme.primary,
-              border: `2px solid ${settings.theme['primary-light']}`,
+              backgroundColor: palette.primary,
+              border: `2px solid ${palette['primary-light']}`,
             }}
           />
           <Icon icon="keyboard_arrow_right" className={css('arrow-icon')} />
@@ -179,28 +181,28 @@ export default function Settings() {
         </Link>
       </Card>
       <p className={css('version')}>SmartMoney v1.0</p>
-      {active === 'theme' && <ThemePopUp onClose={closePopUp} onUpdate={updateTheme} theme={settings.theme} />}
+      {active === 'theme' && <ColorPopUp onClose={closePopUp} onUpdate={updateColor} color={settings.theme.color} />}
       {active === 'budget' && <BudgetPopUp onClose={closePopUp} onUpdate={updateBudget} budget={settings.budget} />}
       {active === 'date' && <DateFormatPopUp onClose={closePopUp} onUpdate={updateDateTime} dateFormat={settings.dateFormat.date} timeFormat={settings.dateFormat.time} />}
     </Layout>
   );
 }
 
-function ThemePopUp({ theme, onClose, onUpdate }) {
+function ColorPopUp({ color, onClose, onUpdate }) {
   const css = useStyles(styles);
   return (
     <Dialog onClose={onClose} className={css('popup')}>
       <h2 className={css('popup-title')}>Color Theme</h2>
-      <div className={css('themes-container')}>
-        {availableThemes.map((_theme, i) => (
+      <div className={css('colors-container')}>
+        {Object.entries(availableThemes).map(([_color, _palette]) => (
           <div
             style={{
-              backgroundColor: _theme.primary,
-              border: `2px solid ${_theme.primary === theme.primary ? theme['primary-dark'] : _theme['primary-light']}`
+              backgroundColor: _palette.primary,
+              border: `2px solid ${color === _color ? _palette['primary-dark'] : _palette['primary-light']}`
             }}
             className={css('color-square-large')}
-            onClick={() => onUpdate(_theme)}
-            key={i}
+            onClick={() => onUpdate(_color)}
+            key={_color}
           />
         ))}
       </div>

@@ -90,8 +90,12 @@
   font-size: 1.5rem;
 } */
 
-.themes-container {
+.colors-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
+}
+
+.colors-container {
+  margin-bottom: 1rem;
 }

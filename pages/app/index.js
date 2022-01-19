@@ -12,6 +12,7 @@ import DateTime from '../../src/utils/DateTime';
 import Settings from '../../src/utils/Settings';
 
 import Layout from '../../src/components/molecules/Layout';
+import Switch from '../../src/components/atoms/Switch';
 import Icon from '../../src/components/atoms/Icon';
 import Button from '../../src/components/atoms/Button';
 import Card from '../../src/components/atoms/Card';
@@ -22,7 +23,7 @@ import ExpenseRatio from '../../src/components/molecules/ExpenseRatio';
 export default function App() {
   const [visible, setVisible] = useState(true);
   const [transactions, setTransactions] = useState([]);
-  const [settings] = useSettings();
+  const [settings, reloadSettings] = useSettings();
   const [setSnackbar] = useSnackbar();
   const db = useDatabase('my-test-app');
   const css = useStyles(styles);
@@ -54,6 +55,19 @@ export default function App() {
   }
 
   const toggleVisibility = () => setVisible(!visible);
+  const onChange = async () => {
+    try {
+      const store = await db.connect('common', 'readwrite');
+      const value = {
+        mode: settings.theme.mode === 'dark' ? 'light' : 'dark',
+        color: settings.theme.color,
+      };
+      await store.put({ id: 'theme', value });
+      reloadSettings('theme');
+    } catch ({ name, message }) {
+      setSnackbar('error', `${name}: ${message}`);
+    }
+  };
 
   const now = Date.now();
   const [today] = DateTime.getDayTimestampBound(now);
@@ -86,6 +100,13 @@ export default function App() {
           </p>
           <Progress value={monthExpense} max={budget} variant="error" />
         </Card>
+        <Switch
+          className={css('switch')}
+          checked={settings.theme.mode === 'dark'}
+          checkedIcon={<Icon icon="dark_mode" className={css('icon', 'no-select')} />}
+          uncheckedIcon={<Icon icon="light_mode" className={css('icon', 'no-select')} />}
+          onChange={onChange}
+        />
       </div>
       <div className={css('container')}>
         {todayTransactions.length > 0 && (

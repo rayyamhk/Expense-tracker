@@ -6,10 +6,13 @@ import {
   createContext,
 } from 'react';
 import IndexedDB from '../utils/IndexedDB';
-import availableThemes from '../utils/Themes';
+import themes from '../utils/themes.json';
 
 const defaultSettings = {
-  theme: availableThemes[0],
+  theme: {
+    mode: 'light',
+    color: 'amber',
+  },
   language: 'en-US',
   budget: 10000,
   dateFormat: {
@@ -116,8 +119,8 @@ export default function useSettings() {
   return useContext(SettingsContext);
 }
 
-function switchTheme(theme) {
-  Object.entries(theme).forEach(([key, value]) => {
+function switchTheme({ mode, color }) {
+  Object.entries(themes[color]).forEach(([key, value]) => {
     document.documentElement.style.setProperty(`--${key}`, value);
   });
 };
