@@ -6,18 +6,10 @@ import {
   createContext,
 } from 'react';
 import IndexedDB from '../utils/IndexedDB';
+import availableThemes from '../utils/Themes';
 
 const defaultSettings = {
-  theme: {
-    primary: '#ffc107',
-    primaryLight: '#ffecb3',
-    primaryDark: '#ffa000',
-    secondary: '#FBFBF8',
-    secondaryLight: '#ffffff',
-    secondaryDark: '#f5f5f5',
-    textPrimary: '#212121',
-    textSecondary: '#9e9e9e',
-  },
+  theme: availableThemes[0],
   language: 'en-US',
   budget: 10000,
   dateFormat: {
@@ -28,12 +20,14 @@ const defaultSettings = {
   subcategories: [],
   payments: [],
 };
-const keys = [
-  'categories',
-  'subcategories',
-  'payments',
-  'common'
-];
+const storeNames = {
+  'categories': 'categories',
+  'subcategories': 'subcategories',
+  'payments': 'payments',
+  'theme': 'common',
+  'budget': 'common',
+  'dateFormat': 'common',
+};
 const SettingsContext = createContext();
 
 export function SettingsProvider({ children }) {
@@ -74,7 +68,7 @@ export function SettingsProvider({ children }) {
         resp.result.forEach(({ id, value }) => {
           settings[id] = value;
         });
-
+        switchTheme(settings.theme);
         setSettings(settings);
       } catch (err) {
         console.debug(err);
@@ -85,17 +79,21 @@ export function SettingsProvider({ children }) {
 
   useEffect(() => {
     const go = async () => {
-      if (keys.includes(key)) {
+      const storeName = storeNames[key];
+      if (storeName) {
         try {
           const _settings = { ...settings };
-          const store = await db.connect(key);
+          const store = await db.connect(storeName);
           const resp = await store.getAll();
-          if (key === 'common') {
+          if (storeName === 'common') {
             resp.result.forEach(({ id, value }) => {
               _settings[id] = value;
             });
           } else {
             _settings[key] = resp.result
+          }
+          if (key === 'theme') {
+            switchTheme(_settings.theme);
           }
           setSettings(_settings);
           setKey(null);
@@ -104,9 +102,7 @@ export function SettingsProvider({ children }) {
         }
       }
     };
-    if (key) {
-      go();
-    }
+    key && go();
   }, [key]);
 
   useEffect(() => console.log(settings));
@@ -119,3 +115,9 @@ export function SettingsProvider({ children }) {
 export default function useSettings() {
   return useContext(SettingsContext);
 }
+
+function switchTheme(theme) {
+  Object.entries(theme).forEach(([key, value]) => {
+    document.documentElement.style.setProperty(`--${key}`, value);
+  });
+};
