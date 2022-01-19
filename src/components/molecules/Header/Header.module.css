@@ -23,3 +23,12 @@
   color: var(--text-primary);
   font-size: 1.25rem;
 }
+
+.header .switch {
+  margin-right: 1rem;
+}
+
+.header .switch .icon {
+  color: #FFF;
+  font-size: 1rem;
+}
