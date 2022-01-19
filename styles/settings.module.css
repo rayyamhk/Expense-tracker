@@ -28,6 +28,12 @@
   width: 36px;
 }
 
+.color-square-large {
+  border-radius: 5px;
+  height: 50px;
+  width: 50px;
+}
+
 .setting-value {
   font-family: var(--font);
   font-size: 0.75rem;
@@ -87,5 +93,5 @@
 .themes-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  gap: 0.5rem;
 }

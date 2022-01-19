@@ -42,7 +42,7 @@ export default function Settings() {
       await store.put({ id: 'theme', value: theme });
       setSnackbar('success', 'Theme Color Updated!');
       closePopUp();
-      reloadSettings('common');
+      reloadSettings('theme');
     } catch ({ name, message }) {
       setSnackbar('error', `${name}: ${message}`);
     }
@@ -62,7 +62,7 @@ export default function Settings() {
       await store.put({ id: 'budget', value: budget });
       setSnackbar('success', 'Budget Updated!');
       closePopUp();
-      reloadSettings('common');
+      reloadSettings('budget');
     } catch ({ name, message }) {
       setSnackbar('error', `${name}: ${message}`);
     }
@@ -77,7 +77,7 @@ export default function Settings() {
       await store.put({ id: 'dateFormat', value: { date, time } });
       setSnackbar('success', 'Date Format Updated!');
       closePopUp();
-      reloadSettings('common');
+      reloadSettings('dateFormat');
     } catch ({ name, message }) {
       setSnackbar('error', `${name}: ${message}`);
     }
@@ -97,7 +97,7 @@ export default function Settings() {
             className={css('color-square')}
             style={{
               backgroundColor: settings.theme.primary,
-              border: `2px solid ${settings.theme.primaryLight}`,
+              border: `2px solid ${settings.theme['primary-light']}`,
             }}
           />
           <Icon icon="keyboard_arrow_right" className={css('arrow-icon')} />
@@ -196,9 +196,9 @@ function ThemePopUp({ theme, onClose, onUpdate }) {
           <div
             style={{
               backgroundColor: _theme.primary,
-              border: `2px solid ${_theme.primaryLight}`
+              border: `2px solid ${_theme.primary === theme.primary ? theme['primary-dark'] : _theme['primary-light']}`
             }}
-            className={css('color-square', _theme.primaryColor === theme.primaryColor && 'active')}
+            className={css('color-square-large')}
             onClick={() => onUpdate(_theme)}
             key={i}
           />
