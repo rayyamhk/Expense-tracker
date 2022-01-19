@@ -3,6 +3,7 @@
   display: flex;
   align-items: center;
   position: relative;
+  z-index: 1;
 }
 
 .container:last-child {
@@ -31,7 +32,7 @@
 } */
 
 .fake-radio {
-  border: 1px solid var(--gray500);
+  border: 1px solid var(--text-secondary);
   border-radius: 50%;
   display: block;
   height: 1.5rem;
@@ -59,7 +60,7 @@
 .fake-radio::after {
   content: '';
   border-radius: 50%;
-  background-color: var(--gray900);
+  background-color: var(--text-primary);
   opacity: 0;
   height: 2.625rem;
   width: 2.625rem;
@@ -71,5 +72,5 @@
 
 .label {
   font-family: var(--font);
-  color: var(--gray900);
+  color: var(--text-primary);
 }

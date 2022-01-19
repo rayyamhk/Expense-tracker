@@ -21,6 +21,7 @@ export default function DateTimePicker(props) {
     day,
     hour,
     minute,
+    settings,
   } = props;
 
   const [tab, setTab] = useState();
@@ -46,7 +47,7 @@ export default function DateTimePicker(props) {
     className,
   );
 
-  const dateDisplay = DateTime.getStringFromArray([year, month, day, hour, minute], 'datetime');
+  const dateDisplay = DateTime.getStringFromArray([year, month, day, hour, minute], 'datetime', settings);
 
   return (
     <div className={classes}>

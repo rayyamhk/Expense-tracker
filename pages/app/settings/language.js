@@ -1,8 +1,8 @@
 import Layout from "../../../src/components/molecules/Layout";
 
-export default function Categories() {
+export default function Language() {
   return (
-    <Layout headline="Categories">
+    <Layout headline="Language">
     </Layout>
   );
 }

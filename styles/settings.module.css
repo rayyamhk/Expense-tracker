@@ -1,0 +1,91 @@
+.main {
+  padding: 1rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  padding: 1rem 1rem;
+  border-bottom: 1px solid var(--lightgray);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.main .setting-icon {
+  font-size: 2rem;
+  margin-right: 0.75rem;
+}
+
+.setting-title {
+  flex: 1 1 0;
+}
+
+.color-square {
+  border-radius: 5px;
+  height: 36px;
+  width: 36px;
+}
+
+.setting-value {
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.main .arrow-icon {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+}
+
+.version {
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 0.5rem;
+  margin-top: 1rem;
+}
+
+.main .popup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 2rem 1rem;
+}
+
+.main .popup-title {
+  text-align: center;
+  font-family: var(--font);
+  margin-bottom: 1.5rem;
+}
+
+.main .input {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.main .popup-actions {
+  display: flex;
+}
+
+.main .popup-btn {
+  font-family: var(--font);
+  font-weight: 400;
+  margin: 0 1rem;
+}
+
+/* .main .popup-btn span {
+  color: var(--text-primary);
+  font-size: 1.5rem;
+} */
+
+.themes-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}

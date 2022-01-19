@@ -21,49 +21,26 @@ export default function Calendar() {
   const [activeYear, setActiveYear] = useState(year);
   const [activeMonth, setActiveMonth] = useState(month);
   const [activeDay, setActiveDay] = useState(day);
-  const [dailyAmount, setDailyAmount] = useState({});
-  const [dailyTransactions, setDailyTransactions] = useState([]);
-  const [getPayments] = useSettings('payments');
-  const [getCategories] = useSettings('categories');
-  const [getSubcategories] = useSettings('subcategories');
+  const [transactions, setTransactions] = useState([]);
+  const [settings] = useSettings();
+  const [setSnackbar] = useSnackbar();
   const db = useDatabase('my-test-app');
-  const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
 
   useEffect(() => {
     let isMounted = true;
     const init = async () => {
+      if (!isMounted) {
+        return;
+      }
       try {
-        if (isMounted) {
-          const payments = await getPayments();
-          const categories = await getCategories();
-          const subcategories = await getSubcategories();
-          const store = await db.connect('transactions');
-          const index = await store.index('datetime_index');
-
-          const timestamp = DateTime.getTimestampFromArray([activeYear, activeMonth]);
-          const [lowerBound, upperBound] = DateTime.getMonthTimestampBound(timestamp);
-          const range = index.IDBKeyRange.bound(lowerBound, upperBound, false, true);
-          const result = await index.openCursor(range, 'next');
-          const dailyAmount = {}, dailyTransactions = {};
-          result.forEach((tran) => {
-            const day = DateTime.getArrayFromTimestamp(tran.datetime)[2];
-            if (!dailyAmount[day]) {
-              dailyAmount[day] = { income: 0, expense: 0 };
-            }
-            dailyAmount[day][tran.type] += tran.amount;
-
-            if (!dailyTransactions[day]) {
-              dailyTransactions[day] = [];
-            }
-            dailyTransactions[day].push(Transaction.parseForDisplay(tran, { payments, categories, subcategories }));
-          });
-          Object.values(dailyAmount).forEach((obj) => {
-            obj.amount = obj.income - obj.expense;
-          });
-          setDailyAmount(dailyAmount);
-          setDailyTransactions(dailyTransactions);
-        }
+        const store = await db.connect('transactions');
+        const index = await store.index('datetime_index');
+        const timestamp = DateTime.getTimestampFromArray([activeYear, activeMonth]);
+        const [lowerBound, upperBound] = DateTime.getMonthTimestampBound(timestamp);
+        const range = index.IDBKeyRange.bound(lowerBound, upperBound, false, true);
+        const transactions = await index.openCursor(range, 'next');
+        setTransactions(transactions);
       } catch ({ name, message }) {
         setSnackbar('error', `${name}: ${message}`);
       }
@@ -72,8 +49,9 @@ export default function Calendar() {
     return () => isMounted = false;
   }, [activeMonth, activeYear]);
 
-  const calendarHeadline = `${DateTime.translateMonth(activeMonth)} ${activeYear}`;
-  const calendarCells = DateTime.getCalendarCells(activeYear, activeMonth);
+  if (!settings) {
+    return <h1>Loading.</h1>;
+  }
 
   const nextMonth= () => {
     setActiveDay(null);
@@ -95,7 +73,9 @@ export default function Calendar() {
     }
   };
 
-  useEffect(() => console.log('rerender'))
+  const calendarHeadline = `${DateTime.translateMonth(activeMonth)} ${activeYear}`;
+  const calendarCells = DateTime.getCalendarCells(activeYear, activeMonth);
+  const { dailyAmount, dailyTransactions } = parse(transactions, settings);
 
   return (
     <Layout
@@ -179,16 +159,40 @@ export default function Calendar() {
             </span>
           </div>
           <Card>
-            {dailyTransactions[activeDay].map((tran) => (
-              <TransactionCard
-                className={css('transaction-card')}
-                {...tran}
-                key={tran.id}
-              />
-            ))}
+            {dailyTransactions[activeDay].map((tran) => {
+              tran.amount = Transaction.parseMoney(tran.amount);
+              tran.datetime = DateTime.getStringFromTimestamp(tran.datetime, 'time', settings);
+              return (
+                <TransactionCard
+                  className={css('transaction-card')}
+                  {...tran}
+                  key={tran.id}
+                />
+              ) ;
+            })}
           </Card>
         </div>
       )}
     </Layout>
   );
 }
+
+function parse(transactions = [], settings) {
+  const dailyAmount = {}, dailyTransactions = {};
+  transactions.forEach((tran) => {
+    const day = DateTime.getArrayFromTimestamp(tran.datetime)[2];
+    if (!dailyAmount[day]) {
+      dailyAmount[day] = { income: 0, expense: 0 };
+    }
+    dailyAmount[day][tran.type] += tran.amount;
+
+    if (!dailyTransactions[day]) {
+      dailyTransactions[day] = [];
+    }
+    dailyTransactions[day].push(Transaction.parseForDisplay(tran, settings));
+  });
+  Object.values(dailyAmount).forEach((obj) => {
+    obj.amount = obj.income - obj.expense;
+  });
+  return { dailyAmount, dailyTransactions };
+};

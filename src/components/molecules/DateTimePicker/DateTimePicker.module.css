@@ -7,11 +7,11 @@
 }
 
 .textfield input[type="text"]:disabled {
-  color: var(--gray900) !important;
+  color: var(--text-primary) !important;
 }
 
 .container .textfield-icon {
-  color: var(--gray900);
+  color: var(--text-primary);
   font-size: 1.75rem;
   position: absolute;
   top: calc(56px / 2);
@@ -56,7 +56,7 @@
 }
 
 .tab-btn {
-  color: var(--gray900);
+  color: var(--text-primary);
   flex: 1;
 }
 

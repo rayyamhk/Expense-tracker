@@ -6,11 +6,11 @@ import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
   return (
-    <MessageProvider>
-      <SettingsProvider>
+    <SettingsProvider>
+      <MessageProvider>
         <Component {...pageProps} />
-      </SettingsProvider>
-    </MessageProvider>
+      </MessageProvider>
+    </SettingsProvider>
   );
 }
 

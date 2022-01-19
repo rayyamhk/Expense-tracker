@@ -10,7 +10,7 @@
 
 .btn::after {
   content: '';
-  background-color: var(--gray900);
+  background-color: var(--text-primary);
   opacity: 0;
   position: absolute;
   top: 0;
@@ -29,7 +29,7 @@
 }
 
 .primary {
-  color: var(--primary-invert);
+  color: var(--text-primary);
   background-color: var(--primary);
 }
 

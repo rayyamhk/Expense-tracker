@@ -6,7 +6,7 @@ export default function useDatabase(dbName) {
     if (typeof window === 'undefined') {
       return {};
     }
-    return new IndexedDB(dbName, 3);
+    return new IndexedDB(dbName, 4);
   }, [dbName]);
   return db;
 };

@@ -159,6 +159,12 @@ function upgrade(e) {
     const store = db.createObjectStore('subcategories', { keyPath: 'id' });
     store.createIndex('category_index', 'category', { unique: false });
   }
+
+  // upgrade from v3 to v4
+  if (oldVersion < 4) {
+    console.log('v3 to v4');
+    db.createObjectStore('common', { keyPath: 'id' });
+  }
 };
 
 export default IndexedDB;

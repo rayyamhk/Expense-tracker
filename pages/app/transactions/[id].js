@@ -1,4 +1,7 @@
-import { useState, useEffect } from 'react';
+import {
+  useState,
+  useEffect,
+} from 'react';
 import { useRouter } from 'next/router';
 import useDatabase from '../../../src/hooks/useDatabase';
 import useSettings from '../../../src/hooks/useSettings';
@@ -15,37 +18,29 @@ import Button from '../../../src/components/atoms/Button';
 import Dialog from '../../../src/components/atoms/Dialog';
 
 export default function TransactionDetails() {
-  const [loading, setLoading] = useState(true);
   const [popUp, setPopUp] = useState(false);
   const [transaction, setTransaction] = useState();
-  const [payments, setPayments] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
-
+  const [settings] = useSettings();
+  const [setSnackbar] = useSnackbar();
   const router = useRouter();
   const db = useDatabase('my-test-app');
-  const [getPayments] = useSettings('payments');
-  const [getCategories] = useSettings('categories');
-  const [getSubcategories] = useSettings('subcategories');
-  const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
 
   useEffect(() => {
     let isMounted = true;
     const init = async () => {
+      if (!router.isReady || !router.query.id || !isMounted) {
+        return;
+      }
       try {
-        if (router.isReady && router.query.id && isMounted) {
-          const store = await db.connect('transactions');
-          const { result } = await store.get(router.query.id);
-          const payments = await getPayments();
-          const categories = await getCategories();
-          const subcategories = await getSubcategories(result.category, 'category_index');
-          setTransaction(result);
-          setPayments(payments);
-          setCategories(categories);
-          setSubcategories(subcategories);
-          setLoading(false);
+        let store = await db.connect('transactions');
+        const { result: transaction } = await store.get(router.query.id);
+        if (!transaction) {
+          router.replace('/app');
+          setSnackbar('warning', 'Invalid transaction.');
+          return;
         }
+        setTransaction(transaction);
       } catch ({ name, message }) {
         setSnackbar('error', `${name}: ${message}`);
       }
@@ -54,12 +49,8 @@ export default function TransactionDetails() {
     return () => isMounted = false;
   }, [router]);
 
-  if (loading) {
+  if (!settings || !transaction) {
     return <h1>Loading.</h1>;
-  }
-
-  if (!transaction) {
-    return <h1>Not found.</h1>;
   }
 
   const {
@@ -71,9 +62,9 @@ export default function TransactionDetails() {
     payment,
     brand,
     details,
-  } = Transaction.parseForDisplay(transaction, { payments, categories, subcategories });
+  } = Transaction.parseForDisplay(transaction, settings);
   const headline = type === 'expense' ? 'Expense' : 'Income';
-  const dateDisplay = DateTime.getStringFromTimestamp(datetime, 'datetime');
+  const dateDisplay = DateTime.getStringFromTimestamp(datetime, 'datetime', settings);
 
   const onCloseDialog = () => setPopUp(false);
   const onOpenDialog = () => setPopUp(true);
@@ -82,7 +73,7 @@ export default function TransactionDetails() {
       const store = await db.connect('transactions', 'readwrite');
       await store.delete(router.query.id);
       setSnackbar('success', 'Transaction Deleted!');
-      router.push('/app');
+      router.replace('/app');
     } catch ({ name, message }) {
       setSnackbar('error', `${name}: ${message}`);
     }

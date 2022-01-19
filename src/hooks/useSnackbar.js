@@ -16,7 +16,7 @@ export function MessageProvider({ children }) {
   }, []);
 
   return (
-    <MessageContext.Provider value={{ type, message, setSnackbar }}>{children}</MessageContext.Provider>
+    <MessageContext.Provider value={[setSnackbar, type, message]}>{children}</MessageContext.Provider>
   );
 }
 

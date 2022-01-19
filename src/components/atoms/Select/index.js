@@ -31,7 +31,7 @@ export default function Select(props) {
 
   return (
     <div className={css(classes)}>
-      <div onClick={onClose} className={css('hidden-overlay')} />
+      <div onClick={onClose} className={css('overlay', !active && 'hidden')} />
       <span className={css('label')}>{label}</span>
       <div onClick={onToggle}>
         <div className={css('display')}>&#8203;{selected?.value}</div>
@@ -42,7 +42,7 @@ export default function Select(props) {
       </div>
         {options.length > 0 && (
           <Card component="ul" elevated className={css('options', 'no-scrollbar')}>
-            {options.map(({ id, value, ...rest }) => (
+            {options.map(({ id, value, icon, ...rest }) => (
               <li
                 onClick={() => {
                   onSelect(id);
@@ -51,8 +51,8 @@ export default function Select(props) {
                 className={css('option')}
                 key={id}
               >
-                <Icon className={css('icon')} {...rest} />
-                <span className={css('option-display')}>{value}</span>
+                {icon && <Icon className={css('icon')} icon={icon} {...rest} />}
+                <span className={css('option-display', icon && 'with-icon')}>{value}</span>
               </li>
             ))}
           </Card>

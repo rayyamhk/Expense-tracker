@@ -21,57 +21,48 @@ import TextField from '../../../src/components/atoms/TextField';
 import Button from '../../../src/components/atoms/Button';
 
 export default function Create() {
-  const [pageMode, setPageMode] = useState('loading');
+  const [pageMode, setPageMode] = useState('create');
   const [submitted, setSubmitted] = useState(false);
   const [transaction, setTransaction] = useState(Transaction.default());
-  const [payments, setPayments] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-
+  const [settings] = useSettings();
+  const [setSnackbar] = useSnackbar();
   const router = useRouter();
   const db = useDatabase('my-test-app');
-  const [getPayments] = useSettings('payments');
-  const [getCategories] = useSettings('categories');
-  const [getSubcategories] = useSettings('subcategories');
-  const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
 
   useEffect(() => {
     let isMounted = true;
     const init = async () => {
+      if (!router.isReady || !router.query.id || !isMounted) {
+        return;
+      }
       try {
-        if (router.isReady && isMounted) {
-          const payments = await getPayments();
-          const categories = await getCategories();
-          setPayments(payments);
-          setCategories(categories);
-          const id = router.query.id;
-          if (id) {
-            const store = await db.connect('transactions');
-            const { result } = await store.get(id);
-            const category = result.category;
-            const subcategories = await getSubcategories(category, 'category_index');
-            setSubcategories(subcategories);
-            setTransaction(result);
-            setPageMode('edit');
-          } else {
-            setPageMode('create');
-          }
+        let store = await db.connect('transactions');
+        const { result: transaction } = await store.get(router.query.id);
+        if (!transaction) {
+          return;
         }
+        const category = transaction.category;
+
+        store = await db.connect('subcategories');
+        const index = await store.index('category_index');
+        const { result: subcategories } = await index.getAll(category);
+        setSubcategories(subcategories);
+        setTransaction(transaction);
+        setPageMode('edit');
       } catch ({ name, message }) {
         setTransaction(Transaction.default());
-        setPageMode('create');
         setSnackbar('error', `${name}: ${message}`);
       }
     };
-    console.log('rerender')
     init();
     return () => isMounted = false;
   }, [router]);
 
   useEffect(() => console.log('rerender'))
 
-  if (pageMode === 'loading') {
+  if (!settings) {
     return <h1>Loading.</h1>;
   }
 
@@ -86,7 +77,9 @@ export default function Create() {
 
   const onCategorySelect = async (id) => {
     try {
-      const subcategories = await getSubcategories(id, 'category_index');
+      const store = await db.connect('subcategories');
+      const index = await store.index('category_index');
+      const { result: subcategories } = await index.getAll(id);
       setSubcategories(subcategories);
       setTransaction({ ...transaction, category: id, subcategory: undefined });
     } catch ({ name, message }) {
@@ -141,9 +134,9 @@ export default function Create() {
   };
 
   const headline = pageMode === 'create' ? 'Create' : 'Edit';
-  const _payments = Settings._arrayToObject(payments);
-  const _categories = Settings._arrayToObject(categories);
-  const _subcategories = Settings._arrayToObject(subcategories);
+  const _payments = Settings.arrayToObject(settings.payments);
+  const _categories = Settings.arrayToObject(settings.categories);
+  const _subcategories = Settings.arrayToObject(subcategories);
 
   const {
     type,
@@ -192,6 +185,7 @@ export default function Create() {
           day={day}
           hour={hour}
           minute={minute}
+          settings={settings}
         />
       </div>
       <div className={css('input-row')}>
@@ -199,7 +193,7 @@ export default function Create() {
         <Select
           label="Category *"
           onSelect={onCategorySelect}
-          options={categories}
+          options={settings.categories}
           selected={categorySelected}
           error={submitted && !category}
           className={css('select')}
@@ -234,7 +228,7 @@ export default function Create() {
         <Select
           label="Payment"
           onSelect={onPaymentChange}
-          options={payments}
+          options={settings.payments}
           selected={paymentSelected}
           className={css('select')}
         />

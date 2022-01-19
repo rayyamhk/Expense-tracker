@@ -12,18 +12,16 @@ export default function TransactionCard(props) {
     amount,
     category,
     className,
-    datetime, // millisecond
     details,
     id,
     subcategory,
+    datetime,
+    timeHTML,
     type,
     ...iconProps
   } = props;
 
   const css = useStyles(styles);
-  const timeDisplay = DateTime.getStringFromTimestamp(datetime, 'time');
-  const timeHTML = DateTime.getStringFromTimestamp(datetime, 'html');
-  const amountDisplay = Transaction.parseMoney(amount);
   let label = category;
   if (subcategory) {
     label += `: ${subcategory}`;
@@ -35,15 +33,15 @@ export default function TransactionCard(props) {
       <div className={css('info')}>
         <h4 className={css('category')}>{label}</h4>
         <p className={css('details')}>{details}</p>
-        <time dateTime={timeHTML} className={css('time')}>{timeDisplay}</time>
+        <time dateTime={datetime} className={css('time')}>{datetime}</time>
       </div>
-      <div className={css('amount', type)}>{amountDisplay}</div>
+      <div className={css('amount', type)}>{amount}</div>
     </Link>
   );
 }
 
 TransactionCard.propsType = {
-  amount: PropTypes.number.isRequired,
+  amount: PropTypes.string.isRequired,
   category: PropTypes.string.isRequired,
   className: PropTypes.string,
   datetime: PropTypes.string.isRequired,
