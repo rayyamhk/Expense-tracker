@@ -1,6 +1,4 @@
 import dayjs from 'dayjs';
-import Settings from './Settings';
-const fakeSettings = Settings.getFakeSettings();
 
 const utils = {
   getStringFromArray,
@@ -34,16 +32,16 @@ function getStringFromTimestamp(timestamp, type, settings) {
   let format;
   switch (type) {
     case 'fulldate':
-      format = `${fakeSettings.day.format}, ${fakeSettings.date.format}`;
+      format = `${settings.dateFormat.date} (ddd)`;
       break;
     case 'date':
-      format = fakeSettings.date.format;
+      format = settings.dateFormat.date;
       break;
     case 'time':
-      format = fakeSettings.time.format;
+      format = settings.dateFormat.time;
       break;
     case 'datetime':
-      format = `${fakeSettings.date.format} ${fakeSettings.time.format}`;
+      format = `${settings.dateFormat.date} ${settings.dateFormat.time}`;
       break;
     case 'html':
       format = 'YYYY-MM-DD';
@@ -56,13 +54,13 @@ function getStringFromArray(arr, type, settings) {
   let format;
   switch (type) {
     case 'datetime':
-      format = `${fakeSettings.date.format} ${fakeSettings.time.format}`;
+      format = `${settings.dateFormat.date} ${settings.dateFormat.time}`;
       break;
     case 'date':
-      format = fakeSettings.date.format;
+      format = settings.dateFormat.date;
       break;
     case 'time':
-      format = fakeSettings.time.format;
+      format = settings.dateFormat.time;
       break;
   };
   return dayjs(new Date(...arr)).format(format);

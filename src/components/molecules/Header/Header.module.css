@@ -14,12 +14,12 @@
 }
 
 .back-arrow span {
-  color: var(--primary-invert);
+  color: var(--text-primary);
   font-size: 1.5rem;
 }
 
 .headline {
   flex: 1 1 0;
-  color: var(--primary-invert);
+  color: var(--text-primary);
   font-size: 1.25rem;
 }

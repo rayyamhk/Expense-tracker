@@ -19,93 +19,58 @@ import Progress from '../../src/components/atoms/Progress';
 import TransactionCard from '../../src/components/molecules/TransactionCard';
 import ExpenseRatio from '../../src/components/molecules/ExpenseRatio';
 
-const budget = 10000;
-
 export default function App() {
-  const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(true);
-  const [analysis, setAnalysis] = useState({});
   const [transactions, setTransactions] = useState([]);
-  const [settings, setSettings] = useState({});
-
+  const [settings] = useSettings();
+  const [setSnackbar] = useSnackbar();
   const db = useDatabase('my-test-app');
-  const [getPayments] = useSettings('payments');
-  const [getCategories] = useSettings('categories');
-  const [getSubcategories] = useSettings('subcategories');
-  const { setSnackbar } = useSnackbar();
   const css = useStyles(styles);
 
   useEffect(() => {
+    let isMounted = true;
     const init = async () => {
+      if (!isMounted) {
+        return;
+      }
       try {
         const now = Date.now();
-        const [today, tomorrow] = DateTime.getDayTimestampBound(now);
         const [thisMonth, nextMonth] = DateTime.getMonthTimestampBound(now);
-
-        const payments = await getPayments();
-        const categories = await getCategories();
-        const subcategories = await getSubcategories();
-        const settings = { payments, categories, subcategories };
-
         const store = await db.connect('transactions');
-        let index = await store.index('datetime_index');
-        let range = index.IDBKeyRange.bound(today, tomorrow, false, true);
+        const index = await store.index('datetime_index');
+        const range = index.IDBKeyRange.bound(thisMonth, nextMonth, false, true);
         const transactions = await index.openCursor(range, 'prev');
-        range = index.IDBKeyRange.bound(thisMonth, nextMonth, false, true);
-        const result = await index.openCursor(range);
-        const analysis = result.reduce((aggregated, tran) => {
-          const { type, category, amount } = tran;
-          if (type === 'expense') {
-            if (typeof aggregated[category] === 'undefined') {
-              aggregated[category] = 0;
-            }
-            aggregated[category] += amount;
-          }
-          return aggregated;
-        }, {});
-
-        setAnalysis(analysis);
         setTransactions(transactions);
-        setSettings(settings);
-        setLoading(false);
       } catch ({ name, message }) {
         setSnackbar('error', `${name}: ${message}`);
       }
     };
     init();
+    return () => isMounted = false;
   }, []);
 
-  if (loading) {
+  if (!settings) {
     return <h1>Loading.</h1>;
   }
 
-  const toggleVisibility = () => {
-    setVisible(!visible);
-  };
+  const toggleVisibility = () => setVisible(!visible);
 
-  const todayExpense = transactions.reduce((total, curr) => {
-    if (curr.type === 'expense') {
-      total += curr.amount;
-    }
-    return total;
-  }, 0);
-  const monthExpense = Object.values(analysis).reduce((total, curr) => total += curr, 0);
   const now = Date.now();
-  const dateHTML = DateTime.getStringFromTimestamp(now, 'html');
-  const dateDisplay = DateTime.getStringFromTimestamp(now, 'fulldate');
-  const balanceDisplay = visible ? Transaction.parseMoney(todayExpense) : '✱✱✱✱✱';
+  const [today] = DateTime.getDayTimestampBound(now);
+  const { todayTransactions, categoriesExpense } = parse(transactions, today);
+  const todayBalance = todayTransactions.reduce((total, { type, amount }) => type === 'expense' ? total - amount : total + amount, 0);
+  const monthExpense = Object.values(categoriesExpense).reduce((total, expense) => total += expense, 0);
+  const dateHTML = DateTime.getStringFromTimestamp(now, 'html', settings);
+  const dateDisplay = DateTime.getStringFromTimestamp(now, 'fulldate', settings);
+  const balanceDisplay = visible ? Transaction.parseMoney(todayBalance) : '✱✱✱✱✱'
+  const budget = settings.budget;
   const budgetDisplay = Transaction.parseMoney(monthExpense);
   const budgetLimitDisplay = Transaction.parseMoney(budget);
-
-  const _categories = Settings._arrayToObject(settings.categories);
-  const top5 = Object.entries(analysis)
-    .map(([category, expense]) => ({ ..._categories[category], expense }))
-    .sort((a, b) => b.expense - a.expense)
-    .slice(0, 5);
+  const top5 = getTop5(categoriesExpense, settings);
 
   return (
     <Layout hideHeader={true}>
-      <header className={css('header')}>
+      <div className={css('header')}>
         <time dateTime={dateHTML} className={css('header-time')}>
           {dateDisplay}
         </time>
@@ -121,14 +86,16 @@ export default function App() {
           </p>
           <Progress value={monthExpense} max={budget} variant="error" />
         </Card>
-      </header>
-      <main className={css('main')}>
-        {transactions.length > 0 && (
+      </div>
+      <div className={css('container')}>
+        {todayTransactions.length > 0 && (
           <section className={css('group')}>
             <h3 className={css('group-title')}>Today</h3>
             <Card elevated>
-              {transactions.map((tran) => {
+              {todayTransactions.map((tran) => {
                 tran = Transaction.parseForDisplay(tran, settings);
+                tran.amount = Transaction.parseMoney(tran.amount);
+                tran.datetime = DateTime.getStringFromTimestamp(tran.datetime, 'time', settings);
                 return <TransactionCard {...tran} key={tran.id} />;
               })}
             </Card>
@@ -148,7 +115,30 @@ export default function App() {
             ))}
           </Card>
         </section>
-      </main>
-    </Layout>
+      </div>
+    </ Layout>
   );
 }
+
+function parse(transactions = [], today) {
+  const todayTransactions = [], categoriesExpense = {};
+  transactions.forEach((x) => {
+    const { datetime, type, category: cat, amount } = x;
+    if (datetime >= today) {
+      todayTransactions.push(x);
+    }
+    if (type === 'expense') {
+      categoriesExpense[cat] = categoriesExpense[cat] ? categoriesExpense[cat] + amount : amount;
+    }
+  });
+  return { todayTransactions, categoriesExpense };
+};
+
+function getTop5(categoriesExpense, settings) {
+  const _categories = Settings.arrayToObject(settings.categories);
+  const top5 = Object.entries(categoriesExpense)
+    .map(([category, expense]) => ({ ..._categories[category], expense }))
+    .sort((a, b) => b.expense - a.expense)
+    .slice(0, 5);
+  return top5;
+};

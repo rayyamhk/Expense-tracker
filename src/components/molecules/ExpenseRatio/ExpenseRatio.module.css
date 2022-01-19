@@ -1,5 +1,5 @@
 .container {
-  border-bottom: 1px solid var(--gray300);
+  border-bottom: 1px solid var(--lightgray);
   padding: 1rem;
   display: flex;
   align-items: center;
@@ -22,7 +22,7 @@
 }
 
 .name {
-  color: var(--gray900);
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 1rem;
   margin-right: 0.5rem;
@@ -30,13 +30,13 @@
 
 .percent {
   flex: 1 1 0;
-  color: var(--gray500);
+  color: var(--text-secondary);
   font-family: inherit;
   font-size: 1rem;
 }
 
 .amount {
-  color: var(--gray900);
+  color: var(--text-primary);
   font-family: inherit;
   font-size: 1rem;
 }

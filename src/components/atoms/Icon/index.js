@@ -8,9 +8,9 @@ import configs from './configs';
 export default function Icon(props) {
   const {
     className,
+    color,
     icon,
     iconType = 'material_icons',
-    color,
   } = props;
 
   const css = useStyles(styles);
@@ -27,8 +27,8 @@ export default function Icon(props) {
 }
 
 Icon.propTypes = {
-  color: PropTypes.string,
-  children: PropTypes.node,
   className: PropTypes.string,
-  name: PropTypes.string,
+  color: PropTypes.string,
+  icon: PropTypes.string.isRequired,
+  iconType: PropTypes.oneOf(['material_icons', 'svg', 'img']),
 };

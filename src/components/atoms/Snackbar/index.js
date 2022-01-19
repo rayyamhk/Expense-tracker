@@ -17,7 +17,7 @@ export default function Snackbar(props) {
   const { className } = props;
 
   const css = useStyles(styles);
-  const { type, message, setSnackbar } = useSnackbar();
+  const [setSnackbar, type, message] = useSnackbar();
   const icon = mappings[type];
 
   const onClick = () => setSnackbar(null, null);

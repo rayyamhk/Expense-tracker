@@ -30,9 +30,9 @@ const Transaction = {
     };
   },
   parseForDisplay: (transaction, { payments, categories, subcategories }) => {
-    const _payments = Settings._arrayToObject(payments);
-    const _categories = Settings._arrayToObject(categories);
-    const _subcategories = Settings._arrayToObject(subcategories);
+    const _payments = Settings.arrayToObject(payments);
+    const _categories = Settings.arrayToObject(categories);
+    const _subcategories = Settings.arrayToObject(subcategories);
     const { payment, category, subcategory } = transaction;
     return {
       ...transaction, // id, type, datetime, amount, brand, details

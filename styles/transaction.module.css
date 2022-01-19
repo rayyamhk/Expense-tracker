@@ -18,7 +18,7 @@
 }
 
 .icon.gray {
-  color: var(--gray500);
+  color: var(--text-secondary);
 }
 
 .select,
@@ -28,7 +28,7 @@
 }
 
 .main .float-btn span {
-  color: var(--white);
+  color: var(--secondary-light);
   font-size: 2rem;
 }
 
