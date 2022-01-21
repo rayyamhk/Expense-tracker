@@ -25,6 +25,7 @@ export default function Button(props) {
     className: css(
       'btn',
       'no-tab',
+      'click-effect',
       variant,
       shape,
       size,

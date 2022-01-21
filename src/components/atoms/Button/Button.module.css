@@ -1,27 +1,8 @@
 .btn {
-  font-family: inherit;
   font-size: 1rem;
   border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-.btn::after {
-  content: '';
-  background-color: var(--text-primary);
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transition: opacity 0.05s linear;
-}
-
-.btn:active::after {
-  opacity: 0.3;
+  display: grid;
+  place-content: center;
 }
 
 .transparent {
@@ -29,17 +10,17 @@
 }
 
 .primary {
-  color: var(--text-primary);
+  color: var(--on-primary);
   background-color: var(--primary);
 }
 
 .success {
-  color: var(--success-invert);
+  color: var(--on-success);
   background-color: var(--success);
 }
 
 .error {
-  color: var(--error-invert);
+  color: var(--on-error);
   background-color: var(--error);
 }
 
@@ -48,7 +29,7 @@
 }
 
 .round {
-  border-radius: 2rem;
+  border-radius: 1rem;
 }
 
 .small {
@@ -66,8 +47,8 @@
 .float {
   font-size: 2rem;
   font-weight: 700;
-  height: 48px;
-  width: 48px;
+  height: 3rem;
+  width: 3rem;
   position: fixed;
   bottom: calc(56px + 1rem);
   right: 1rem;
