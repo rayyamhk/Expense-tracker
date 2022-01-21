@@ -36,7 +36,13 @@
   transition: opacity 0.1s linear;
 }
 
-.click-effect:active::after {
+.click-effect:active,
+.click-effect:focus {
+  outline: none;
+}
+
+.click-effect:active::after,
+.click-effect:focus::after {
   opacity: 0.3;
 }
 
