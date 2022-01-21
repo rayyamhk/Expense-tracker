@@ -20,7 +20,7 @@ export default function Dialog(props) {
 
   return (
     <div className={css('overlay')} onClick={onClose}>
-      <Card elevated className={css('container', className)}>
+      <Card elevation={2} className={css('container', 'p-2', className)}>
         {children}
       </Card>
     </div>
@@ -30,5 +30,5 @@ export default function Dialog(props) {
 Dialog.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  onClise: PropTypes.func,
+  onClose: PropTypes.func,
 };

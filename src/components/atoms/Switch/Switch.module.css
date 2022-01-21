@@ -1,16 +1,16 @@
 .wrapper {
-  background-color: var(--secondary);
-  width: 48px;
-  height: 20px;
-  border-radius: 10px;
+  background-color: var(--on-layout);
+  width: 3rem;
+  height: 1.25rem;
+  border-radius: 0.75rem;
   position: relative;
 }
 
 .ball {
-  background-color: var(--text-primary);
+  background-color: var(--black);
   border-radius: 50%;
-  height: 30px;
-  width: 30px;
+  height: 1.875rem;
+  width: 1.875rem;
   display: flex;
   justify-content: center;
   align-items: center;

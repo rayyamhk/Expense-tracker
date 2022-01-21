@@ -5,6 +5,7 @@ import styles from './ExpenseRatio.module.css';
 
 import Icon from '../../atoms/Icon';
 import Progress from '../../atoms/Progress';
+import Typography from '../../atoms/Typography';
 
 export default function ExpenseRatio(props) {
   const {
@@ -20,13 +21,13 @@ export default function ExpenseRatio(props) {
   const amount = Transaction.parseMoney(value);
   
   return (
-    <div className={css('container')}>
-      <Icon {...iconProps} />
-      <div className={css('details')}>
-        <div className={css('text-wrapper')}>
-          <span className={css('name')}>{category}</span>
-          <span className={css('percent')}>{percent}</span>
-          <span className={css('amount')}>{amount}</span>
+    <div className={css('container', 'p-2')}>
+      <Icon size="lg" {...iconProps} />
+      <div className={css('details', 'ml-2')}>
+        <div className={css('text-wrapper', 'mb-1')}>
+          <Typography component="span" variant="h5" className={css('name', 'mr-1')}>{category}</Typography>
+          <Typography component="span" variant="h6" className={css('percent')}>{percent}</Typography>
+          <Typography component="span" variant="h6" className={css('amount')}>{amount}</Typography>
         </div>
         <Progress value={value} max={max} />
       </div>

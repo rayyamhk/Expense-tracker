@@ -15,6 +15,7 @@ import Layout from '../../src/components/molecules/Layout';
 import Switch from '../../src/components/atoms/Switch';
 import Icon from '../../src/components/atoms/Icon';
 import Button from '../../src/components/atoms/Button';
+import Typography from '../../src/components/atoms/Typography';
 import Card from '../../src/components/atoms/Card';
 import Progress from '../../src/components/atoms/Progress';
 import TransactionCard from '../../src/components/molecules/TransactionCard';
@@ -22,18 +23,14 @@ import ExpenseRatio from '../../src/components/molecules/ExpenseRatio';
 
 export default function App() {
   const [visible, setVisible] = useState(true);
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState([]); // whole month
   const [settings, reloadSettings] = useSettings();
   const [setSnackbar] = useSnackbar();
   const db = useDatabase('my-test-app');
   const css = useStyles(styles);
 
   useEffect(() => {
-    let isMounted = true;
     const init = async () => {
-      if (!isMounted) {
-        return;
-      }
       try {
         const now = Date.now();
         const [thisMonth, nextMonth] = DateTime.getMonthTimestampBound(now);
@@ -47,7 +44,6 @@ export default function App() {
       }
     };
     init();
-    return () => isMounted = false;
   }, []);
 
   if (!settings) {
@@ -55,7 +51,7 @@ export default function App() {
   }
 
   const toggleVisibility = () => setVisible(!visible);
-  const onChange = async () => {
+  const onThemeChange = async () => {
     try {
       const store = await db.connect('common', 'readwrite');
       const value = {
@@ -69,50 +65,75 @@ export default function App() {
     }
   };
 
+  const themeMode = settings?.theme?.mode || 'light';
+  const visibility = visible ? 'visibility' : 'visibility_off';
   const now = Date.now();
   const [today] = DateTime.getDayTimestampBound(now);
   const { todayTransactions, categoriesExpense } = parse(transactions, today);
   const todayBalance = todayTransactions.reduce((total, { type, amount }) => type === 'expense' ? total - amount : total + amount, 0);
   const monthExpense = Object.values(categoriesExpense).reduce((total, expense) => total += expense, 0);
-  const dateHTML = DateTime.getStringFromTimestamp(now, 'html', settings);
   const dateDisplay = DateTime.getStringFromTimestamp(now, 'fulldate', settings);
   const balanceDisplay = visible ? Transaction.parseMoney(todayBalance) : '✱✱✱✱✱'
-  const budget = settings.budget;
+  const budget = settings?.budget;
   const budgetDisplay = Transaction.parseMoney(monthExpense);
   const budgetLimitDisplay = Transaction.parseMoney(budget);
   const top5 = getTop5(categoriesExpense, settings);
 
   return (
     <Layout hideHeader={true}>
-      <div className={css('header')}>
-        <time dateTime={dateHTML} className={css('header-time')}>
+      <Card
+        component="header"
+        squared
+        overflow
+        elevation={1}
+        className={css('header')}
+      >
+        <Typography
+          component="time"
+          variant="h1"
+          className={css('time')}
+        >
           {dateDisplay}
-        </time>
-        <div className={css('header-balance')}>
-          <Button variant="transparent" onClick={toggleVisibility} >
-            {visible ? <Icon icon="visibility" /> : <Icon icon="visibility_off" />}
-          </Button>
-          Balance: {balanceDisplay}
-        </div>
-        <Card elevated className={css('budget-card')}>
-          <p className={css('budget-status', monthExpense > budget && 'over-budget')}>
+        </Typography>
+        <Button
+          variant="transparent"
+          onClick={toggleVisibility}
+          className={css('balance')}
+        >
+          <Icon icon={visibility} size="xs" className={css('eye')} />
+          <Typography component="span" variant="h4">
+            Balance: {balanceDisplay}
+          </Typography>
+        </Button>
+        <Card elevation={2} className={css('card')}>
+          <Typography
+            component="p"
+            variant="h6"
+            className={css('budget-text', monthExpense > budget && 'over-budget')}
+          >
             Budget of this month: <span>{budgetDisplay}</span> out of {budgetLimitDisplay}
-          </p>
+          </Typography>
           <Progress value={monthExpense} max={budget} variant="error" />
         </Card>
         <Switch
           className={css('switch')}
-          checked={settings.theme.mode === 'dark'}
-          checkedIcon={<Icon icon="dark_mode" className={css('icon', 'no-select')} />}
-          uncheckedIcon={<Icon icon="light_mode" className={css('icon', 'no-select')} />}
-          onChange={onChange}
+          checked={themeMode === 'dark'}
+          checkedIcon={<Icon icon="dark_mode" color="#FFFFFF" size="xs" />}
+          uncheckedIcon={<Icon icon="light_mode" color="#FFFFFF" size="xs" />}
+          onChange={onThemeChange}
         />
-      </div>
+      </Card>
       <div className={css('container')}>
         {todayTransactions.length > 0 && (
-          <section className={css('group')}>
-            <h3 className={css('group-title')}>Today</h3>
-            <Card elevated>
+          <section className="mb-2">
+            <Typography
+              variant="h3"
+              component="h3"
+              className="mb-2"
+            >
+              Today
+            </Typography>
+            <Card elevation={2}>
               {todayTransactions.map((tran) => {
                 tran = Transaction.parseForDisplay(tran, settings);
                 tran.amount = Transaction.parseMoney(tran.amount);
@@ -122,9 +143,15 @@ export default function App() {
             </Card>
           </section>
         )}
-        <section className={css('group')}>
-          <h3 className={css('group-title')}>Top 5 Expenses</h3>
-          <Card elevated>
+        <section>
+          <Typography
+            variant="h3"
+            component="h3"
+            className="mb-2"
+          >
+            Top 5 Expenses
+          </Typography>
+          <Card elevation={2}>
             {top5.map(({ expense, value, ...rest }, i) => (
               <ExpenseRatio
                 key={i}
@@ -156,6 +183,9 @@ function parse(transactions = [], today) {
 };
 
 function getTop5(categoriesExpense, settings) {
+  if (!settings) {
+    return [];
+  }
   const _categories = Settings.arrayToObject(settings.categories);
   const top5 = Object.entries(categoriesExpense)
     .map(([category, expense]) => ({ ..._categories[category], expense }))

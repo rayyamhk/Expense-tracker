@@ -1,5 +1,5 @@
 .overlay {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--overlay);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,6 +12,6 @@
 }
 
 .container {
-  padding: 1rem;
+  background-color: var(--surface);
   max-width: 90%;
 }

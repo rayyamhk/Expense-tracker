@@ -16,6 +16,7 @@ import Icon from '../../../src/components/atoms/Icon';
 import TextField from '../../../src/components/atoms/TextField';
 import Button from '../../../src/components/atoms/Button';
 import Dialog from '../../../src/components/atoms/Dialog';
+import Typography from '../../../src/components/atoms/Typography';
 
 export default function TransactionDetails() {
   const [popUp, setPopUp] = useState(false);
@@ -83,9 +84,9 @@ export default function TransactionDetails() {
   };
 
   return (
-    <Layout headline={headline} className={css('main')}>
-      <div className={css('input-row')}>
-        <Icon icon="calendar_today" color="#f44336" className={css('icon')} />
+    <Layout headline={headline} className="p-2">
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="calendar_today" color="#f44336" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Date Time"
@@ -95,8 +96,8 @@ export default function TransactionDetails() {
           className={css('textfield')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="category" color="#3f51b5" className={css('icon')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="category" color="#3f51b5" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Category"
@@ -106,8 +107,8 @@ export default function TransactionDetails() {
           className={css('textfield')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="dashboard" color="#2196f3" className={css('icon')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="dashboard" color="#2196f3" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Subcategory"
@@ -117,8 +118,8 @@ export default function TransactionDetails() {
           className={css('textfield')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="attach_money" color="#ffc107" className={css('icon')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="attach_money" color="#ffc107" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Amount"
@@ -128,8 +129,8 @@ export default function TransactionDetails() {
           className={css('textfield')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="payment" color="#673ab7" className={css('icon')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="payment" color="#673ab7" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Payment"
@@ -139,8 +140,8 @@ export default function TransactionDetails() {
           className={css('textfield')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="store" color="#4caf50" className={css('icon')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="store" color="#4caf50" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Brand"
@@ -151,7 +152,7 @@ export default function TransactionDetails() {
         />
       </div>
       <div className={css('input-row')}>
-        <Icon icon="insert_comment" color="#e91e63" className={css('icon')} />
+        <Icon icon="insert_comment" color="#e91e63" size="lg" className="mr-2" />
         <TextField
           type="textarea"
           rows="3"
@@ -167,44 +168,49 @@ export default function TransactionDetails() {
         shape="circle"
         variant="error"
         float
-        className={css('float-btn', 'float-btn-left')}
+        className={css('delete-btn')}
       >
-        <Icon icon="delete" />
+        <Icon icon="delete" size="md" />
       </Button>
       <Button
         onClick={onEdit}
         shape="circle"
         variant="success"
         float
-        className={css('float-btn')}
+        className={css('edit-btn')}
       >
-        <Icon icon="mode" />
+        <Icon icon="mode" size="md" />
       </Button>
       {popUp && (
         <Dialog onClose={onCloseDialog} className={css('popup')}>
-          <Icon icon="delete_forever" className={css('popup-icon')} />
-          <h2 className={css('popup-title')}>Are you sure you want to delete this transaction?</h2>
-          <div className={css('popup-actions')}>
+          <Icon icon="delete_forever" size="xl" className={css('popup-icon')} />
+          <Typography
+            component="h2"
+            variant="h2"
+            align="center"
+          >
+            Are you sure you want to delete this transaction?
+          </Typography>
+          <div className={css('popup-actions', 'mt-2')}>
             <Button
-              autoFocus
               variant="primary"
               shape="round"
               size="large"
               shadow
-              className={css('popup-btn')}
+              className="mx-2"
               onClick={onCloseDialog}
             >
-              No
+              <Typography component="span" variant="body">No</Typography>
             </Button>
             <Button
               variant="transparent"
               shape="round"
               size="large"
               shadow
-              className={css('popup-btn')}
+              className="mx-2"
               onClick={onDelete}
             >
-              Yes
+              <Typography component="span" variant="body">Yes</Typography>
             </Button>
           </div>
         </Dialog>
