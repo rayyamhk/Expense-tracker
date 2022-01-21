@@ -11,8 +11,8 @@ import DateTime from '../../src/utils/DateTime';
 import Transaction from '../../src/utils/Transaction';
 
 import Layout from '../../src/components/molecules/Layout';
+import Typography from '../../src/components/atoms/Typography';
 import Icon from '../../src/components/atoms/Icon';
-import Button from '../../src/components/atoms/Button';
 import Card from '../../src/components/atoms/Card';
 import TransactionCard from '../../src/components/molecules/TransactionCard';
 
@@ -54,7 +54,7 @@ export default function Calendar() {
   }
 
   const nextMonth= () => {
-    setActiveDay(null);
+    setActiveDay(1);
     if (activeMonth === 11) {
       setActiveMonth(0);
       setActiveYear(activeYear + 1);
@@ -64,7 +64,7 @@ export default function Calendar() {
   };
 
   const prevMonth= () => {
-    setActiveDay(null);
+    setActiveDay(1);
     if (activeMonth === 0) {
       setActiveMonth(11);
       setActiveYear(activeYear - 1);
@@ -75,104 +75,111 @@ export default function Calendar() {
 
   const calendarHeadline = `${DateTime.translateMonth(activeMonth)} ${activeYear}`;
   const calendarCells = DateTime.getCalendarCells(activeYear, activeMonth);
+  const fullDate = DateTime.getStringFromArray([activeYear, activeMonth, activeDay], 'date', settings);
   const { dailyAmount, dailyTransactions } = parse(transactions, settings);
 
   return (
-    <Layout
-      headline={calendarHeadline}
-      className={css('main')}
-      actions={(
-        <>
-          <Button
-            onClick={prevMonth}
-            variant="transparent"
-            className={css('icon')}
-          >
-            <Icon icon="keyboard_arrow_left" />
-          </Button>
-          <Button
-            onClick={nextMonth}
-            variant="transparent"
-            className={css('icon')}
-          >
-            <Icon icon="keyboard_arrow_right" />
-          </Button>
-        </>
-      )}
-    >
-      <table role="grid" className={css('calendar', dailyTransactions[activeDay] && 'active')}>
-        <thead role="rowgroup">
-          <tr role="row">
-            <th role="columnheader" aria-label="Sunday">Sun</th>
-            <th role="columnheader" aria-label="Monday">Mon</th>
-            <th role="columnheader" aria-label="Tuesday">Tue</th>
-            <th role="columnheader" aria-label="Wednesday">Wed</th>
-            <th role="columnheader" aria-label="Thursday">Thu</th>
-            <th role="columnheader" aria-label="Friday">Fri</th>
-            <th role="columnheader" aria-label="Saturday">Sat</th>
-          </tr>
-        </thead>
-        <tbody role="rowgroup">
-          {calendarCells.map((row, i) => (
-            <tr role="row" key={i}>
-              {row.map(({ current, day: x }, j) => {
-                if (!current) {
+    <Layout headline={calendarHeadline}>
+      <Card
+        elevation={2}
+        className={css('calendar-wrapper', 'p-2')}
+      >
+        <table role="grid" className={css('calendar')}>
+          <thead role="rowgroup">
+            <tr role="row">
+              <Typography className="py-1" component="th" variant="body" role="columnheader" aria-label="Sunday">S</Typography>
+              <Typography className="py-1" component="th" variant="body" role="columnheader" aria-label="Monday">M</Typography>
+              <Typography className="py-1" component="th" variant="body" role="columnheader" aria-label="Tuesday">T</Typography>
+              <Typography className="py-1" component="th" variant="body" role="columnheader" aria-label="Wednesday">W</Typography>
+              <Typography className="py-1" component="th" variant="body" role="columnheader" aria-label="Thursday">T</Typography>
+              <Typography className="py-1" component="th" variant="body" role="columnheader" aria-label="Friday">F</Typography>
+              <Typography className="py-1" component="th" variant="body" role="columnheader" aria-label="Saturday">S</Typography>
+            </tr>
+          </thead>
+          <tbody role="rowgroup">
+            {calendarCells.map((row, i) => (
+              <tr role="row" key={i}>
+                {row.map(({ current, day: x }, j) => {
+                  if (!current) {
+                    return (
+                      <td key={j} className={css('disabled')}>
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          className={css('date', 'no-select')}
+                        >
+                          {x}
+                        </Typography>
+                      </td>
+                    );
+                  }
                   return (
-                    <td key={j} className={css('disabled')}>
-                      <span className={css('date', 'no-select')}>{x}</span>
+                    <td
+                      role="gridcell"
+                      tabIndex={-1}
+                      onClick={() => setActiveDay(x)}
+                      className={css(
+                        'no-tab',
+                        activeYear === year && activeMonth === month && x === day && 'today',
+                        activeDay === x && 'active',
+                      )}
+                      key={j}
+                    >
+                      <Typography
+                        component="span"
+                        variant="caption"
+                        className={css('date', 'no-select')}
+                      >
+                          {x}
+                      </Typography>
+                      {dailyAmount[x] && (
+                        <Typography
+                          component="span"
+                          variant="caption"
+                          className={css(
+                            'amount',
+                            'no-select',
+                            dailyAmount[x].amount < 0 ? 'expense' : 'income'
+                          )}
+                        >
+                          {Transaction.parseMoney(dailyAmount[x].amount, true)}
+                        </Typography>
+                      )}
                     </td>
                   );
-                }
-                return (
-                  <td
-                    role="gridcell"
-                    tabIndex={-1}
-                    onClick={() => setActiveDay(x)}
-                    className={css(
-                      'no-tab',
-                      activeYear === year && activeMonth === month && x === day && 'today',
-                      activeDay === x && 'active',
-                    )}
-                    key={j}
-                  >
-                    <span className={css('date', 'no-select')}>{x}</span>
-                    {dailyAmount[x] && (
-                      <span className={css('amount', 'no-select', dailyAmount[x].amount < 0 ? 'expense' : 'income')}>
-                        {Transaction.parseMoney(dailyAmount[x].amount, true)}
-                      </span>
-                    )}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {dailyTransactions[activeDay] && (
-        <div className={css('transactions-list', 'no-scrollbar')}>
-          <div className={css('daily-breakdown')}>
-            <span>
-              Income: <span className={css('income')}>{Transaction.parseMoney(dailyAmount[activeDay]?.income || 0)}</span>
-            </span>
-            <span>
-              Expense: <span className={css('expense')}>{Transaction.parseMoney(dailyAmount[activeDay]?.expense || 0)}</span>
-            </span>
-          </div>
-          <Card>
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Card>
+      <div className={css('transactions-list', 'p-2', 'no-scrollbar')}>
+        <div className={css('daily-breakdown', 'mb-2')}>
+          <Typography component="time" variant="caption" className={css('fulldate', 'text')}>
+            {fullDate}
+          </Typography>
+          <Typography component="span" variant="caption" className={css('mr-2', 'text')}>
+            Income: <span className={css('income')}>{Transaction.parseMoney(dailyAmount[activeDay]?.income || 0)}</span>
+          </Typography>
+          <Typography component="span" variant="caption" className={css('text')}>
+            Expense: <span className={css('expense')}>{Transaction.parseMoney(dailyAmount[activeDay]?.expense || 0)}</span>
+          </Typography>
+        </div>
+        {dailyTransactions[activeDay] ? (
+          <Card elevation={2}>
             {dailyTransactions[activeDay].map((tran) => {
               tran.amount = Transaction.parseMoney(tran.amount);
               tran.datetime = DateTime.getStringFromTimestamp(tran.datetime, 'time', settings);
-              return (
-                <TransactionCard
-                  className={css('transaction-card')}
-                  {...tran}
-                  key={tran.id}
-                />
-              ) ;
+              return <TransactionCard {...tran} key={tran.id} />;
             })}
           </Card>
-        </div>
-      )}
+        ) : (
+          <div className={css('fallback')}>
+            <Icon icon="sentiment_satisfied_alt" size="sm" className={css('fallback-icon', 'mb-1')} />
+            <Typography component="p" variant="h6" className={css('fallback-text')}>No transactions for this day.</Typography>
+          </div>
+        )}
+      </div>
     </Layout>
   );
 }

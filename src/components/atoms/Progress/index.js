@@ -4,9 +4,9 @@ import styles from './Progress.module.css';
 
 export default function Progress(props) {
   const {
-    value,
+    value = 0,
     variant = 'primary',
-    max,
+    max = 100,
   } = props;
 
   const css = useStyles(styles);
@@ -22,7 +22,7 @@ export default function Progress(props) {
 }
 
 Progress.propTypes = {
-  value: PropTypes.number.isRequired,
+  value: PropTypes.number,
   variant: PropTypes.oneOf(['primary', 'error']),
-  max: PropTypes.number.isRequired,
+  max: PropTypes.number,
 };

@@ -1,5 +1,5 @@
 .header {
-  background-color: var(--primary);
+  background-color: var(--layout);
   padding: 1.5rem 1rem 2.75rem;
   position: relative;
 }
@@ -7,43 +7,28 @@
 .header .switch {
   position: absolute;
   right: 1rem;
-  top: 1.5rem;
+  top: 1.75rem;
 }
 
-.header .switch .icon {
-  color: #FFF;
-  font-size: 1rem;
+.header .time {
+  color: var(--on-layout);
 }
 
-.header-time {
-  font-family: var(--font);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.header-balance {
-  font-family: var(--font);
-  font-size: 1rem;
-  font-weight: 700;
+.header .balance {
+  color: var(--on-layout);
   line-height: 1;
-  color: var(--text-primary);
   display: flex;
   align-items: center;
   margin: 0.5rem 0;
 }
 
-/* Icon */
-.header-balance span {
-  font-size: 1.125rem;
-  color: var(--text-primary);
+.header .balance .eye {
+  color: var(--on-layout);
+  margin-right: 0.5rem;
 }
 
-main .budget-card {
-  font-family: var(--font);
-  font-size: rem;
-  font-weight: 400;
-  color: var(--text-primary);
+.header .card {
+  background-color: var(--surface);
   padding: 1rem;
   position: absolute;
   left: 1rem;
@@ -51,7 +36,8 @@ main .budget-card {
   bottom: -2.25rem;
 }
 
-.budget-status {
+.header .budget-text {
+  color: var(--on-surface);
   margin-bottom: 1rem;
 }
 
@@ -62,16 +48,4 @@ main .budget-card {
 
 .container {
   padding: calc(40px + 0.75rem) 1rem 1rem;
-}
-
-.group {
-  margin-bottom: 1rem;
-}
-
-.group:last-child {
-  margin-bottom: 0;
-}
-
-.group-title {
-  margin-bottom: 1rem;
 }

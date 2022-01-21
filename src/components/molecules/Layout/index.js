@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
+import useStyles from '../../../hooks/useStyles';
+import styles from './Layout.module.css';
+
 import Header from '../Header';
 import Footer from '../Footer';
 import Snackbar from '../../atoms/Snackbar';
-import useStyles from '../../../hooks/useStyles';
-import styles from './Layout.module.css';
 
 export default function Layout(props) {
   const {

@@ -60,8 +60,6 @@ export default function Create() {
     return () => isMounted = false;
   }, [router]);
 
-  useEffect(() => console.log('rerender'))
-
   if (!settings) {
     return <h1>Loading.</h1>;
   }
@@ -154,9 +152,9 @@ export default function Create() {
   const paymentSelected = payment ? { id: payment, value: _payments[payment]?.value } : undefined;
 
   return (
-    <Layout headline={headline} className={css('main')}>
-      <div className={css('input-row')}>
-        <Icon icon="attach_money" className={css('icon', 'gray')} />
+    <Layout headline={headline} className="p-2">
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="attach_money" size="lg" className={css('gray-icon', 'mr-2')} />
         <Radio
           label="Expense"
           name="type"
@@ -174,8 +172,8 @@ export default function Create() {
           checked={type === 'income'}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="edit_calendar" className={css('icon', 'gray')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="edit_calendar" className={css('gray-icon', 'mr-2')} />
         <DateTimePicker
           className={css('datetime-picker')}
           label="Date Time *"
@@ -188,8 +186,8 @@ export default function Create() {
           settings={settings}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="category" className={css('icon', 'gray')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="category" className={css('gray-icon', 'mr-2')} />
         <Select
           label="Category *"
           onSelect={onCategorySelect}
@@ -199,8 +197,8 @@ export default function Create() {
           className={css('select')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="dashboard" className={css('icon', 'gray')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="dashboard" className={css('gray-icon', 'mr-2')} />
         <Select
           label="Subcategory"
           onSelect={onSubcategorySelect}
@@ -209,8 +207,8 @@ export default function Create() {
           className={css('select')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="price_change" className={css('icon', 'gray')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="price_change" className={css('gray-icon', 'mr-2')} />
         <TextField
           type="number"
           label="Amount *"
@@ -223,8 +221,8 @@ export default function Create() {
           className={css('textfield')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="payment" className={css('icon', 'gray')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="payment" className={css('gray-icon', 'mr-2')} />
         <Select
           label="Payment"
           onSelect={onPaymentChange}
@@ -233,8 +231,8 @@ export default function Create() {
           className={css('select')}
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="store" className={css('icon', 'gray')} />
+      <div className={css('input-row', 'mb-2')}>
+        <Icon icon="store" className={css('gray-icon', 'mr-2')} />
         <TextField
           type="text"
           label="Brand"
@@ -246,7 +244,7 @@ export default function Create() {
         />
       </div>
       <div className={css('input-row')}>
-        <Icon icon="edit_note" className={css('icon', 'gray')} />
+        <Icon icon="edit_note" className={css('gray-icon', 'mr-2')} />
         <TextField
           type="textarea"
           rows="3"
@@ -262,9 +260,9 @@ export default function Create() {
         shape="circle"
         variant="success"
         float
-        className={css('float-btn')}
+        className={css('submit-btn')}
       >
-        <Icon icon="done" />
+        <Icon icon="done" size="md" />
       </Button>
     </Layout>
   );

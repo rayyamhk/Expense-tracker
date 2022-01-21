@@ -29,11 +29,12 @@ const Transaction = {
       details,
     };
   },
-  parseForDisplay: (transaction, { payments, categories, subcategories }) => {
+  parseForDisplay: (transaction, settings = {}) => {
+    const { payments, categories, subcategories } = settings;
+    const { payment, category, subcategory } = transaction;
     const _payments = Settings.arrayToObject(payments);
     const _categories = Settings.arrayToObject(categories);
     const _subcategories = Settings.arrayToObject(subcategories);
-    const { payment, category, subcategory } = transaction;
     return {
       ...transaction, // id, type, datetime, amount, brand, details
       ..._categories[category], // icon, iconType, color
@@ -46,7 +47,10 @@ const Transaction = {
     const isNegative = value < 0;
     value = Math.abs(value);
     const strValue = value.toString();
-    const [int, dec] = strValue.split('.');
+    let [int, dec] = strValue.split('.');
+    if (dec !== undefined && dec.length > 2) {
+      dec = Math.round(Number(dec) / (10 ** (dec.length - 2)))
+    }
     const unit = Math.ceil(int.length / 3);
     if (!short || unit < 2) {
       let str = int.split('').reverse().reduce((moneyStr, digit, idx) => {

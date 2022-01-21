@@ -5,9 +5,7 @@
 }
 
 .label {
-  font-family: var(--font);
-  font-weight: 300;
-  white-space: nowrap;
+  color: var(--on-surface);
   position: absolute;
   top: 1rem;
   left: 1rem;
@@ -15,27 +13,21 @@
 }
 
 .display {
-  color: var(--text-primary);
-  font-family: var(--font);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+  color: var(--on-surface);
+  background-color: var(--surface);
   min-width: 1.4375rem;
-  padding: 1rem;
-  padding-right: 2rem;
 }
 
 .arrow {
-  color: var(--text-primary);
-  font-size: 1.5rem;
+  color: var(--on-surface);
   position: absolute;
-  right: 0.25rem;
-  top: calc(50% - 0.75rem);
+  right: 0.35rem;
+  top: calc(50% - 0.8rem);
   transition: transform 0.1s linear;
 }
 
 .fieldset {
-  border: 1px solid var(--text-secondary);
+  border: 1px solid var(--on-surface-light);
   border-radius: 4px;
   position: absolute;
   top: -0.49rem;
@@ -45,16 +37,12 @@
 }
 
 .legend {
-  font-family: var(--font);
-  font-size: 0.7rem;
-  white-space: nowrap;
   max-width: 0.01px;
   visibility: hidden;
-  padding: 0;
 }
 
 .options {
-  padding: 0.5rem 0;
+  background-color: var(--surface);
   min-width: 100%;
   max-height: calc(56px * 5 + 1rem);
   overflow-y: scroll;
@@ -67,40 +55,17 @@
 }
 
 .option {
-  font-family: var(--font);
   min-height: 56px;
-  padding: 0.5rem 1rem;
-  position: relative;
   display: flex;
   align-items: center;
-}
-
-.option::after {
-  content: '';
-  background-color: var(--text-primary);
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.option:active::after {
-  opacity: 0.1;
-}
-
-.option-display.with-icon {
-  margin-left: 0.75rem;
 }
 
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100vh;
-  width: 100vw;
-  z-index: -10000;
+  right: 0;
+  bottom: 0;
 }
 
 .overlay.hidden {
@@ -109,39 +74,24 @@
 
 .active .label,
 .selected .label {
-  font-size: 0.7rem;
-  font-weight: 300;
   transform: translate(-0.05rem, -1.5rem);
 }
 
+.active .legend,
+.selected .legend {
+  max-width: unset;
+}
+
 .selected .label {
-  color: var(--text-secondary);
+  color: var(--on-surface-light);
 }
 
 .active .label {
   color: var(--primary);
 }
 
-.error .label {
-  color: var(--error);
-}
-
 .active .arrow {
   transform: rotateZ(180deg);
-}
-
-.active .fieldset {
-  border: 2px solid var(--primary);
-}
-
-.error .fieldset {
-  border: 2px solid var(--error);
-}
-
-.active .legend,
-.selected .legend {
-  padding-right: 0.2rem;
-  max-width: unset;
 }
 
 .active .options {
@@ -149,6 +99,18 @@
   transform: scaleY(1);
 }
 
+.active .fieldset {
+  border: 2px solid var(--primary);
+}
+
 .active .overlay {
   z-index: 1;
+}
+
+.error .label {
+  color: var(--error);
+}
+
+.error .fieldset {
+  border: 2px solid var(--error);
 }

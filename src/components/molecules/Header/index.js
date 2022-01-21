@@ -6,6 +6,8 @@ import useSnackbar from '../../../hooks/useSnackbar';
 import useStyles from '../../../hooks/useStyles';
 import styles from './Header.module.css';
 
+import Card from '../../atoms/Card';
+import Typography from '../../atoms/Typography';
 import Icon from '../../atoms/Icon';
 import Button from '../../atoms/Button';
 import Switch from '../../atoms/Switch';
@@ -22,10 +24,11 @@ export default function Header(props) {
   const [setSnackbar] = useSnackbar();
   const css = useStyles(styles);
 
-  if (hidden || !settings) {
+  if (hidden) {
     return null;
   }
 
+  const themeMode = settings?.theme?.mode || 'light';
   const redirectPrevPage = () => router.back();
   const onChange = async () => {
     try {
@@ -42,25 +45,36 @@ export default function Header(props) {
   };
 
   return (
-    <header className={css('header')}>
+    <Card
+      component="header"
+      elevation={2}
+      squared
+      className={css('header')}
+    >
       <Button
         onClick={redirectPrevPage}
         variant='transparent'
-        className={css('back-arrow')}
+        className={css('arrow-btn')}
       >
-        <Icon icon="arrow_back" />
+        <Icon icon="arrow_back" size="sm" className={css('arrow')} />
       </Button>
-      <h1 className={css('headline')}>{headline}</h1>
+      <Typography
+        component="h1"
+        variant="h2"
+        className={css('headline')}
+      >
+        {headline}
+      </Typography>
       <Switch
         className={css('switch')}
-        checked={settings.theme.mode === 'dark'}
-        checkedIcon={<Icon icon="dark_mode" className={css('icon', 'no-select')} />}
-        uncheckedIcon={<Icon icon="light_mode" className={css('icon', 'no-select')} />}
+        checked={themeMode === 'dark'}
+        checkedIcon={<Icon icon="dark_mode" color="#FFFFFF" size="xs" />}
+        uncheckedIcon={<Icon icon="light_mode" color="#FFFFFF" size="xs" />}
         onChange={onChange}
       />
-    </header>
-  )
-}
+    </Card>
+  );
+};
 
 Header.propTypes = {
   headline: PropTypes.string,

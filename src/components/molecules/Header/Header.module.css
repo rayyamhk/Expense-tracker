@@ -1,34 +1,31 @@
 .header {
-  background-color: var(--primary);
+  background-color: var(--layout);
   display: flex;
   align-items: center;
   position: relative;
   z-index: 10000;
 }
 
-.back-arrow {
+.header .arrow-btn {
   height: 3.5rem;
   width: 3.5rem;
   display: grid;
   place-content: center;
 }
 
-.back-arrow span {
-  color: var(--text-primary);
-  font-size: 1.5rem;
+.header .arrow {
+  color: var(--on-layout);
 }
 
 .headline {
   flex: 1 1 0;
-  color: var(--text-primary);
-  font-size: 1.25rem;
+  color: var(--on-layout);
 }
 
 .header .switch {
-  margin-right: 1rem;
+  margin-right: 1.25rem;
 }
 
 .header .switch .icon {
   color: #FFF;
-  font-size: 1rem;
 }

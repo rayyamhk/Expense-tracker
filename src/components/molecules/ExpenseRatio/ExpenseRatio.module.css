@@ -1,8 +1,8 @@
 .container {
   border-bottom: 1px solid var(--lightgray);
-  padding: 1rem;
+  background-color: var(--surface);
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
 
 .container:last-child {
@@ -11,32 +11,18 @@
 
 .details {
   flex: 1 1 0;
-  margin-left: 1rem;
 }
 
 .text-wrapper {
-  font-family: var(--font);
-  margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
 }
 
-.name {
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 1rem;
-  margin-right: 0.5rem;
+.name, .amount {
+  color: var(--on-surface);
 }
 
 .percent {
   flex: 1 1 0;
-  color: var(--text-secondary);
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-.amount {
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 1rem;
+  color: var(--on-surface-light);
 }
