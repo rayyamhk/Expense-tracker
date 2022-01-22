@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .base-text {
+    @apply font-primary antialiased text-inherit
+  }
+
+  .base-btn {
+    @apply
+      center
+      rounded border border-solid shadow
+      base-text text-xs text-center 
+      select-none no-tab btn-effect
+  }
+}
+
+@layer utilities {
+  .no-tab {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* tricks to avoid ios tap effect */
+  }
+
+  .no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Old versions of Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+  }
+
+  .no-wrap {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .btn-effect {
+    @apply
+      relative overflow-hidden
+      after:absolute after:inset-0 after:bg-transparent after:transition-colors
+      active:after:bg-overlay
+      sm:active:after:bg-transparent
+      sm:hover:after:bg-overlay
+  }
+
+  .center {
+    @apply grid place-content-center
+  }
+
+  .absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
