@@ -10,7 +10,7 @@ export type ButtonProps = {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void,
   size?: 'xs' | 'sm' | 'md' | 'lg',
   variant?: 'contained' | 'outlined' | 'transparent',
-} & React.ButtonHTMLAttributes<HTMLButtonElement> & LinkProps;
+} & React.ComponentPropsWithoutRef<'button'> & LinkProps;
 
 const sizes = {
   xs: 'px-1 py-1',

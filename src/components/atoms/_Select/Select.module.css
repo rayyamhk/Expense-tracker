@@ -54,12 +54,6 @@
   transition: opacity 0.1s linear, transform 0.1s linear;
 }
 
-.option {
-  min-height: 56px;
-  display: flex;
-  align-items: center;
-}
-
 .overlay {
   position: fixed;
   top: 0;

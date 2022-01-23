@@ -2,49 +2,50 @@ import PropTypes from 'prop-types';
 import css, { prefix } from '../../../utils/css';
 import Typography from '../Typography';
 
-type RadioProps = {
+export type RadioProps = {
   checked?: boolean,
   className?: string,
+  id: string,
   label: string,
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void,
   value: string | number,
-} & React.InputHTMLAttributes<HTMLInputElement>;
+} & React.ComponentPropsWithoutRef<'input'>;
 
 export default function Radio(props: RadioProps) {
   const {
     checked = false,
     className,
+    id,
     label,
     onChange,
     value,
     ...rest
   } = props;
 
-  const id = typeof value === 'string' ? value : value.toString();
+  const containerClasses = css('flex items-center z-10', className);
+
   const radioClasses = css(
-    "border border-solid border-on-surface-light rounded-full h-6 w-6 absolute-center",
-    // prefix("before:", "bg-primary rounded scale-0 h-3.5 w-3.5 absolute-center transition-transform duration-75 ease-linear"),
-    // prefix('after:', 'bg-on-primary rounded-full opacity-0 h-11 w-11 absolute-center'),
-    // prefix("peer-checked:", "scale-100"),
-    // "after:h-10 after:w-10 after:bg-success after:block after:absolute-center"
-    // prefix('before:', 'bg-success-light h-10 w-10 absolute-center')
-  )
+    'border border-solid border-on-surface-light rounded-full h-6 w-6 absolute-center -z-10',
+    'peer-checked:after:scale-100 group-hover:before:opacity-10',
+    prefix('before:', 'bg-on-primary rounded-full h-10 w-10 absolute-center transition-opacity opacity-0'),
+    prefix('after:', 'bg-primary rounded-full h-3 w-3 absolute-center transition-transform scale-0'),
+  );
 
   return (
-    <div className="flex items-center relative">
-      <div className="h-11 w-11 relative">
+    <div className={containerClasses}>
+      <div className="group h-10 w-10 relative">
         <input
           type="radio"
           id={id}
           value={value}
           onChange={onChange}
           checked={checked}
-          className="opacity-0 absolute-center w-5 h-5 peer"
+          className="peer opacity-0 h-10 w-10 absolute-center cursor-pointer"
           {...rest}
         />
         <span className={radioClasses} />
       </div>
-      <Typography component="label" htmlFor={id}>{label}</Typography>
+      <Typography component="label" htmlFor={id} className="pl-1 cursor-pointer">{label}</Typography>
     </div>
   );
 }
@@ -52,7 +53,8 @@ export default function Radio(props: RadioProps) {
 Radio.propTypes = {
   checked: PropTypes.bool,
   className: PropTypes.string,
-  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string,
   onChange: PropTypes.func,
   value: PropTypes.string.isRequired,
 };

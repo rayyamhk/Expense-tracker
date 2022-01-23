@@ -5,9 +5,9 @@ export type CardProps = {
   children?: React.ReactNode,
   className?: string,
   component?: React.ElementType,
-  elevation?: number,
+  elevation?: 0 | 1 | 2 | 3,
   squared?: boolean,
-} & React.AllHTMLAttributes<HTMLElement>;
+} & React.HTMLProps<HTMLElement>;
 
 const elevations = {
   0: 'shadow-none',

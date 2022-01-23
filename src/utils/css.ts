@@ -16,7 +16,7 @@ export default function css(...classNames: classNames): string {
 };
 
 export function prefix(prefix: string, classNames: string): string {
-  const x = classNames.split(' ').filter((str) => !!str).map((str) => prefix + str).join(' ');
-  console.log(x);
-  return x;
+  prefix = prefix.trim();
+  classNames = classNames.trim();
+  return classNames.split(' ').filter((str) => !!str).map((str) => prefix + str).join(' ');
 };
