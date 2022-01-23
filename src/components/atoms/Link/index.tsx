@@ -5,7 +5,7 @@ export type LinkProps = {
   children?: React.ReactNode,
   className?: string,
   href?: string,
-} & React.AnchorHTMLAttributes<HTMLAnchorElement>;
+} & React.ComponentPropsWithoutRef<'a'>;
 
 export default function Link(props: LinkProps) {
   const {

@@ -36,6 +36,15 @@
     overflow: hidden;
   }
 
+  .no-srcollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   .btn-effect {
     @apply
       relative overflow-hidden
@@ -50,9 +59,6 @@
   }
 
   .absolute-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    @apply absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2;
   }
 }

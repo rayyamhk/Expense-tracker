@@ -29,7 +29,7 @@ const palettes = {
   'on-warning': 'var(--on-warning)',
 }
 
-module.exports = {
+module.exports = pseudoPrefix({
   content: [
     './pages/**/*.{js,ts,jsx,tsx}',
     './src/components/**/*.{js,ts,jsx,tsx}'
@@ -52,4 +52,43 @@ module.exports = {
     },
   },
   plugins: [],
-}
+});
+
+function pseudoPrefix(twConfig) {
+  if (Array.isArray(twConfig.content)) {
+    const content = {};
+    content.files = twConfig.content;
+    content.transform = {
+      DEFAULT: transformer,
+    };
+    twConfig.content = content;
+  } else {
+    if (!twConfig.content?.transform) {
+      twConfig.content.transform = {
+        DEFAULT: transformer,
+      };
+    } else if (typeof twConfig.content.transform === 'object') {
+      const transform = {};
+      Object.entries(twConfig.content.transform).forEach(([ext, handler]) => {
+        if (typeof handler === 'function') {
+          transform[ext] = (content) => {
+            handler(content);
+            transformer(content);
+          }
+        } else {
+          transform[ext] = transformer;
+        }
+      });
+      twConfig.content.transform = transform;
+    }
+  }
+  return twConfig;
+};
+
+function transformer(content) {
+  return content.replace(/prefix\(\s*['"`]([\w\s\.:/-]+)['"`]\s*,\s*['"`]([\w\s\.:/-]+)['"`]\s*\)/g, (_, prefix, classNames) => {
+    prefix = prefix.trim();
+    classNames = classNames.trim();
+    return '"' + classNames.split(' ').filter((str) => !!str).map((str) => prefix + str).join(' ') + '"';
+  });
+};
