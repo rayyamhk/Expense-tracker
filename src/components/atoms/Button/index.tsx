@@ -30,7 +30,7 @@ const colors = {
     error: 'text-error bg-transparent border-error shadow-none',
     success: 'text-success bg-transparent border-success shadow-none',
   },
-  transparent: 'text-inherit bg-transparent border-0',
+  transparent: 'text-inherit bg-transparent border-transparent shadow-none',
 };
 
 export default function Button(props: ButtonProps) {

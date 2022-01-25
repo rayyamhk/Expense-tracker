@@ -10,7 +10,7 @@
   .base-btn {
     @apply
       center
-      rounded border border-solid shadow
+      rounded after:rounded border border-solid shadow
       base-text text-sm text-center 
       no-select no-tap btn-effect;
   }
@@ -33,7 +33,7 @@
     @apply select-none;
   }
 
-  .no-srcollbar {
+  .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
@@ -44,8 +44,9 @@
 
   .btn-effect {
     @apply
-      relative overflow-hidden
-      after:absolute after:inset-0 after:bg-transparent after:transition-colors
+      relative
+      after:absolute after:inset-[-1px]
+      after:bg-transparent after:transition-colors
       active:after:bg-overlay
       sm:active:after:bg-transparent
       sm:hover:after:bg-overlay;

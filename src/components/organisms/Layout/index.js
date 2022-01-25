@@ -4,7 +4,7 @@ import styles from './Layout.module.css';
 
 import Header from '../Header';
 import Footer from '../Footer';
-import Snackbar from '../../atoms/Snackbar';
+import Snackbar from '../../molecules/Snackbar';
 
 export default function Layout(props) {
   const {

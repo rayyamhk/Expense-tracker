@@ -6,18 +6,42 @@ import { useState } from 'react';
 import TextField from '../src/components/molecules/TextField';
 import Select from '../src/components/molecules/Select';
 import Calendar from '../src/components/organisms/Calendar';
+import Clock from '../src/components/molecules/Clock';
+import Switch from '../src/components/atoms/Switch/index';
+import Layout from '../src/components/organisms/Layout';
+import IconButton from '../src/components/atoms/IconButton';
+import Footer from '../src/components/organisms/Footer';
 
 export default function Home() {
 
   const [checked, setChecked] = useState('1');
   const [input, setInput] = useState('')
   const [selected, setSelected] = useState(null);
-  const [year, setYear] = useState(2022);
-  const [month, setMonth] = useState(0);
-  const [day, setDay] = useState(24);
-  
+
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear());
+  const [month, setMonth] = useState(now.getMonth());
+  const [day, setDay] = useState(now.getDate());
+  const [hour, setHour] = useState(now.getHours());
+  const [minute, setMinute] = useState(now.getMinutes());
+  const [switchChecked, setSwitchChecked] = useState(false);
   return (
-    <div className="p-10 flex flex-col items-center">
+    <div className="p-10 w-[600px] mx-auto flex flex-col items-center">
+      <IconButton icon="home" size="xs"/>
+      <IconButton icon="home" size="sm"/>
+      <IconButton icon="home" size="md"/>
+      <IconButton icon="home" size="lg"/>
+      <IconButton icon="home" size="xl"/>
+      <Switch checked={switchChecked} onChange={() => setSwitchChecked(!switchChecked)} />
+      <Clock
+        hour={hour}
+        minute={minute}
+        onTimeChange={(hour, min) => {
+          setHour(hour);
+          setMinute(min);
+        }}
+        className="w-[20rem]"
+      />
       <Select
         className="mb-4 w-16"
         onSelect={(id) => setSelected(id)}
@@ -56,6 +80,7 @@ export default function Home() {
         <Button size="md" color="primary" variant="contained">This is a Button</Button>
         <Button size="lg" color="primary" variant="contained">This is a Button</Button>
       </Card>
+      <Footer />
     </div>
   );
 }
