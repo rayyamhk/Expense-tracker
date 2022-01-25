@@ -1,17 +1,22 @@
+declare const window: any;
+
 class IndexedDB {
-  constructor(dbName, version) {
+  indexedDB: IDBFactory;
+  dbName: string;
+  version: number;
+
+  constructor(dbName: string, version: number) {
     this.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-    this.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction || {READ_WRITE: 'readwrite'};
     this.dbName = dbName;
     this.version = version;
   };
 
-  connect(storeName, mode) {
+  connect(storeName: string, mode: 'readonly' | 'readwrite') {
     return new Promise((resolve, reject) => {
       const openReq = this.indexedDB.open(this.dbName, this.version);
       openReq.onupgradeneeded = upgrade;
       openReq.onsuccess = (e) => {
-        const db = e.target.result;
+        const db = openReq.result; // ?
         const transactions = db.transaction(storeName, mode);
         const store = transactions.objectStore(storeName);
         resolve(new StoreWrapper(store));
@@ -31,6 +36,9 @@ class IndexedDB {
 }
 
 class StoreWrapper {
+  store: IDBObjectStore;
+  IDBKeyRange: IDBKeyRange;
+
   constructor(store) {
     this.store = store;
     this.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;

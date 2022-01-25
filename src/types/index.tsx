@@ -34,3 +34,8 @@ export type Settings = {
   subcategories: SelectedItem[],
   payments: SelectedItem[],
 };
+export type IndexedDBType = {
+  indexedDB: IDBDatabase,
+  dbName: string,
+  version: string,
+};

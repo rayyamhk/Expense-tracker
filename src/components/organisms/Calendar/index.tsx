@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import css from '../../../utils/css';
 import DateTime from '../../../utils/DateTime';
-import SimpleCalendar from '../../molecules/Calendar';
+import SimpleCalendar from '../../molecules/SimpleCalendar';
 import Typography from '../../atoms/Typography';
 import IconButton from '../../atoms/IconButton';
 
@@ -43,8 +43,8 @@ export default function Calendar(props: CalendarProps) {
   };
 
   return (
-    <div className={css('min-w-[20rem]', className)}>
-      <div className="bg-surface text-on-surface flex items-center">
+    <div className={css('p-4 min-w-[20rem] rounded-lg bg-surface text-on-surface', className)}>
+      <div className="mb-2 flex items-center">
         <Typography
           as="h6"
           variant="h6"

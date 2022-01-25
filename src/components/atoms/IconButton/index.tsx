@@ -13,7 +13,7 @@ export type IconButtonProps = {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
   squared?: boolean,
   variant?: 'contained' | 'outlined' | 'transparent',
-} & ButtonProps;
+} & Omit<ButtonProps, 'size'>;
 
 const sizes = {
   'xs': 'w-6 h-6',
@@ -39,9 +39,11 @@ export default function IconButton(props: IconButtonProps) {
   const classes = css(
     'center',
     sizes[size],
-    !squared && 'rounded-full',
+    !squared && 'rounded-full after:rounded-full',
     className,
   );
+
+  const iconSize = ['md', 'lg', 'xl'].includes(size) ? 'md' : size;
 
   return (
     <Button
@@ -51,7 +53,7 @@ export default function IconButton(props: IconButtonProps) {
       onClick={onClick}
       {...rest}
     >
-      <Icon icon={icon} iconType={iconType} color={color} size={size} />
+      <Icon icon={icon} iconType={iconType} color={color} size={iconSize} />
     </Button>
   );
 };
