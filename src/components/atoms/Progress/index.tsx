@@ -35,7 +35,7 @@ export default function Progress(props: ProgressProps) {
       />
     </div>
   );
-}
+};
 
 Progress.propTypes = {
   value: PropTypes.number,

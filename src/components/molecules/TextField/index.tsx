@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import css, { prefix } from '../../../utils/css';
-import Typography from '../Typography';
+import Typography from '../../atoms/Typography';
 
 export type TextFieldProps = {
   className?: string,
@@ -34,24 +34,10 @@ export default function TextField(props: TextFieldProps) {
     }
   };
 
-  const containerClasses = css('relative z-10', className);
-  const labelClasses = css(
-    'absolute top-[-0.47rem] left-4 peer-focus:text-primary',
-    error && !value ? 'text-error' : 'text-on-surface-light',
-  );
-  const fieldsetClasses = css(
-    'rounded pointer-events-none',
-    'absolute inset-0 top-[-0.47rem]',
-    label && 'px-2',
-    error && !value ? 'border-2 border-error' : 'border border-on-surface-light',
-    prefix('peer-focus:', 'border-2 border-primary'),
-  );
-  const legendClasses = css('invisible', label && 'px-2'); // allow to render without labels
-
   const Tag = type === 'textarea' ? 'textarea' : 'input';
 
   return (
-    <div className={containerClasses}>
+    <div className={css('min-w-[12rem] relative z-10', className)}>
       <Tag
         type={type}
         value={value}
@@ -60,24 +46,33 @@ export default function TextField(props: TextFieldProps) {
         id={id}
         autoComplete="off"
         className="
-          peer base-text text-normal text-sm text-on-surface
+          peer bg-transparent base-text text-normal text-sm text-on-surface
           w-full p-4 resize-none focus:outline-none
         "
         {...rest}
       />
       <Typography
-        component="label"
+        as="label"
         variant="caption"
         htmlFor={id}
-        className={labelClasses}
+        className={css(
+          'absolute top-[-0.47rem] left-3.5 peer-focus:text-primary',
+          error && !value ? 'text-error' : 'text-on-surface-light',
+        )}
       >
         &#8203;{label}
       </Typography>
-      <fieldset className={fieldsetClasses}>
+      <fieldset className={css(
+        'rounded pointer-events-none',
+        'absolute inset-0 top-[-0.47rem]',
+        prefix('peer-focus:', 'border-2 border-primary'),
+        label && 'px-2',
+        error && !value ? 'border-2 border-error' : 'border border-on-surface-light',
+      )}>
         <Typography
-          component="legend"
+          as="legend"
           variant="caption"
-          className={legendClasses}
+          className={css('invisible', label && 'px-1')}
         >
           &#8203;{label}
         </Typography>

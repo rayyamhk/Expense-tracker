@@ -1,4 +1,9 @@
 import dayjs from 'dayjs';
+import {
+  CalendarCell,
+  DateType,
+  Settings,
+} from '../types'; 
 
 const utils = {
   getStringFromArray,
@@ -13,7 +18,7 @@ const utils = {
 
 export default utils;
 
-function getArrayFromTimestamp(timestamp) {
+function getArrayFromTimestamp(timestamp: number): number[] {
   const date = new Date(timestamp);
   return [
     date.getFullYear(),
@@ -24,55 +29,54 @@ function getArrayFromTimestamp(timestamp) {
   ];
 };
 
-function getTimestampFromArray(arr) {
-  return new Date(...arr).getTime();
+function getTimestampFromArray(arr: number[]) {
+  const [year, month, day, hour, minute] = arr;
+  return new Date(year, month, day, hour, minute).getTime();
 };
 
-function getStringFromTimestamp(timestamp, type, settings) {
-  let format;
+function getStringFromTimestamp(timestamp: number, type: DateType, settings: Settings) {
+  let format: string;
   switch (type) {
     case 'fulldate':
-      format = `${settings.dateFormat.date} (ddd)`;
+      format = `${settings.dateTimeFormat.date} (ddd)`;
       break;
     case 'date':
-      format = settings.dateFormat.date;
+      format = settings.dateTimeFormat.date;
       break;
     case 'time':
-      format = settings.dateFormat.time;
+      format = settings.dateTimeFormat.time;
       break;
     case 'datetime':
-      format = `${settings.dateFormat.date} ${settings.dateFormat.time}`;
-      break;
-    case 'html':
-      format = 'YYYY-MM-DD';
+      format = `${settings.dateTimeFormat.date} ${settings.dateTimeFormat.time}`;
       break;
   };
   return dayjs(timestamp).format(format);
 };
 
-function getStringFromArray(arr, type, settings) {
-  let format;
+function getStringFromArray(arr: number[], type: DateType, settings: Settings) {
+  let format: string;
   switch (type) {
     case 'datetime':
-      format = `${settings.dateFormat.date} ${settings.dateFormat.time}`;
+      format = `${settings.dateTimeFormat.date} ${settings.dateTimeFormat.time}`;
       break;
     case 'date':
-      format = settings.dateFormat.date;
+      format = settings.dateTimeFormat.date;
       break;
     case 'time':
-      format = settings.dateFormat.time;
+      format = settings.dateTimeFormat.time;
       break;
   };
-  return dayjs(new Date(...arr)).format(format);
+  const [year, month, day, hour, minute] = arr;
+  return dayjs(new Date(year, month, day, hour, minute)).format(format);
 };
 
-function getCalendarCells(year, month) {
+function getCalendarCells(year: number, month: number) {
   const prevMonthDayNum = new Date(year, month, 0).getDate();
   const currentMonthDayNum = new Date(year, month + 1, 0).getDate();
   const dayOfWeek = new Date(year, month, 1).getDay();
 
-  const cells = [];
-  let row;
+  const cells: CalendarCell[][] = [];
+  let row: CalendarCell[];
   for (let i = 0; i < 42; i++) {
     if (i % 7 === 0) {
       row = [];
@@ -91,17 +95,17 @@ function getCalendarCells(year, month) {
   return cells;
 };
 
-function getDayTimestampBound(timestamp) {
+function getDayTimestampBound(timestamp: number): [number, number] {
   const [year, month, day] = getArrayFromTimestamp(timestamp);
   return [new Date(year, month, day).getTime(), new Date(year, month, day + 1).getTime()];
 };
 
-function getMonthTimestampBound(timestamp) {
+function getMonthTimestampBound(timestamp: number): [number, number] {
   const [year, month] = getArrayFromTimestamp(timestamp);
   return [new Date(year, month).getTime(), new Date(year, month + 1).getTime()];
 };
 
-function translateMonth(month, type = 'long') {
+function translateMonth(month: number, type: 'long' | 'short' = 'long'): string {
   const monthNames = [
     { long: 'January', short: 'Jan' },
     { long: 'February', short: 'Feb' },
@@ -116,5 +120,5 @@ function translateMonth(month, type = 'long') {
     { long: 'November', short: 'Nov' },
     { long: 'December', short: 'Dec' },
   ];
-  return monthNames[month][type];
+  return monthNames[month]?.[type];
 };

@@ -4,7 +4,7 @@ import css from '../../../utils/css';
 export type CardProps = {
   children?: React.ReactNode,
   className?: string,
-  component?: React.ElementType,
+  as?: React.ElementType,
   elevation?: 0 | 1 | 2 | 3,
   squared?: boolean,
 } & React.HTMLProps<HTMLElement>;
@@ -20,7 +20,7 @@ export default function Card(props: CardProps) {
   const {
     children,
     className,
-    component: Tag = 'div',
+    as: Tag = 'div',
     elevation = 0,
     squared = false,
     ...rest
@@ -38,12 +38,12 @@ export default function Card(props: CardProps) {
       {children}
     </Tag>
   );
-}
+};
 
 Card.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
-  component: PropTypes.string,
+  as: PropTypes.string,
   elevation: PropTypes.oneOf([0, 1, 2, 3]),
   squared: PropTypes.bool,
 };

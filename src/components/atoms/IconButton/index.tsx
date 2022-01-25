@@ -1,11 +1,14 @@
 import PropTypes from 'prop-types';
 import css from '../../../utils/css';
+import { IconType } from '../../../types';
 import Button, { ButtonProps } from '../Button';
 import Icon from '../Icon';
 
 export type IconButtonProps = {
   className?: string,
+  color?: string,
   icon: string,
+  iconType?: IconType,
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void,
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
   squared?: boolean,
@@ -23,7 +26,9 @@ const sizes = {
 export default function IconButton(props: IconButtonProps) {
   const {
     className,
+    color,
     icon,
+    iconType,
     onClick,
     size = 'md',
     squared = false,
@@ -44,15 +49,18 @@ export default function IconButton(props: IconButtonProps) {
       variant={variant}
       size="xs"
       onClick={onClick}
+      {...rest}
     >
-      <Icon icon={icon} size={size} {...rest} />
+      <Icon icon={icon} iconType={iconType} color={color} size={size} />
     </Button>
   );
 };
 
 IconButton.propTypes = {
   className: PropTypes.string,
+  color: PropTypes.string,
   icon: PropTypes.string.isRequired,
+  iconType: PropTypes.oneOf(['material_icon', 'jpg', 'png', 'svg']),
   onClick: PropTypes.func,
   size: PropTypes.oneOf(['xs', 'sm', 'md', 'lg', 'xl']),
   squared: PropTypes.bool,
