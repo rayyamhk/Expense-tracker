@@ -36,7 +36,7 @@ export default function Dialog(props: DialogProps) {
       </Card>
     </div>
   );
-}
+};
 
 Dialog.propTypes = {
   children: PropTypes.node,

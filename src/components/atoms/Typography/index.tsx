@@ -5,11 +5,11 @@ export type TypographyProps = {
   align?: 'left' | 'center' | 'right',
   children: React.ReactNode,
   className?: string,
-  component?: React.ElementType,
+  as?: React.ElementType,
   italic?: boolean,
   nowrap?: boolean,
-  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'body' | 'caption',
-} & React.LabelHTMLAttributes<HTMLLabelElement>; // htmlFor
+  variant?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'body' | 'caption' | 'caption2',
+} & React.HTMLProps<HTMLElement>; // htmlFor
 
 const variants = {
   'h1': 'text-2xl font-bold',
@@ -33,7 +33,7 @@ export default function Typography(props: TypographyProps) {
     align = 'left',
     children,
     className,
-    component: Tag = 'p',
+    as: Tag = 'p',
     italic = false,
     nowrap = false,
     variant = 'body',
@@ -60,7 +60,7 @@ Typography.propTypes = {
   align: PropTypes.oneOf(['left', 'center', 'right']),
   children: PropTypes.node,
   className: PropTypes.string,
-  component: PropTypes.string,
+  as: PropTypes.string,
   italic: PropTypes.bool,
   variant: PropTypes.oneOf([
     'h1',

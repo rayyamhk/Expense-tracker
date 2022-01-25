@@ -17,7 +17,7 @@ const sizes = {
   sm: 'px-2 py-2',
   md: 'px-4 py-2.5',
   lg: 'px-6 py-3',
-}
+};
 
 const colors = {
   contained: {
@@ -31,7 +31,7 @@ const colors = {
     success: 'text-success bg-transparent border-success shadow-none',
   },
   transparent: 'text-inherit bg-transparent border-0',
-}
+};
 
 export default function Button(props: ButtonProps) {
   const {
@@ -53,13 +53,11 @@ export default function Button(props: ButtonProps) {
   );
 
   if (href) {
-    return <Link href={href} className={classes} {...rest}>{children}</Link>
-  }
+    return <Link href={href} className={classes} {...rest}>{children}</Link>;
+  };
 
-  return (
-    <button onClick={onClick} className={classes} {...rest}>{children}</button>
-  );
-}
+  return <button onClick={onClick} className={classes} {...rest}>{children}</button>;
+};
 
 Button.propTypes = {
   children: PropTypes.node,

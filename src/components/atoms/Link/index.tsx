@@ -22,7 +22,7 @@ export default function Link(props: LinkProps) {
       </a>
     </NextLink>
   );
-}
+};
 
 Link.propTypes = {
   children: PropTypes.node,

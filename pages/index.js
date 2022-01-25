@@ -1,27 +1,31 @@
 import Button from '../src/components/atoms/Button';
 import Card from '../src/components/atoms/Card';
-import Typography from '../src/components/atoms/Typography';
 import Progress from '../src/components/atoms/Progress';
-import Radio from '../src/components/atoms/Radio';
+import Radio from '../src/components/molecules/Radio';
 import { useState } from 'react';
-import TextField from '../src/components/atoms/TextField/index';
-import Select from '../src/components/atoms/_Select';
+import TextField from '../src/components/molecules/TextField';
+import Select from '../src/components/molecules/Select';
+import Calendar from '../src/components/organisms/Calendar';
 
 export default function Home() {
 
   const [checked, setChecked] = useState('1');
   const [input, setInput] = useState('')
   const [selected, setSelected] = useState(null);
+  const [year, setYear] = useState(2022);
+  const [month, setMonth] = useState(0);
+  const [day, setDay] = useState(24);
   
   return (
-    <div className="absolute inset-0 bg-surface center">
+    <div className="p-10 flex flex-col items-center">
       <Select
-        label="Select"
-        className="mb-4 w-10"
+        className="mb-4 w-16"
         onSelect={(id) => setSelected(id)}
-        selected={{ id: selected, value: `Very long long long long long long long long longlonglonglonglonglong text ...`}}
+        error
+        label="Example Select"
+        selected={{ id: selected, value: `Very long long long long long long long long text ...`}}
         options={[
-          {id: '1', value: ' Value 1 Value 1 Value 1'},
+          {id: '1', value: ' Value 1 Value 1 Value 1', icon: 'close'},
           {id: '2', value: 'Value 2'},
           {id: '3', value: 'Value 3'},
           {id: '4', value: 'Value 4'},
@@ -30,10 +34,22 @@ export default function Home() {
           {id: '7', value: 'Value 7'},
         ]}
       />
-      <TextField  id="id1" type="text" value={input} className="mb-4" onChange={(e) => setInput(e.target.value)} />
+      <Calendar
+        year={year}
+        month={month}
+        day={day}
+        today={[2022, 0, 25]}
+        className="w-[15rem] h-[20rem]"
+        onDateChange={(YYYY, MM, DD) => {
+          setYear(YYYY);
+          setMonth(MM);
+          setDay(DD);
+        }}
+      />
+      <TextField  id="id1" type="text" label="Input" value={input} className="mb-4" onChange={(e) => setInput(e.target.value)} />
       <TextField id="id2" type="textarea" label="Textarea" value={input} row="3" onChange={(e) => setInput(e.target.value)} />
-      <Radio id="id3"  onChange={() => setChecked('1')} checked={checked === '1'} label="TEST" value="1" />
-      <Radio  id="id4" onChange={() => setChecked('2')} checked={checked === '2'} label="2" value="2" />
+      <Radio id="id3"  onChange={(value) => setChecked(value)} checked={checked === '1'} label="TEST" value="1" />
+      <Radio  id="id4" onChange={(value) => setChecked(value)} checked={checked === '2'} label="2" value="2" />
       <Progress value={70} max={100} variant="error" className="my-4" />
       <Card className="flex gap-x-2 bg-surface" elevation={2}>
         <Button size="sm" color="primary" variant="contained">This is a Button</Button>

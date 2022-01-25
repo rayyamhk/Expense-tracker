@@ -119,7 +119,7 @@ export default function Calendar() {
                       tabIndex={-1}
                       onClick={() => setActiveDay(x)}
                       className={css(
-                        'no-tab',
+                        'no-tap',
                         activeYear === year && activeMonth === month && x === day && 'today',
                         activeDay === x && 'active',
                       )}

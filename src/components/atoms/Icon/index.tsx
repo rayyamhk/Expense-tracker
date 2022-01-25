@@ -1,13 +1,14 @@
 import PropTypes from 'prop-types';
 import css from '../../../utils/css';
 import getDimensions from './getDimensions';
+import { IconType } from '../../../types';
 import Image from 'next/image';
 
 export type IconProps = {
   className?: string,
   color?: string,
   icon: string,
-  iconType?: 'material_icons' | 'jpg' | 'png' | 'svg',
+  iconType?: IconType,
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
 };
 
@@ -30,8 +31,7 @@ export default function Icon(props: IconProps) {
 
   if (iconType === 'material_icons') {
     const classes = css(
-      'material-icons',
-      'no-select',
+      'material-icons color-inherit no-select',
       sizes[size],
       className,
     );
