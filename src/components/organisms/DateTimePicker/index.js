@@ -4,11 +4,11 @@ import useStyles from '../../../hooks/useStyles';
 import styles from './DateTimePicker.module.css';
 import DateTime from '../../../utils/DateTime';
 
-import TextField from '../../atoms/TextField';
+import TextField from '../../molecules/TextField';
 import Button from '../../atoms/Button';
 import Card from '../../atoms/Card';
-import Calendar from '../../atoms/Calendar';
-import Clock from '../../atoms/Clock';
+import Calendar from '../../organisms/Calendar';
+import Clock from '../../molecules/Clock';
 import Icon from '../../atoms/Icon';
 
 export default function DateTimePicker(props) {
@@ -81,14 +81,14 @@ export default function DateTimePicker(props) {
         <div className={css('tab-btns')}>
           <Button
             onClick={dateTab}
-            variant={tab === 'date' ? 'primary' : 'transparent'}
+            variant={tab === 'date' ? 'contained' : 'transparent'}
             className={css('tab-btn')}
           >
             <Icon icon="date_range" />
           </Button>
           <Button
             onClick={timeTab}
-            variant={tab === 'time' ? 'primary' : 'transparent'}
+            variant={tab === 'time' ? 'contained' : 'transparent'}
             className={css('tab-btn')}
           >
             <Icon icon="access_time" />

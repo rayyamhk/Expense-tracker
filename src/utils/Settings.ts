@@ -6,7 +6,7 @@ const utils = {
 export default utils;
 
 // parse settings from database and store it to state.
-function arrayToObject(settings = []) {
+function arrayToObject(settings = []): object {
   return settings.reduce((obj, setting) => {
     const { id, ...rest } = setting;
     if (id) {

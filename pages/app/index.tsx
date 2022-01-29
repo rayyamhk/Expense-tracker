@@ -5,29 +5,29 @@ import {
 import useDatabase from '../../src/hooks/useDatabase';
 import useSettings from '../../src/hooks/useSettings';
 import useSnackbar from '../../src/hooks/useSnackbar';
-import useStyles from '../../src/hooks/useStyles';
-import styles from '../../styles/app.module.css';
-import Transaction from '../../src/utils/Transaction';
+import css from '../../src/utils/css';
+import TransactionUtils from '../../src/utils/Transaction';
 import DateTime from '../../src/utils/DateTime';
 import Settings from '../../src/utils/Settings';
 
-import Layout from '../../src/components/molecules/Layout';
+import Layout from '../../src/components/organisms/Layout';
+import TransactionCard from '../../src/components/organisms/TransactionCard';
+import ExpenseRatio from '../../src/components/organisms/ExpenseRatio';
 import Switch from '../../src/components/atoms/Switch';
-import Icon from '../../src/components/atoms/Icon';
-import Button from '../../src/components/atoms/Button';
+import IconButton from '../../src/components/atoms/IconButton';
 import Typography from '../../src/components/atoms/Typography';
 import Card from '../../src/components/atoms/Card';
 import Progress from '../../src/components/atoms/Progress';
-import TransactionCard from '../../src/components/molecules/TransactionCard';
-import ExpenseRatio from '../../src/components/molecules/ExpenseRatio';
+
+import { Transaction } from '../../src/types';
+
 
 export default function App() {
   const [visible, setVisible] = useState(true);
-  const [transactions, setTransactions] = useState([]); // whole month
+  const [transactions, setTransactions] = useState<Transaction[]>([]); // whole month
   const [settings, reloadSettings] = useSettings();
   const [setSnackbar] = useSnackbar();
   const db = useDatabase('my-test-app');
-  const css = useStyles(styles);
 
   useEffect(() => {
     const init = async () => {
@@ -35,9 +35,9 @@ export default function App() {
         const now = Date.now();
         const [thisMonth, nextMonth] = DateTime.getMonthTimestampBound(now);
         const store = await db.connect('transactions');
-        const index = await store.index('datetime_index');
+        const index = store.index('datetime_index');
         const range = index.IDBKeyRange.bound(thisMonth, nextMonth, false, true);
-        const transactions = await index.openCursor(range, 'prev');
+        const transactions = await index.openCursor(range, 'prev') as Transaction[];
         setTransactions(transactions);
       } catch ({ name, message }) {
         setSnackbar('error', `${name}: ${message}`);
@@ -71,83 +71,88 @@ export default function App() {
   const [today] = DateTime.getDayTimestampBound(now);
   const { todayTransactions, categoriesExpense } = parse(transactions, today);
   const todayBalance = todayTransactions.reduce((total, { type, amount }) => type === 'expense' ? total - amount : total + amount, 0);
-  const monthExpense = Object.values(categoriesExpense).reduce((total, expense) => total += expense, 0);
+  const monthExpense = Object.values(categoriesExpense).reduce((total, expense) => total += expense, 0) as number;
   const dateDisplay = DateTime.getStringFromTimestamp(now, 'fulldate', settings);
-  const balanceDisplay = visible ? Transaction.parseMoney(todayBalance) : '✱✱✱✱✱'
+  const balanceDisplay = visible ? TransactionUtils.parseMoney(todayBalance) : '✱✱✱✱✱'
   const budget = settings?.budget;
-  const budgetDisplay = Transaction.parseMoney(monthExpense);
-  const budgetLimitDisplay = Transaction.parseMoney(budget);
+  const budgetDisplay = TransactionUtils.parseMoney(monthExpense);
+  const budgetLimitDisplay = TransactionUtils.parseMoney(budget);
   const top5 = getTop5(categoriesExpense, settings);
 
   return (
     <Layout hideHeader={true}>
       <Card
-        component="header"
+        as="header"
         squared
-        overflow
         elevation={1}
-        className={css('header')}
+        className="bg-layout px-4 pt-6 pb-11 relative"
       >
         <Typography
-          component="time"
+          as="time"
           variant="h1"
-          className={css('time')}
+          className="text-on-layout"
         >
           {dateDisplay}
         </Typography>
-        <Button
-          variant="transparent"
-          onClick={toggleVisibility}
-          className={css('balance')}
+        <Typography
+          as="h4"
+          variant="h4"
+          className="text-on-layout flex my-2"
         >
-          <Icon icon={visibility} size="xs" className={css('eye')} />
-          <Typography component="span" variant="h4">
+          <IconButton
+            icon={visibility}
+            size="xs"
+            variant="transparent"
+            onClick={toggleVisibility}
+            squared
+            className="mr-2"
+          />
             Balance: {balanceDisplay}
-          </Typography>
-        </Button>
-        <Card elevation={2} className={css('card')}>
+        </Typography>
+        <Card
+          elevation={2}
+          className="bg-surface p-4 absolute inset-x-4 -bottom-9"
+        >
           <Typography
-            component="p"
+            as="p"
             variant="h6"
-            className={css('budget-text', monthExpense > budget && 'over-budget')}
+            className="text-on-surface mb-4"
           >
-            Budget of this month: <span>{budgetDisplay}</span> out of {budgetLimitDisplay}
+            Budget of this month: <span className={budgetDisplay > budgetLimitDisplay && 'font-bold text-error-light'}>{budgetDisplay}</span> out of {budgetLimitDisplay}
           </Typography>
           <Progress value={monthExpense} max={budget} variant="error" />
         </Card>
         <Switch
-          className={css('switch')}
+          className="absolute right-4 top-7"
           checked={themeMode === 'dark'}
-          checkedIcon={<Icon icon="dark_mode" color="#FFFFFF" size="xs" />}
-          uncheckedIcon={<Icon icon="light_mode" color="#FFFFFF" size="xs" />}
           onChange={onThemeChange}
         />
       </Card>
-      <div className={css('container')}>
+      <Card className="px-4 pb-4 pt-[calc(40px+0.75rem)]">
         {todayTransactions.length > 0 && (
-          <section className="mb-2">
+          <Card as="section" className="p-0 mb-4">
             <Typography
               variant="h3"
-              component="h3"
-              className="mb-2"
+              as="h3"
+              className="mb-4"
             >
               Today
             </Typography>
             <Card elevation={2}>
               {todayTransactions.map((tran) => {
-                tran = Transaction.parseForDisplay(tran, settings);
-                tran.amount = Transaction.parseMoney(tran.amount);
+                tran = TransactionUtils.parseForDisplay(tran, settings);
+                tran.amount = TransactionUtils.parseMoney(tran.amount);
                 tran.datetime = DateTime.getStringFromTimestamp(tran.datetime, 'time', settings);
                 return <TransactionCard {...tran} key={tran.id} />;
               })}
             </Card>
-          </section>
+          </Card>
         )}
-        <section>
+        <Card as="section" className="p-0">
           <Typography
             variant="h3"
-            component="h3"
-            className="mb-2"
+            as="h3"
+            className="mb-4"
           >
             Top 5 Expenses
           </Typography>
@@ -162,11 +167,11 @@ export default function App() {
               />
             ))}
           </Card>
-        </section>
-      </div>
+        </Card>
+      </Card>
     </ Layout>
   );
-}
+};
 
 function parse(transactions = [], today) {
   const todayTransactions = [], categoriesExpense = {};

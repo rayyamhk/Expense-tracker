@@ -1,31 +1,31 @@
-import {
-  useState,
-  useEffect,
-} from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import useDatabase from '../../../src/hooks/useDatabase';
 import useSettings from '../../../src/hooks/useSettings';
 import useSnackbar from '../../../src/hooks/useSnackbar';
-import useStyles from '../../../src/hooks/useStyles';
-import styles from '../../../styles/transaction.module.css';
-import Transaction from '../../../src/utils/Transaction';
-import DateTime from '../../../src/utils/DateTime';
+import css from '../../../src/utils/css';
+import TransactionUtils from '../../../src/utils/Transaction';
+import DateTimeUtils from '../../../src/utils/DateTime';
 
-import Layout from '../../../src/components/molecules/Layout';
-import Icon from '../../../src/components/atoms/Icon';
-import TextField from '../../../src/components/atoms/TextField';
+import Layout from '../../../src/components/organisms/Layout';
+import TextField from '../../../src/components/molecules/TextField';
+import Dialog from '../../../src/components/molecules/Dialog';
 import Button from '../../../src/components/atoms/Button';
-import Dialog from '../../../src/components/atoms/Dialog';
+import Icon from '../../../src/components/atoms/Icon';
+import IconButton from '../../../src/components/atoms/IconButton';
 import Typography from '../../../src/components/atoms/Typography';
+
+import {
+  Transaction,
+} from '../../../src/types';
 
 export default function TransactionDetails() {
   const [popUp, setPopUp] = useState(false);
-  const [transaction, setTransaction] = useState();
+  const [transaction, setTransaction] = useState<Transaction>();
   const [settings] = useSettings();
   const [setSnackbar] = useSnackbar();
   const router = useRouter();
   const db = useDatabase('my-test-app');
-  const css = useStyles(styles);
 
   useEffect(() => {
     let isMounted = true;
@@ -35,7 +35,7 @@ export default function TransactionDetails() {
       }
       try {
         let store = await db.connect('transactions');
-        const { result: transaction } = await store.get(router.query.id);
+        const { result: transaction }: { result: Transaction } = await store.get(router.query.id);
         if (!transaction) {
           router.replace('/app');
           setSnackbar('warning', 'Invalid transaction.');
@@ -47,12 +47,12 @@ export default function TransactionDetails() {
       }
     };
     init();
-    return () => isMounted = false;
+    return () => { isMounted = false; };
   }, [router]);
 
   if (!settings || !transaction) {
     return <h1>Loading.</h1>;
-  }
+  };
 
   const {
     type,
@@ -63,9 +63,9 @@ export default function TransactionDetails() {
     payment,
     brand,
     details,
-  } = Transaction.parseForDisplay(transaction, settings);
+  } = TransactionUtils.parseForDisplay(transaction, settings);
   const headline = type === 'expense' ? 'Expense' : 'Income';
-  const dateDisplay = DateTime.getStringFromTimestamp(datetime, 'datetime', settings);
+  const dateDisplay = DateTimeUtils.getStringFromTimestamp(datetime, 'datetime', settings);
 
   const onCloseDialog = () => setPopUp(false);
   const onOpenDialog = () => setPopUp(true);
@@ -84,108 +84,104 @@ export default function TransactionDetails() {
   };
 
   return (
-    <Layout headline={headline} className="p-2">
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="calendar_today" color="#f44336" size="lg" className="mr-2" />
+    <Layout headline={headline}>
+      <div className="flex mb-5">
+        <Icon icon="calendar_today" color="#f44336" size="lg" className="mr-4" />
         <TextField
           type="text"
           label="Date Time"
           value={dateDisplay}
           disabled
           id="datetime"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="category" color="#3f51b5" size="lg" className="mr-2" />
+      <div className="flex mb-5">
+        <Icon icon="category" color="#3f51b5" size="lg" className="mr-4" />
         <TextField
           type="text"
           label="Category"
           value={category}
           disabled
           id="category"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="dashboard" color="#2196f3" size="lg" className="mr-2" />
+      <div className="flex mb-5">
+        <Icon icon="dashboard" color="#2196f3" size="lg" className="mr-4" />
         <TextField
           type="text"
           label="Subcategory"
-          value={subcategory || ' '}
+          value={subcategory}
           disabled
           id="subcategory"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
+      <div className="flex mb-5">
         <Icon icon="attach_money" color="#ffc107" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Amount"
-          value={amount}
+          value={amount?.toString()}
           disabled
           id="amount"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
+      <div className="flex mb-5">
         <Icon icon="payment" color="#673ab7" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Payment"
-          value={payment || ' '}
+          value={payment}
           disabled
           id="payment"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
+      <div className="flex mb-5">
         <Icon icon="store" color="#4caf50" size="lg" className="mr-2" />
         <TextField
           type="text"
           label="Brand"
-          value={brand || ' '}
+          value={brand}
           disabled
           id="brand"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
       <div className={css('input-row')}>
         <Icon icon="insert_comment" color="#e91e63" size="lg" className="mr-2" />
         <TextField
           type="textarea"
-          rows="3"
+          rows={3}
           label="Details"
-          value={details || ' '}
+          value={details}
           disabled
           id="details"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
-      <Button
+      <IconButton
+        icon="delete"
+        size="md"
+        color="error"
         onClick={onOpenDialog}
-        shape="circle"
-        variant="error"
-        float
-        className={css('delete-btn')}
-      >
-        <Icon icon="delete" size="md" />
-      </Button>
-      <Button
+        className="fixed bottom-[calc(56px+1rem)] right-10"
+      />
+      <IconButton
+        icon="mode"
+        size="md"
+        color="success"
         onClick={onEdit}
-        shape="circle"
-        variant="success"
-        float
-        className={css('edit-btn')}
-      >
-        <Icon icon="mode" size="md" />
-      </Button>
+        className="fixed bottom-[calc(56px+1rem)] right-4"
+      />
       {popUp && (
-        <Dialog onClose={onCloseDialog} className={css('popup')}>
-          <Icon icon="delete_forever" size="xl" className={css('popup-icon')} />
+        <Dialog onClose={onCloseDialog} className="flex flex-col items-center">
+          <Icon icon="delete_forever" size="xl" className="text-error" />
           <Typography
-            component="h2"
+            as="h2"
             variant="h2"
             align="center"
           >
@@ -193,24 +189,20 @@ export default function TransactionDetails() {
           </Typography>
           <div className={css('popup-actions', 'mt-2')}>
             <Button
-              variant="primary"
-              shape="round"
-              size="large"
-              shadow
-              className="mx-2"
+              variant="contained"
+              size="lg"
+              className="mx-4"
               onClick={onCloseDialog}
             >
-              <Typography component="span" variant="body">No</Typography>
+              <Typography as="span" variant="body">No</Typography>
             </Button>
             <Button
               variant="transparent"
-              shape="round"
-              size="large"
-              shadow
-              className="mx-2"
+              size="lg"
+              className="mx-4"
               onClick={onDelete}
             >
-              <Typography component="span" variant="body">Yes</Typography>
+              <Typography as="span" variant="body">Yes</Typography>
             </Button>
           </div>
         </Dialog>

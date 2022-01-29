@@ -23,13 +23,15 @@ export default function Switch(props: SwitchProps) {
   );
 
   return (
-    <div
-      className={css('w-10 h-5 rounded-xl relative bg-on-surface', className)}
-      onClick={() => onChange(!checked)}
-    >
-      <span className={ballClasses}>
-        <Icon icon={checked ? 'dark_mode' : 'light_mode'} size="xs" color="#FFFFFF" />
-      </span>
+    <div className={className}>
+      <div
+        className="w-10 h-5 rounded-xl relative bg-on-surface"
+        onClick={() => onChange(!checked)}
+      >
+        <span className={ballClasses}>
+          <Icon icon={checked ? 'dark_mode' : 'light_mode'} size="xs" color="#FFFFFF" />
+        </span>
+      </div>
     </div>
   )
 };

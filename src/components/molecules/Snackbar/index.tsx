@@ -31,7 +31,7 @@ export default function Snackbar({ className }: SnackbarProps) {
   }
 
   const classes = css(
-    'flex items-center w-full',
+    'flex items-center px-4 py-2',
     styles[type],
     className,
   );

@@ -45,6 +45,8 @@ export default function Button(props: ButtonProps) {
     ...rest
   } = props;
 
+  console.log(variant, colors[variant])
+
   const classes = css(
     'base-btn',
     typeof colors[variant] === 'string' ? colors[variant] : colors[variant][color],
