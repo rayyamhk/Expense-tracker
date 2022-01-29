@@ -7,15 +7,21 @@ import {
 } from 'react';
 import IndexedDB from '../utils/IndexedDB';
 import themes from '../utils/themes.json';
+import { Settings, SettingKeys, Theme } from '../types';
 
-const defaultSettings = {
+type ContextType = [
+  Settings,
+  Dispatch<React.SetStateAction<SettingKeys>>
+];
+
+const defaultSettings: Settings = {
   theme: {
     mode: 'light',
     color: 'amber',
   },
   language: 'en-US',
   budget: 10000,
-  dateFormat: {
+  dateTimeFormat: {
     date: 'MMM DD, YYYY',
     time: 'HH:mm',
   },
@@ -29,20 +35,17 @@ const storeNames = {
   'payments': 'payments',
   'theme': 'common',
   'budget': 'common',
-  'dateFormat': 'common',
+  'dateTimeFormat': 'common',
 };
-const SettingsContext = createContext();
+const SettingsContext = createContext<ContextType>([undefined, undefined]);
 
 export function SettingsProvider({ children }) {
   const db = useMemo(() => {
-    if (typeof window === 'undefined') {
-      return {};
-    }
     return new IndexedDB('my-test-app', 4);
   }, []);
 
-  const [settings, setSettings] = useState();
-  const [key, setKey] = useState();
+  const [settings, setSettings] = useState<Settings>();
+  const [key, setKey] = useState<SettingKeys>();
 
   useEffect(() => {
     const init = async () => {
@@ -51,7 +54,7 @@ export function SettingsProvider({ children }) {
         let store = await db.connect('categories');
         let resp = await store.getAll();
         if (resp.result?.length > 0) {
-          settings.categories = resp.result
+          settings.categories = resp.result;
         }
 
         store = await db.connect('subcategories');
@@ -113,11 +116,11 @@ export function SettingsProvider({ children }) {
   return (
     <SettingsContext.Provider value={[settings, setKey]}>{children}</SettingsContext.Provider>
   );
-}
+};
 
 export default function useSettings() {
   return useContext(SettingsContext);
-}
+};
 
 function switchTheme({ mode, color }) {
   Object.entries(themes[color]).forEach(([key, value]) => {

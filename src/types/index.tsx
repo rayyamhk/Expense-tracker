@@ -34,8 +34,21 @@ export type Settings = {
   subcategories: SelectedItem[],
   payments: SelectedItem[],
 };
-export type IndexedDBType = {
-  indexedDB: IDBDatabase,
-  dbName: string,
-  version: string,
+export type SettingKeys = 'theme' | 'language' | 'budget' | 'dateTimeFormat' | 'categories' | 'subcategories' | 'payments';
+export type Theme = { [key: string]: string };
+export type Transaction = {
+  id: string,
+  type: 'expense' | 'income',
+  datetime: number,
+  category?: string,
+  subcategory?: string,
+  amount?: number,
+  payment?: string,
+  brand?: string,
+  details?: string,
+};
+export type TransactionDisplayProps = Transaction & {
+  icon?: string,
+  iconType?: string,
+  color?: string,
 };

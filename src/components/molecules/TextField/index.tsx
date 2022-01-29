@@ -11,7 +11,7 @@ export type TextFieldProps = {
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void,
   type?: 'text' | 'textarea' | 'number' | 'password',
   value?: string,
-} & React.InputHTMLAttributes<HTMLInputElement> & React.TextareaHTMLAttributes<HTMLTextAreaElement>;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement> & React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'>;
 
 export default function TextField(props: TextFieldProps) {
   const {

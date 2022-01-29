@@ -9,7 +9,7 @@ export type RadioProps = {
   label: string,
   onChange?: (value: string | number) => void,
   value: string | number,
-} & React.ComponentPropsWithoutRef<'input'>;
+} & Omit<React.ComponentPropsWithoutRef<'input'>, 'onChange'>;
 
 export default function Radio(props: RadioProps) {
   const {

@@ -3,16 +3,18 @@ import PropTypes from 'prop-types';
 import useSettings from '../../../hooks/useSettings';
 import useDatabase from '../../../hooks/useDatabase';
 import useSnackbar from '../../../hooks/useSnackbar';
-import useStyles from '../../../hooks/useStyles';
-import styles from './Header.module.css';
 
 import Card from '../../atoms/Card';
 import Typography from '../../atoms/Typography';
-import Icon from '../../atoms/Icon';
-import Button from '../../atoms/Button';
+import IconButton from '../../atoms/IconButton';
 import Switch from '../../atoms/Switch';
 
-export default function Header(props) {
+export type HeaderProps = {
+  headline?: string,
+  hidden?: boolean,
+};
+
+export default function Header(props: HeaderProps) {
   const {
     headline,
     hidden = false,
@@ -22,7 +24,6 @@ export default function Header(props) {
   const db = useDatabase('my-test-app');
   const [settings, reloadSettings] = useSettings();
   const [setSnackbar] = useSnackbar();
-  const css = useStyles(styles);
 
   if (hidden) {
     return null;
@@ -46,30 +47,29 @@ export default function Header(props) {
 
   return (
     <Card
-      component="header"
-      elevation={2}
+      as="header"
+      elevation={1}
       squared
-      className={css('header')}
+      className="bg-layout w-full p-0 flex items-center relative z-50"
     >
-      <Button
+      <IconButton
+        icon="arrow_back"
+        size="xl"
+        variant="transparent"
         onClick={redirectPrevPage}
-        variant='transparent'
-        className={css('arrow-btn')}
-      >
-        <Icon icon="arrow_back" size="sm" className={css('arrow')} />
-      </Button>
+        squared
+        className="text-on-layout"
+      />
       <Typography
-        component="h1"
+        as="h1"
         variant="h2"
-        className={css('headline')}
+        className="text-on-layout flex-grow"
       >
         {headline}
       </Typography>
       <Switch
-        className={css('switch')}
+        className="mr-5"
         checked={themeMode === 'dark'}
-        checkedIcon={<Icon icon="dark_mode" color="#FFFFFF" size="xs" />}
-        uncheckedIcon={<Icon icon="light_mode" color="#FFFFFF" size="xs" />}
         onChange={onChange}
       />
     </Card>

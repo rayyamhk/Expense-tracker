@@ -1,35 +1,34 @@
-import {
-  useState,
-  useEffect,
-} from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import useDatabase from '../../../src/hooks/useDatabase';
 import useSettings from '../../../src/hooks/useSettings';
 import useSnackbar from '../../../src/hooks/useSnackbar';
-import useStyles from '../../../src/hooks/useStyles';
-import styles from '../../../styles/transaction.module.css';
-import Transaction from '../../../src/utils/Transaction';
-import DateTime from '../../../src/utils/DateTime';
-import Settings from '../../../src/utils/Settings';
+import TransactionUtils from '../../../src/utils/Transaction';
+import DateTimeUtils from '../../../src/utils/DateTime';
+import SettingUtils from '../../../src/utils/Settings';
 
-import Layout from '../../../src/components/molecules/Layout';
+import Layout from '../../../src/components/organisms/Layout';
+import DateTimePicker from '../../../src/components/organisms/DateTimePicker';
+import Radio from '../../../src/components/molecules/Radio';
+import Select from '../../../src/components/molecules/Select';
+import TextField from '../../../src/components/molecules/TextField';
 import Icon from '../../../src/components/atoms/Icon';
-import Radio from '../../../src/components/atoms/Radio';
-import DateTimePicker from '../../../src/components/molecules/DateTimePicker';
-import Select from '../../../src/components/atoms/Select';
-import TextField from '../../../src/components/atoms/TextField';
-import Button from '../../../src/components/atoms/Button';
+import IconButton from '../../../src/components/atoms/IconButton';
+
+import {
+  SelectedItem,
+  Transaction,
+} from '../../../src/types';
 
 export default function Create() {
-  const [pageMode, setPageMode] = useState('create');
+  const [pageMode, setPageMode] = useState<'create' | 'edit'>('create');
   const [submitted, setSubmitted] = useState(false);
-  const [transaction, setTransaction] = useState(Transaction.default());
-  const [subcategories, setSubcategories] = useState([]);
+  const [transaction, setTransaction] = useState(TransactionUtils.default());
+  const [subcategories, setSubcategories] = useState<SelectedItem[]>([]);
   const [settings] = useSettings();
   const [setSnackbar] = useSnackbar();
   const router = useRouter();
   const db = useDatabase('my-test-app');
-  const css = useStyles(styles);
 
   useEffect(() => {
     let isMounted = true;
@@ -39,45 +38,45 @@ export default function Create() {
       }
       try {
         let store = await db.connect('transactions');
-        const { result: transaction } = await store.get(router.query.id);
+        const { result: transaction }: { result: Transaction } = await store.get(router.query.id);
         if (!transaction) {
           return;
         }
         const category = transaction.category;
 
         store = await db.connect('subcategories');
-        const index = await store.index('category_index');
-        const { result: subcategories } = await index.getAll(category);
+        const index = store.index('category_index');
+        const { result: subcategories }: { result: SelectedItem[] } = await index.getAll(category);
         setSubcategories(subcategories);
         setTransaction(transaction);
         setPageMode('edit');
       } catch ({ name, message }) {
-        setTransaction(Transaction.default());
+        setTransaction(TransactionUtils.default());
         setSnackbar('error', `${name}: ${message}`);
       }
     };
     init();
-    return () => isMounted = false;
+    return () => { isMounted = false; };
   }, [router]);
 
   if (!settings) {
     return <h1>Loading.</h1>;
-  }
-
-  const onTypeChange = (e) => {
-    setTransaction({ ...transaction, type: e.target.value });
   };
 
-  const onDateTimeChange = (YYYY, MM, DD, hh, mm) => {
-    const timestamp = DateTime.getTimestampFromArray([YYYY, MM, DD, hh, mm]);
+  const onTypeChange = (value: 'expense' | 'income') => {
+    setTransaction({ ...transaction, type: value });
+  };
+
+  const onDateTimeChange = (YYYY: number, MM: number, DD: number, hh: number, mm: number) => {
+    const timestamp = DateTimeUtils.getTimestampFromArray([YYYY, MM, DD, hh, mm]);
     setTransaction({ ...transaction, datetime: timestamp });
   };
 
-  const onCategorySelect = async (id) => {
+  const onCategorySelect = async (id: string) => {
     try {
       const store = await db.connect('subcategories');
-      const index = await store.index('category_index');
-      const { result: subcategories } = await index.getAll(id);
+      const index = store.index('category_index');
+      const { result: subcategories }: { result: SelectedItem[] } = await index.getAll(id);
       setSubcategories(subcategories);
       setTransaction({ ...transaction, category: id, subcategory: undefined });
     } catch ({ name, message }) {
@@ -85,23 +84,23 @@ export default function Create() {
     }
   };
 
-  const onSubcategorySelect = (id) => {
+  const onSubcategorySelect = (id: string) => {
     setTransaction({ ...transaction, subcategory: id });
   };
 
-  const onAmountChange = (e) => {
-    setTransaction({ ...transaction, amount: e.target.value });
+  const onAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTransaction({ ...transaction, amount: Number(e.target.value) });
   };
 
-  const onDetailsChange = (e) => {
+  const onDetailsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTransaction({ ...transaction, details: e.target.value });
   };
 
-  const onBrandChange = (e) => {
+  const onBrandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTransaction({ ...transaction, brand: e.target.value });
   };
 
-  const onPaymentChange = (id) => {
+  const onPaymentChange = (id: string) => {
     setTransaction({ ...transaction, payment: id });
   };
 
@@ -113,12 +112,12 @@ export default function Create() {
         setSnackbar('error', 'Some fields are missing.');
         return;
       }
-      if (Number(amount) < 0) {
+      if (amount < 0) {
         setSnackbar('error', 'Amount should be non-negative.');
         return;
       }
       const store = await db.connect('transactions', 'readwrite');
-      await store.put(Transaction.parseForDatabase(transaction));
+      await store.put(TransactionUtils.parseForDatabase(transaction));
       if (pageMode === 'edit') {
         router.push(`/app/transactions/${transaction.id}`);
         setSnackbar('success', 'Transaction updated!');
@@ -127,14 +126,14 @@ export default function Create() {
         setSnackbar('success', 'Transaction created!');
       }
     } catch ({ name, message }) {
-      setSnackbar('error', `${e.name}: ${e.message}`);
+      setSnackbar('error', `${name}: ${message}`);
     }
   };
 
   const headline = pageMode === 'create' ? 'Create' : 'Edit';
-  const _payments = Settings.arrayToObject(settings.payments);
-  const _categories = Settings.arrayToObject(settings.categories);
-  const _subcategories = Settings.arrayToObject(subcategories);
+  const _payments = SettingUtils.arrayToObject(settings.payments) as SelectedItem[];
+  const _categories = SettingUtils.arrayToObject(settings.categories) as SelectedItem[];
+  const _subcategories = SettingUtils.arrayToObject(subcategories) as SelectedItem[];
 
   const {
     type,
@@ -146,15 +145,15 @@ export default function Create() {
     brand,
     details,
   } = transaction;
-  const [year, month, day, hour, minute] = DateTime.getArrayFromTimestamp(datetime);
-  const categorySelected = category ? { id: category, value: _categories[category]?.value } : undefined;
-  const subcategorySelected = subcategory ? { id: subcategory, value: _subcategories[subcategory]?.value } : undefined;
-  const paymentSelected = payment ? { id: payment, value: _payments[payment]?.value } : undefined;
+  const [year, month, day, hour, minute] = DateTimeUtils.getArrayFromTimestamp(datetime);
+  const categorySelected: SelectedItem = category ? { id: category, value: _categories[category]?.value } : undefined;
+  const subcategorySelected: SelectedItem = subcategory ? { id: subcategory, value: _subcategories[subcategory]?.value } : undefined;
+  const paymentSelected: SelectedItem = payment ? { id: payment, value: _payments[payment]?.value } : undefined;
 
   return (
-    <Layout headline={headline} className="p-2">
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="attach_money" size="lg" className={css('gray-icon', 'mr-2')} />
+    <Layout headline={headline}>
+      <div className="flex mb-5">
+        <Icon icon="attach_money" size="lg" className="text-disabled mr-4" />
         <Radio
           label="Expense"
           name="type"
@@ -162,6 +161,7 @@ export default function Create() {
           value="expense"
           onChange={onTypeChange}
           checked={type === 'expense'}
+          className="mr-4"
         />
         <Radio
           label="Income"
@@ -172,10 +172,10 @@ export default function Create() {
           checked={type === 'income'}
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="edit_calendar" className={css('gray-icon', 'mr-2')} />
+      <div className="flex mb-5">
+        <Icon icon="edit_calendar" className="text-disabled mr-4" />
         <DateTimePicker
-          className={css('datetime-picker')}
+          className="w-full"
           label="Date Time *"
           onDateTimeChange={onDateTimeChange}
           year={year}
@@ -186,84 +186,82 @@ export default function Create() {
           settings={settings}
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="category" className={css('gray-icon', 'mr-2')} />
+      <div className="flex mb-5">
+        <Icon icon="category" className="text-disabled mr-4" />
         <Select
           label="Category *"
           onSelect={onCategorySelect}
           options={settings.categories}
           selected={categorySelected}
           error={submitted && !category}
-          className={css('select')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="dashboard" className={css('gray-icon', 'mr-2')} />
+      <div className="flex mb-5">
+        <Icon icon="dashboard" className="text-disabled mr-4" />
         <Select
           label="Subcategory"
           onSelect={onSubcategorySelect}
           options={subcategories}
           selected={subcategorySelected}
-          className={css('select')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="price_change" className={css('gray-icon', 'mr-2')} />
+      <div className="flex mb-5">
+        <Icon icon="price_change" className="text-disabled mr-4" />
         <TextField
           type="number"
           label="Amount *"
-          value={amount}
+          value={amount?.toString() || ''}
           onChange={onAmountChange}
-          error={submitted && !amount}
+          error={submitted && amount < 0}
           min="0"
-          nextFocus="brand"
+          next="brand"
           id="amount"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="payment" className={css('gray-icon', 'mr-2')} />
+      <div className="flex mb-5">
+        <Icon icon="payment" className="text-disabled mr-4" />
         <Select
           label="Payment"
           onSelect={onPaymentChange}
           options={settings.payments}
           selected={paymentSelected}
-          className={css('select')}
+          className="w-full"
         />
       </div>
-      <div className={css('input-row', 'mb-2')}>
-        <Icon icon="store" className={css('gray-icon', 'mr-2')} />
+      <div className="flex mb-5">
+        <Icon icon="store" className="text-disabled mr-4" />
         <TextField
           type="text"
           label="Brand"
           value={brand}
           onChange={onBrandChange}
           id="brand"
-          nextFocus='details'
-          className={css('textfield')}
+          next='details'
+          className="w-full"
         />
       </div>
-      <div className={css('input-row')}>
-        <Icon icon="edit_note" className={css('gray-icon', 'mr-2')} />
+      <div className="flex mb-5">
+        <Icon icon="edit_note" className="text-disabled mr-4" />
         <TextField
           type="textarea"
-          rows="3"
+          rows={3}
           label="Details"
           value={details}
           onChange={onDetailsChange}
           id="details"
-          className={css('textfield')}
+          className="w-full"
         />
       </div>
-      <Button
+      <IconButton
+        icon="done"
+        size="md"
         onClick={onSubmit}
-        shape="circle"
-        variant="success"
-        float
-        className={css('submit-btn')}
-      >
-        <Icon icon="done" size="md" />
-      </Button>
+        color="success"
+        className="fixed bottom-[calc(56px+1rem)] right-4"
+      />
     </Layout>
   );
 }

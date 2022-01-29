@@ -10,7 +10,7 @@ import Clock from '../src/components/molecules/Clock';
 import Switch from '../src/components/atoms/Switch/index';
 import Layout from '../src/components/organisms/Layout';
 import IconButton from '../src/components/atoms/IconButton';
-import Footer from '../src/components/organisms/Footer';
+import useSnackbar from '../src/hooks/useSnackbar';
 
 export default function Home() {
 
@@ -25,8 +25,12 @@ export default function Home() {
   const [hour, setHour] = useState(now.getHours());
   const [minute, setMinute] = useState(now.getMinutes());
   const [switchChecked, setSwitchChecked] = useState(false);
+  const [setSnackbar] = useSnackbar();
+
+  setSnackbar('error', 'test')
+
   return (
-    <div className="p-10 w-[600px] mx-auto flex flex-col items-center">
+    <Layout headline="Calendar">
       <IconButton icon="home" size="xs"/>
       <IconButton icon="home" size="sm"/>
       <IconButton icon="home" size="md"/>
@@ -80,7 +84,6 @@ export default function Home() {
         <Button size="md" color="primary" variant="contained">This is a Button</Button>
         <Button size="lg" color="primary" variant="contained">This is a Button</Button>
       </Card>
-      <Footer />
-    </div>
+    </Layout>
   );
 }

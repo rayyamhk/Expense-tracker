@@ -1,22 +1,27 @@
 declare const window: any;
 
+type rejectError = (e: Event) => void;
+type resolveStore = (store: StoreWrapper) => void;
+type resolveRequest = (req: IDBRequest) => void;
+
 class IndexedDB {
   indexedDB: IDBFactory;
   dbName: string;
   version: number;
 
   constructor(dbName: string, version: number) {
-    this.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-    this.dbName = dbName;
-    this.version = version;
+    if (typeof window !== 'undefined') {
+      this.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+      this.dbName = dbName;
+      this.version = version;
+    }
   };
 
-  connect(storeName: string, mode: 'readonly' | 'readwrite') {
-    return new Promise((resolve, reject) => {
+  connect(storeName: string, mode: 'readonly' | 'readwrite' = 'readonly') {
+    return new Promise((resolve: resolveStore, reject: rejectError) => {
       const openReq = this.indexedDB.open(this.dbName, this.version);
-      openReq.onupgradeneeded = upgrade;
       openReq.onsuccess = (e) => {
-        const db = openReq.result; // ?
+        const db = openReq.result; // e.target.result
         const transactions = db.transaction(storeName, mode);
         const store = transactions.objectStore(storeName);
         resolve(new StoreWrapper(store));
@@ -31,103 +36,122 @@ class IndexedDB {
       };
       openReq.onerror = (e) => reject(e);
       openReq.onblocked = (e) => console.debug('open request onblocked: ', e);
+      openReq.onupgradeneeded = (e) => {
+        const oldVersion = e.oldVersion;
+        const db = openReq.result;
+        const upgradeTransaction = openReq.transaction;
+      
+        // init v1
+        if (oldVersion < 1) {
+          console.log('v0 to v1');
+          const store = db.createObjectStore('transactions', { keyPath: 'id' });
+          store.createIndex('datetime_index', 'datetime', { unique: false });
+        }
+      
+        // upgrade from v1 to v2
+        if (oldVersion < 2) {
+          console.log('v1 to v2');
+          db.createObjectStore('payments', { keyPath: 'id' });
+          const transactionsStore = upgradeTransaction.objectStore('transactions');
+          transactionsStore.createIndex('payment_index', 'payment', { unique: false });
+        }
+      
+        // upgrade from v2 to v3
+        if (oldVersion < 3) {
+          console.log('v2 to v3');
+          db.createObjectStore('categories', { keyPath: 'id' });
+          const store = db.createObjectStore('subcategories', { keyPath: 'id' });
+          store.createIndex('category_index', 'category', { unique: false });
+        }
+      
+        // upgrade from v3 to v4
+        if (oldVersion < 4) {
+          console.log('v3 to v4');
+          db.createObjectStore('common', { keyPath: 'id' });
+        }
+      };
     });
   };
 }
 
 class StoreWrapper {
   store: IDBObjectStore;
-  IDBKeyRange: IDBKeyRange;
+  IDBKeyRange = IDBKeyRange;
 
-  constructor(store) {
+  constructor(store: IDBObjectStore) {
     this.store = store;
     this.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
   };
 
-  add(...args) {
-    return new Promise((resolve, reject) => {
-      const req = this.store.add(...args);
+  add(value: object, key?: IDBValidKey) {
+    return new Promise((resolve: resolveRequest, reject: rejectError) => {
+      const req = this.store.add(value, key);
       req.onerror = (e) => reject(e);
-      req.onsuccess = (e) => {
-        e.target.store = this;
-        resolve(e.target);
-      };
+      req.onsuccess = (e) => resolve(e.target as IDBRequest);
     });
   };
 
-  put(...args) {
-    return new Promise((resolve, reject) => {
-      const req = this.store.put(...args);
+  put(item: object, key?: IDBValidKey) {
+    return new Promise((resolve: resolveRequest, reject: rejectError) => {
+      const req = this.store.put(item, key);
       req.onerror = (e) => reject(e);
-      req.onsuccess = (e) => {
-        e.target.store = this;
-        resolve(e.target)
-      };
+      req.onsuccess = (e) => resolve(e.target as IDBRequest);
     });
   };
 
-  get(...args) {
-    return new Promise((resolve, reject) => {
-      const req = this.store.get(...args);
+  get(key: IDBValidKey) {
+    return new Promise((resolve: resolveRequest, reject: rejectError) => {
+      const req = this.store.get(key);
       req.onerror = (e) => reject(e);
-      req.onsuccess = (e) => {
-        e.target.store = this;
-        resolve(e.target);
-      };
+      req.onsuccess = (e) => resolve(e.target as IDBRequest);
     });
   };
 
-  getAll(...args) {
-    return new Promise((resolve, reject) => {
-      const req = this.store.getAll(...args);
+  getAll(query?: IDBKeyRange | IDBValidKey, count?: number) {
+    return new Promise((resolve: resolveRequest, reject: rejectError) => {
+      const req = this.store.getAll(query, count);
       req.onerror = (e) => reject(e);
-      req.onsuccess = (e) => {
-        e.target.store = this;
-        resolve(e.target);
-      };
+      req.onsuccess = (e) => resolve(e.target as IDBRequest);
     });
   };
 
-  delete(...args) {
-    return new Promise((resolve, reject) => {
-      const req = this.store.delete(...args);
+  delete(key: IDBKeyRange | IDBValidKey) {
+    return new Promise((resolve: resolveRequest, reject: rejectError) => {
+      const req = this.store.delete(key);
       req.onerror = (e) => reject(e);
-      req.onsuccess = (e) => {
-        e.target.store = this;
-        resolve(e.target);
-      };
+      req.onsuccess = (e) => resolve(e.target as IDBRequest);
     });
   };
 
-  index(name) {
+  index(name: string) {
     const index = this.store.index(name);
     return new IndexWrapper(index);
   };
 }
 
 class IndexWrapper {
-  constructor(index) {
+  index: IDBIndex;
+  IDBKeyRange = IDBKeyRange;
+
+  constructor(index: IDBIndex) {
     this.index = index;
     this.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
   };
 
-  getAll(...args) {
-    return new Promise((resolve, reject) => {
-      const req = this.index.getAll(...args);
+  getAll(query?: IDBKeyRange | IDBValidKey, count?: number) {
+    return new Promise((resolve: resolveRequest, reject: rejectError) => {
+      const req = this.index.getAll(query, count);
       req.onerror = (e) => reject(e);
-      req.onsuccess = (e) => {
-        e.target.index = this;
-        resolve(e.target);
-      };
+      req.onsuccess = (e) => resolve(e.target as IDBRequest);
     });
   };
 
-  openCursor(...args) {
-    return new Promise((resolve, reject) => {
-      const req = this.index.openCursor(...args);
-      const results = [];
-      req.onsuccess = (e) => {
-        const cursor = e.target.result;
+  openCursor(range?: IDBKeyRange | IDBValidKey, direction?: IDBCursorDirection) {
+    return new Promise((resolve: (value: object[]) => void, reject: rejectError) => {
+      const req = this.index.openCursor(range, direction);
+      const results: object[] = [];
+      req.onsuccess = () => {
+        const cursor = req.result; // e.target.result
         if (cursor) {
           results.push(cursor.value);
           cursor.continue();
@@ -139,40 +163,5 @@ class IndexWrapper {
     });
   };
 }
-
-function upgrade(e) {
-  const oldVersion = e.oldVersion;
-  const db = e.target.result;
-  const upgradeTransaction = e.target.transaction;
-
-  // init v1
-  if (oldVersion < 1) {
-    console.log('v0 to v1');
-    const store = db.createObjectStore('transactions', { keyPath: 'id' });
-    store.createIndex('datetime_index', 'datetime', { unique: false });
-  }
-
-  // upgrade from v1 to v2
-  if (oldVersion < 2) {
-    console.log('v1 to v2');
-    db.createObjectStore('payments', { keyPath: 'id' });
-    const transactionsStore = upgradeTransaction.objectStore('transactions');
-    transactionsStore.createIndex('payment_index', 'payment', { unique: false });
-  }
-
-  // upgrade from v2 to v3
-  if (oldVersion < 3) {
-    console.log('v2 to v3');
-    db.createObjectStore('categories', { keyPath: 'id' });
-    const store = db.createObjectStore('subcategories', { keyPath: 'id' });
-    store.createIndex('category_index', 'category', { unique: false });
-  }
-
-  // upgrade from v3 to v4
-  if (oldVersion < 4) {
-    console.log('v3 to v4');
-    db.createObjectStore('common', { keyPath: 'id' });
-  }
-};
 
 export default IndexedDB;
